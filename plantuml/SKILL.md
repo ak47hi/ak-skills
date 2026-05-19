@@ -156,3 +156,7 @@ Empirical sanity check (manual `claude -p` runs against two opposing prompts):
 - Should-not-trigger ("mermaid diagram for github readme"): plantuml did NOT fire; Claude produced a Mermaid `flowchart LR` directly.
 
 Conclusion: the original description was already doing its job. Applied a small **surgical edit** to graft in genuine improvements surfaced by the LLM drafts: "ERD" added alongside "ER"; expanded exclusion list (D2, Excalidraw, gantt, sankey, user journey, mindmap, gitGraph, timeline); intent-based phrasing ("Trigger on the intent to diagram software... not just the word 'PlantUML'"); pointer to `references/92-not-plantuml.md`. Description is now 972 chars (cap 1024).
+
+### 2026-05-19 — elicitation cap fix
+
+Subagent eval run (see `evals/subagent-run-1.json`) flagged case 0 (ambiguous "draw a diagram of our system") as the lone PARTIAL because the model listed 6 candidate diagram types instead of the rule's 2–3. Root cause: the rule said "trim to 2–3 that fit" but didn't say what to do when nothing trims (maximally vague prompt). Tightened `references/00-elicitation.md` Q1 section: **cap at 3 candidates, always**. Added explicit fallback for the maximally-vague case (default to C4 Container / Sequence / ER as the three most common production-software intents; swap one out when the implied domain calls for it). Master nine-option list stays as the internal reference; the user sees at most three.
