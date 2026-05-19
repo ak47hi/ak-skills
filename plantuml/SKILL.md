@@ -1,6 +1,6 @@
 ---
 name: plantuml
-description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Use whenever the user asks for any UML / sequence / component / class / state / activity / ER / use-case / C4 / "architecture diagram" / "flow diagram" in PlantUML, or pastes a `.puml` file, or asks Claude to "draw" / "diagram" / "sketch" a system, flow, or schema. Do NOT use for Mermaid, Graphviz, drawio/diagrams.net, or ASCII box art — those need their own tooling.
+description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Trigger on the intent to diagram software — phrases like "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container diagram", "draw the architecture", "sketch the system" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio/diagrams.net, Excalidraw, ASCII box art, or diagram families PlantUML handles poorly (gantt, sankey, user journey, mindmap, gitGraph, timeline) — those go to other tools; see `references/92-not-plantuml.md`.
 ---
 
 # PlantUML skill
@@ -146,3 +146,13 @@ Evaluation + refinement pass against current PlantUML (v1.2026.x) and C4-PlantUM
 - **Updated** `templates/sequence.puml` — commented examples of `return` and `autonumber` format string.
 - **Updated** `references/90-anti-patterns.md` — `!theme` must precede `!include` (`E010`); `!theme plain` on C4 (`E011`); cross-reference to `scripts/lint.py` and its code vocabulary.
 - **Updated** `SKILL.md` VERIFY — mechanical lint pass added as step 1, prose walk as step 2.
+
+### 2026-05-19 — Phase 5 description tuning
+
+Ran skill-creator's `run_loop.py` (20-query trigger eval; 5 iterations; 300 `claude -p` calls). **Best_description came back identical to original** because the harness was structurally unable to measure: `run_eval.py` writes a synthetic slash command at `~/.claude/commands/<skill_name>-skill-<uuid>.md` and checks for the uuid-suffixed name in the `Skill` tool's input, but `claude -p` invoked the **real installed skill** at `~/.claude/skills/plantuml/` by its bare name `plantuml`. String-match never fired. The four LLM-generated description drafts were written to a file nobody read.
+
+Empirical sanity check (manual `claude -p` runs against two opposing prompts):
+- Should-trigger ("OAuth2 PKCE sequence diagram"): plantuml fired, read SKILL.md + references, wrote a `.puml`, ran `scripts/lint.py`. Full workflow.
+- Should-not-trigger ("mermaid diagram for github readme"): plantuml did NOT fire; Claude produced a Mermaid `flowchart LR` directly.
+
+Conclusion: the original description was already doing its job. Applied a small **surgical edit** to graft in genuine improvements surfaced by the LLM drafts: "ERD" added alongside "ER"; expanded exclusion list (D2, Excalidraw, gantt, sankey, user journey, mindmap, gitGraph, timeline); intent-based phrasing ("Trigger on the intent to diagram software... not just the word 'PlantUML'"); pointer to `references/92-not-plantuml.md`. Description is now 972 chars (cap 1024).
