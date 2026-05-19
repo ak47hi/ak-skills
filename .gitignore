@@ -10,3 +10,4 @@ __pycache__/
 !docs/**/*.png
 !docs/**/*.svg
 /docs/
+plantuml/.claude/

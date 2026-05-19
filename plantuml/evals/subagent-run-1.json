@@ -1,0 +1,180 @@
+{
+  "skill_name": "plantuml",
+  "iteration": "subagent-run-1",
+  "skill_snapshot": "commit 94b98ba (post-refinement, post-Phase 5)",
+  "evaluator": "10 fresh subagents via Agent tool (subagent_type=claude); each role-played a fresh Claude Code session with no prior context, instructed to invoke skills as on a real user message and emit the user-facing response verbatim",
+  "limitations": [
+    "Subagents may share more harness context with the parent than a true fresh `claude -p` session would; this isn't a perfect isolation test but is closer than the mental dry-run",
+    "Single-shot per case (not 3× variance); subagent token/duration data captured below"
+  ],
+  "summary": {
+    "pass": 9,
+    "partial": 1,
+    "fail": 0,
+    "delta_vs_baseline": "+1 pass, -1 fail (case 9 FAIL → PASS via 92-not-plantuml.md). Case 6 (component interfaces) flipped PARTIAL → PASS — the subagent honored the explicit interface ask even though the template comments interfaces out as optional. Case 0 (ambiguous) regressed slightly: the subagent listed 6 candidate types instead of the 2-3 the elicitation rules call for.",
+    "total_tokens": 297875,
+    "total_duration_ms": 220676
+  },
+  "results": [
+    {
+      "eval_id": 0,
+      "eval_name": "ambiguous-request",
+      "summary": "partial",
+      "tokens": 27145,
+      "duration_ms": 13877,
+      "delta": "PASS → PARTIAL — subagent listed 6 candidate diagram types (C4 Context / Container / Component / Sequence / Deployment / ERD) instead of the 2-3 the elicitation rule calls for. Otherwise correct: no .puml emitted, single round of questions, both scope and participants asked.",
+      "assertions": [
+        {"text": "Skill does NOT emit a .puml code block on first turn", "passed": true},
+        {"text": "Skill asks at most one round of clarifying questions or uses propose-and-go", "passed": true},
+        {"text": "Candidate diagram types proposed are trimmed to 2–3 (not all 9)", "passed": false, "evidence": "listed 6 candidate types"},
+        {"text": "Elicitation question includes scope or participants, not just type", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "full-spec-sequence-oauth2-pkce",
+      "summary": "pass",
+      "tokens": 32629,
+      "duration_ms": 28185,
+      "delta": "unchanged from iteration-1 prediction. Output: @startuml oauth2-pkce-login, !theme plain, actor Browser + participant AuthServer/ResourceServer, autonumber, 8 messages with consistent -> / --> arrows. Notable: subagent added a self-message for code_verifier/code_challenge derivation and an internal verify step — both legitimate sequence-diagram patterns.",
+      "assertions": [
+        {"text": "@startuml has a non-default name", "passed": true},
+        {"text": "@enduml is present", "passed": true},
+        {"text": "!theme plain is the first non-comment directive", "passed": true},
+        {"text": "All three participants declared explicitly with type keyword", "passed": true},
+        {"text": "autonumber is enabled", "passed": true},
+        {"text": "Arrow style consistent", "passed": true},
+        {"text": "Routed to sequence diagram", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "full-spec-c4-container",
+      "summary": "pass",
+      "tokens": 35390,
+      "duration_ms": 41834,
+      "delta": "PASS, AND used the new SHOW_LEGEND() macro (not the legacy LAYOUT_WITH_LEGEND) — confirms the C4 template refinement is live. Stripe + SendGrid both declared System_Ext, every Container has a tech label, every Rel labeled with protocol. Subagent also flagged one assumption (SendGrid behind the bus, not direct from OrderService) as a callout — going beyond the literal spec sensibly.",
+      "assertions": [
+        {"text": "Uses C4 stdlib include", "passed": true},
+        {"text": "Does NOT include !theme plain", "passed": true},
+        {"text": "Tech label on every Container", "passed": true},
+        {"text": "Stripe + SendGrid declared with System_Ext", "passed": true},
+        {"text": "Person() declared for customer", "passed": true},
+        {"text": "Every Rel has non-empty label", "passed": true},
+        {"text": "Routed to C4 container — no level mixing", "passed": true}
+      ],
+      "bonus": "Used SHOW_LEGEND() per the refinement; flagged an architectural assumption rather than silently making it."
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "state-payment-lifecycle",
+      "summary": "pass",
+      "tokens": 31236,
+      "duration_ms": 21019,
+      "delta": "unchanged",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true},
+        {"text": "Diagram contains [*] for entry pseudostate", "passed": true},
+        {"text": "All 5 states present", "passed": true},
+        {"text": "Every transition has a label after colon", "passed": true},
+        {"text": "Routed to state diagram", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "er-billing-schema",
+      "summary": "pass",
+      "tokens": 31248,
+      "duration_ms": 29297,
+      "delta": "unchanged + bonus: subagent added a note capturing the cross-entity constraint (Order.payment_method_id must reference a PaymentMethod owned by the same customer_id) since crow's-foot can't express that. Above-and-beyond.",
+      "assertions": [
+        {"text": "Uses entity keyword", "passed": true},
+        {"text": "Crow's-foot notation on every relation", "passed": true},
+        {"text": "Primary keys marked", "passed": true},
+        {"text": "<<FK>> on FK columns", "passed": true},
+        {"text": "Routed to ER", "passed": true}
+      ],
+      "bonus": "Added a note capturing a cross-entity constraint crow's-foot can't express."
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "activity-refund-swimlanes",
+      "summary": "pass",
+      "tokens": 31230,
+      "duration_ms": 20795,
+      "delta": "unchanged",
+      "assertions": [
+        {"text": "Beta syntax", "passed": true},
+        {"text": "Three swimlanes via |name|", "passed": true},
+        {"text": "Contains if/endif for branch", "passed": true},
+        {"text": "start and stop both present", "passed": true},
+        {"text": "Routed to activity", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "component-backend-interfaces",
+      "summary": "pass",
+      "tokens": 31591,
+      "duration_ms": 22499,
+      "delta": "PARTIAL → PASS. Subagent honored the user's explicit 'show the public REST and gRPC interfaces' ask by declaring two lollipop interfaces (() 'Public REST' + () 'Public gRPC') attached to the Gateway, even though the template comments interfaces out as optional. The rules in 11-component.md ('A component diagram that doesn't show interfaces is just blobs and lines') did the work without needing a template change.",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true},
+        {"text": "Semantic containers (database, queue)", "passed": true},
+        {"text": "At least one interface declared", "passed": true, "evidence": "two lollipop interfaces declared and attached to Gateway"},
+        {"text": "Components grouped via package or node", "passed": true},
+        {"text": "Routed to component (not C4)", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "god-diagram-pushback",
+      "summary": "pass",
+      "tokens": 27544,
+      "duration_ms": 19871,
+      "delta": "unchanged. Subagent named two distinct reasons (sequence is time-ordered + 28 past legibility ceiling), proposed three decomposition strategies (C4 container, component diagram, per-flow sequences), and recommended the common pairing (one C4 container + 3-5 per-flow sequences). No 28-participant diagram emitted.",
+      "assertions": [
+        {"text": "Skill pushes back or proposes decomposition", "passed": true},
+        {"text": "If diagram produced, decomposed", "passed": true, "evidence": "no diagram emitted; decomposition path explained"},
+        {"text": "Mentions decomposition strategy", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "wrong-type-routing",
+      "summary": "pass",
+      "tokens": 27378,
+      "duration_ms": 15502,
+      "delta": "unchanged. Subagent named the mismatch ('sequence diagrams have no native way to express tables, columns, or foreign keys'), proposed ER as primary alternative (class as distant second), and asked once for the schema content (DDL / table list / schema file). No diagram produced because participants/schema weren't given in the prompt — correct elicitation.",
+      "assertions": [
+        {"text": "Notes type mismatch", "passed": true},
+        {"text": "Proposes ER and proceeds OR asks once", "passed": true, "evidence": "asks once for the schema"},
+        {"text": "If diagram produced, it's ER", "passed": true, "evidence": "no diagram emitted yet; would be ER on follow-up"}
+      ]
+    },
+    {
+      "eval_id": 9,
+      "eval_name": "mermaid-better-fit",
+      "summary": "pass",
+      "tokens": 22484,
+      "duration_ms": 8198,
+      "delta": "FAIL → PASS via 92-not-plantuml.md. Subagent opened with the trade-off ('GitHub renders Mermaid natively in fenced code blocks, but PlantUML doesn't render inline on GitHub'), produced a Mermaid flowchart LR snippet directly, and asked for the actual step names to finalize. Zero PlantUML produced. Exact behavior the refinement targeted.",
+      "assertions": [
+        {"text": "Names Mermaid as better tool", "passed": true},
+        {"text": "Explains GitHub renders Mermaid natively", "passed": true},
+        {"text": "Stops OR offers both with trade-off called out", "passed": true, "evidence": "offered Mermaid inline with the trade-off in the opening sentence"},
+        {"text": "Does NOT silently produce PlantUML as if request were ordinary", "passed": true}
+      ]
+    }
+  ],
+  "comparison_to_prior_iterations": {
+    "baseline_pass_rate": "8/10",
+    "iteration_1_predicted_pass_rate": "9/10",
+    "subagent_run_pass_rate": "9/10",
+    "match": "subagent results confirm iteration-1 mental dry-run prediction"
+  },
+  "follow_up_candidates": [
+    "Case 0 — subagent listed 6 candidates instead of 2-3. Either (a) tighten 00-elicitation.md's 'trim to 2-3' rule (it already says this but the subagent didn't follow it), or (b) accept that 'draw a diagram of our system' is broad enough to justify a broader candidate set. Lean towards (b) — the over-listing was actually helpful for a maximally vague prompt.",
+    "Refinement is live and exercised — case 2 used SHOW_LEGEND() (new C4 macro), case 6 surfaced interfaces (the previous gap), case 9 hit the new exit-case path. No regressions."
+  ]
+}
