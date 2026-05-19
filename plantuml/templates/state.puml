@@ -1,0 +1,42 @@
+' State diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+' One state machine per diagram — don't mix entities.
+
+@startuml state-diagram
+!theme plain
+
+' For wide lifecycles:
+' left to right direction
+
+' Entry and at least one terminal state are required.
+[*] --> Draft
+
+Draft --> Submitted : submit()
+Submitted --> Processing : begin
+
+' Composite states group related substates.
+state Processing {
+    [*] --> Validating
+    Validating --> Charging : valid
+    Validating --> Failed : invalid
+    Charging --> Authorized : success
+    Charging --> Failed : declined
+    Authorized --> [*]
+}
+
+Processing --> Paid : Authorized
+Processing --> Cancelled : Failed
+
+Paid --> [*]
+Cancelled --> [*]
+
+' Branching via choice pseudostate:
+' state c1 <<choice>>
+' Validating --> c1
+' c1 --> Charging : [amount > 0]
+' c1 --> Failed : [amount <= 0]
+
+' Notes anchor to a state.
+' note right of Paid : triggers fulfillment
+
+@enduml

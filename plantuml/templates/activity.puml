@@ -1,0 +1,49 @@
+' Activity diagram skeleton (beta syntax — always use beta, not legacy).
+' Rename the diagram (after @startuml) and the file to match the scope.
+
+@startuml activity-diagram
+!theme plain
+
+' Swimlanes (only if multiple actors execute different steps):
+' |User|
+' :Submit form;
+' |System|
+' :Validate;
+
+' Partitions (logical phases, single-actor):
+' partition "Authentication" {
+'     :Verify token;
+'     :Load user;
+' }
+
+start
+
+:Receive request;
+:Authenticate;
+
+if (authenticated?) then (yes)
+    :Authorize;
+    if (authorized?) then (yes)
+        :Execute;
+        :Return 200;
+    else (no)
+        :Return 403;
+        stop
+    endif
+else (no)
+    :Return 401;
+    stop
+endif
+
+' Parallel work:
+' fork
+'     :Send email;
+' fork again
+'     :Update analytics;
+' fork again
+'     :Write audit log;
+' end fork
+
+stop
+
+@enduml

@@ -1,0 +1,33 @@
+' C4 Context diagram skeleton.
+' Shows: the system, its users, and external systems it interacts with.
+' Does NOT show internal containers or components — that's the wrong level.
+'
+' Stdlib include (works with PlantUML built-in standard library, bundled since ~2020).
+' Fallback if your PlantUML build is older:
+'   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+@startuml c4-context
+!include <C4/C4_Context>
+
+' Optional: switch direction or enable legend.
+' LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+
+title System Context — <SystemName>
+
+Person(customer, "Customer", "Places orders, manages account.")
+Person(support, "Support Agent", "Handles refunds and account issues.")
+
+System(system, "Order Management System", "Lets customers place and track orders.")
+
+System_Ext(stripe, "Stripe", "Payment processing.")
+System_Ext(email, "Email Provider", "Transactional email.")
+System_Ext(analytics, "Analytics Platform", "Business analytics.")
+
+Rel(customer, system, "Places orders, views history")
+Rel(support, system, "Issues refunds, looks up orders")
+Rel(system, stripe, "Charges and refunds via", "HTTPS")
+Rel(system, email, "Sends transactional email via", "SMTP / API")
+Rel(system, analytics, "Streams events to", "HTTPS")
+
+@enduml

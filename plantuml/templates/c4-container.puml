@@ -1,0 +1,44 @@
+' C4 Container diagram skeleton.
+' Shows: the apps/services/datastores inside the system, plus external touchpoints.
+' Does NOT show internals of any container — that's the Component level.
+'
+' Stdlib include. Fallback for older PlantUML builds:
+'   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+@startuml c4-container
+!include <C4/C4_Container>
+
+' Optional layout / legend:
+' LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+
+title Container Diagram — <SystemName>
+
+Person(customer, "Customer", "Places orders, manages account.")
+
+System_Boundary(system, "Order Management System") {
+    Container(web, "Web App", "React, TypeScript", "Customer-facing SPA.")
+    Container(mobile, "Mobile App", "iOS, Android", "Native customer app.")
+    Container(api, "API Gateway", "Go, gRPC + HTTP/JSON", "Routes requests, authn/authz.")
+    Container(auth, "Auth Service", "Go", "Authentication, session management.")
+    Container(orders, "Order Service", "Go", "Order lifecycle, business rules.")
+    ContainerDb(db, "Application DB", "Postgres", "Customers, orders, payment methods.")
+    ContainerQueue(bus, "Event Bus", "SQS", "Domain events: order placed, paid, cancelled.")
+}
+
+System_Ext(stripe, "Stripe", "Payment processing.")
+System_Ext(email, "Email Provider", "Transactional email.")
+
+Rel(customer, web, "Uses", "HTTPS")
+Rel(customer, mobile, "Uses")
+Rel(web, api, "Calls", "HTTPS/JSON")
+Rel(mobile, api, "Calls", "HTTPS/JSON")
+Rel(api, auth, "Verifies sessions via", "gRPC")
+Rel(api, orders, "Routes order ops to", "gRPC")
+Rel(auth, db, "Reads/writes user data", "SQL")
+Rel(orders, db, "Reads/writes order data", "SQL")
+Rel(orders, bus, "Publishes domain events", "AWS SDK")
+Rel(orders, stripe, "Charges and refunds via", "HTTPS")
+Rel(orders, email, "Sends order email via", "API")
+
+@enduml

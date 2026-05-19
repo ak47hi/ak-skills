@@ -1,0 +1,71 @@
+' Class diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+
+@startuml class-diagram
+!theme plain
+
+' For wide hierarchies:
+' left to right direction
+' For dense diagrams with many relations:
+' skinparam linetype ortho
+
+' Hide noise on overview diagrams:
+' hide empty members
+
+package "domain.order" {
+    enum OrderStatus {
+        DRAFT
+        SUBMITTED
+        PAID
+        CANCELLED
+    }
+
+    class Order {
+        - id: UUID
+        - customerId: UUID
+        - status: OrderStatus
+        - total: Money
+        + submit(): void
+        + cancel(reason: String): void
+        {static} + draft(customerId: UUID): Order
+    }
+
+    class LineItem {
+        - sku: String
+        - quantity: int
+        - unitPrice: Money
+    }
+}
+
+package "domain.payment" {
+    abstract class PaymentMethod {
+        # {abstract} validate(): boolean
+        + charge(amount: Money): void
+    }
+
+    class CreditCard
+    class BankTransfer
+}
+
+interface Repository<T> {
+    + findById(id: UUID): T?
+    + save(entity: T): void
+}
+
+class OrderRepository
+
+' Relations:
+'   <|-- inheritance     <|.. realization
+'   *--  composition     o--  aggregation
+'   -->  association     ..>  dependency
+PaymentMethod <|-- CreditCard
+PaymentMethod <|-- BankTransfer
+Repository <|.. OrderRepository
+Order "1" *-- "1..*" LineItem
+Order --> PaymentMethod
+Order --> OrderStatus
+
+' Notes anchor to classes or relations.
+' note right of Order: invariant — status transitions only forward
+
+@enduml

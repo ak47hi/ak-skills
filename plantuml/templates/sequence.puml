@@ -1,0 +1,54 @@
+' Sequence diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+' Theme fallback: replace `!theme plain` with these three lines if the
+' user's PlantUML build doesn't ship the `plain` theme:
+'   skinparam monochrome true
+'   skinparam shadowing false
+'   skinparam defaultFontName "Helvetica"
+
+@startuml sequence-diagram
+!theme plain
+
+' Participants — declare explicitly, pick the type that matches the role.
+' Available: actor, participant, boundary, control, entity, database, collections, queue
+actor User
+participant "Web App" as Web
+participant API
+control AuthService as Auth
+database Users
+
+' Optional: group participants when there are >5
+' box "Frontend"
+'     actor User
+'     participant "Web App" as Web
+' end box
+' box "Backend"
+'     participant API
+'     control AuthService as Auth
+' end box
+
+' Optional: autonumber when there are 6+ messages
+' autonumber
+
+' Messages.
+' Convention: -> for request (sync), --> for response (dashed), ->> for fire-and-forget.
+User -> Web: action
+Web -> API: request
+API -> Auth: verify
+Auth -> Users: query
+Users --> Auth: row
+Auth --> API: ok
+API --> Web: response
+Web --> User: result
+
+' Optional control flow:
+' alt happy path
+'     ...
+' else error case
+'     ...
+' end
+
+' Optional notes — always anchor (left of / right of / over).
+' note right of Auth: rate-limited
+
+@enduml

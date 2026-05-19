@@ -1,0 +1,37 @@
+' C4 Dynamic diagram skeleton.
+' Shows: a numbered runtime sequence of calls across containers (or components)
+' for ONE scenario. Like a sequence diagram, but using C4 element styling.
+'
+' Stdlib include. Fallback for older PlantUML builds:
+'   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Dynamic.puml
+
+@startuml c4-dynamic
+!include <C4/C4_Dynamic>
+
+' LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+
+title Dynamic Diagram — Place Order Flow
+
+Person(customer, "Customer")
+Container(web, "Web App", "React", "Customer SPA.")
+Container(api, "API Gateway", "Go", "Routes, authn/authz.")
+Container(orders, "Order Service", "Go", "Order lifecycle.")
+ContainerDb(db, "Application DB", "Postgres")
+ContainerQueue(bus, "Event Bus", "SQS")
+System_Ext(stripe, "Stripe")
+
+' Numbered Rel calls — the numbering is the diagram's information.
+Rel(customer, web, "1. Submits checkout form")
+Rel(web, api, "2. POST /orders")
+Rel(api, orders, "3. CreateOrder(...)")
+Rel(orders, db, "4. INSERT order, line_items")
+Rel(orders, stripe, "5. Charge card")
+Rel(stripe, orders, "6. Authorized")
+Rel(orders, db, "7. UPDATE status = PAID")
+Rel(orders, bus, "8. Publish OrderPlaced")
+Rel(orders, api, "9. Return order_id")
+Rel(api, web, "10. 201 Created {order_id}")
+Rel(web, customer, "11. Show confirmation")
+
+@enduml
