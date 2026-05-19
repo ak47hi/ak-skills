@@ -44,6 +44,28 @@ Why it's bad: bloats the source, doesn't render consistently across PlantUML ver
 
 Fix: rely on `!theme plain`. If `plain` isn't available on the user's build, use the minimal `skinparam` block from `references/91-output-contract.md` — nothing more.
 
+### `!theme` after `!include` (ordering pitfall)
+
+Symptom: a `!theme foo` directive appears later in the file than an `!include` (or inside an included file).
+
+Why it's bad: themes layer on top of the renderer's defaults — including the style choices baked into stdlib `!include`s. If theme comes after include, the theme either gets overridden by the include's own styling or fights it, producing visually inconsistent output. PlantUML doesn't error; it silently produces a worse diagram.
+
+Fix: `!theme` is always the first non-comment directive, before any `!include`. lint.py catches this as `E010`.
+
+### `!theme plain` on a C4 diagram
+
+Symptom: a `.puml` file has both `!include <C4/C4_*>` and `!theme plain`.
+
+Why it's bad: C4-PlantUML applies its own visual conventions and color palette via the include. Stacking `!theme plain` on top either gets overridden or fights the stdlib styling. Inconsistent output, no error.
+
+Fix: on C4 diagrams, drop `!theme plain` entirely — the stdlib handles theming. Use `SHOW_LEGEND()` (or `LAYOUT_WITH_LEGEND()`) to expose visual element types instead. lint.py catches this as `E011`. See `references/18-c4.md` § "No `!theme plain` on C4 diagrams".
+
+## Mechanical lint pass
+
+Many of the rules above can be checked deterministically. Run `scripts/lint.py <file.puml>` against the generated source as the first pass of VERIFY — it's faster and more reliable than walking this list by hand. The prose walk below catches what static checks can't (intent mismatches, abstraction-level choices, scope decisions).
+
+Codes the script emits: `E001`–`E004` (universal: missing/unnamed `@startuml`, missing `@enduml`), `E010`–`E011` (theme/include ordering), `W020`–`W022` (sequence: god-diagram count, autonumber-on-small-diagram, implicit participants), `E030`/`W031` (state: missing `[*]`, unlabeled transitions), `E040`/`W041` (ER: class-style arrow in ER, missing crow's-foot), `W050`/`E051`/`E052` (C4: missing tech label, missing `Rel` label), `W060` (class: missing visibility), `W070`/`W080` (component / deployment: no semantic containers).
+
 ## Per-type
 
 ### Sequence

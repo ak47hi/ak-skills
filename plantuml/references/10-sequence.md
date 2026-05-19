@@ -96,6 +96,21 @@ Rules:
 - Use activation only when you want to show overlapping activity or nested calls. For linear flows, skip it.
 - Every `++` needs a matching `--`. Unmatched activation reads as a stuck rectangle.
 
+### Return shorthand
+
+When a participant is currently activated and you want to send a reply back to whoever called it, `return` is shorter and clearer than naming both ends again:
+
+```puml
+User -> Web ++: POST /login
+Web -> Auth ++: verify
+Auth -> Users ++: query
+return row              ' implicit Users --> Auth, deactivates Users
+return ok               ' implicit Auth --> Web, deactivates Auth
+return 200              ' implicit Web --> User, deactivates Web
+```
+
+`return` only works inside an active region (after `++`). It auto-targets the most recent caller and auto-deactivates. Use it for happy-path replies; spell out `B --> A: text` when the return value or context differs from the call.
+
 ## Notes
 
 Anchor every note. Free-floating `note: text` is ambiguous.
@@ -145,7 +160,21 @@ autonumber
 User -> Web: ...
 ```
 
-Customize: `autonumber 10 5` starts at 10, increments by 5.
+Customize:
+
+- `autonumber 10` — start at 10.
+- `autonumber 10 5` — start at 10, increment by 5.
+- `autonumber 10 "<b>[000]"` — format strings via the third argument. `000` is a width-padded decimal placeholder; HTML-style tags (`<b>`, `<i>`, `<color:...>`) work. Useful when numbers should look like documentation references (e.g. `[001]`, `[002]`).
+- `autonumber stop` ... `autonumber resume` — pause and resume numbering across sections of one diagram. `autonumber stop` halts; later `autonumber resume` (or `autonumber resume 5` to continue from a specific value) picks back up.
+
+```puml
+autonumber 1 "<b>[000]"
+User -> Web: POST /login
+autonumber stop
+note over Web: ... background work ...
+autonumber resume
+Web --> User: 200
+```
 
 ## Dividers
 
@@ -172,6 +201,18 @@ User -> Web: click verification link
 ## Direction
 
 Default is top-to-bottom (each participant is a column, time flows down). Don't change this.
+
+## Advanced: `!pragma teoz true`
+
+Adding `!pragma teoz true` as the first directive switches PlantUML to its newer sequence renderer. It unlocks:
+
+- **Nested boxes** (`box "Auth" { box "Token Service" { ... } }`) — useful for showing logical grouping within a subsystem.
+- **Anchors and `&`** for parallel messages that happen at the same logical timestep: `User -> Web: A & Web -> Audit: B` renders A and B as simultaneous.
+- **Duration** of activations rendered more precisely.
+
+Trade-offs: layout differs subtly from the default engine; some older diagrams render slightly differently under teoz. Opt-in, file-by-file — don't enable globally.
+
+Don't include teoz in the template by default. Reach for it only when you need one of the above features.
 
 ## Anti-patterns specific to sequence
 

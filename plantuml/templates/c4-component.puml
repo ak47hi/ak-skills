@@ -8,8 +8,15 @@
 @startuml c4-component
 !include <C4/C4_Component>
 
+' Optional modernized style (C4-PlantUML v2.13.0+).
+' !ROUNDED_STYLE=1
+' !NEW_C4_STYLE=1
+
+' Optional: switch direction.
 ' LAYOUT_LEFT_RIGHT()
-LAYOUT_WITH_LEGEND()
+' LAYOUT_LANDSCAPE()    ' add !NO_LAY_ROTATE=1 if Lay_*() hints stop working
+
+SHOW_LEGEND()
 
 title Component Diagram — Order Service
 

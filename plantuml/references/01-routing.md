@@ -2,6 +2,12 @@
 
 Pick exactly one diagram type per `.puml` file. If a request honestly needs two diagrams, produce two files — don't mix levels in one.
 
+## Before routing: is PlantUML even the right tool?
+
+Check `references/92-not-plantuml.md` first. If the request is an **exit case** (Mermaid for GitHub-native rendering; gantt / journey / mindmap / gitGraph / sankey / quadrant; D2 for "make it look good"; Excalidraw-style whiteboarding), **name the better tool and stop** — don't produce PlantUML the user will throw away.
+
+The user can always override ("produce PlantUML anyway"), in which case drop back into the decision tree below.
+
 ## Intent → type decision tree
 
 Walk top to bottom. First match wins.

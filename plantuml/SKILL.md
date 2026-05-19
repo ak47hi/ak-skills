@@ -80,8 +80,9 @@ For C4 specifically, the `!include <C4/C4_Container>` short form requires the Pl
 
 Before emitting the artifact:
 
-1. Walk `references/90-anti-patterns.md` against the generated `.puml`. Common catches: god-diagrams (>15 nodes in a context/component diagram), color-only semantics, mixed C4 abstraction levels, missing `[*]` in state diagrams, no cardinality on ER relations, inconsistent arrow styles within one diagram.
-2. Format the response per `references/91-output-contract.md`:
+1. **Mechanical pass:** run `scripts/lint.py <generated>.puml`. The script checks the deterministic rules (named `@startuml`, balanced theme/include ordering, no `!theme plain` on C4, crow's-foot on ER relations, tech labels on C4 containers, `[*]` on state diagrams, etc.). It exits non-zero on errors. Fix any reported issue before emitting. The list of codes is in `references/90-anti-patterns.md` § "Mechanical lint pass".
+2. **Prose pass:** walk `references/90-anti-patterns.md` for the things lint can't catch — abstraction-level mistakes, intent mismatches, layout choice, scope decisions. Common catches: god-diagrams (>15 nodes in a context/component diagram), color-only semantics, mixed C4 abstraction levels, inconsistent arrow styles within one diagram.
+3. **Format the response** per `references/91-output-contract.md`:
    - One fenced `puml` code block with the full source.
    - The render command (`plantuml -tsvg <name>.puml` for vector, `-tpng` for raster).
    - A single-sentence summary of what the diagram shows.
@@ -122,5 +123,26 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 | `references/16-er.md` | ER: `entity`, `*`, `<<FK>>`, crow's-foot cardinality |
 | `references/17-usecase.md` | Use case: actors, system boundary, include/extend |
 | `references/18-c4.md` | C4: stdlib includes, macros, abstraction levels |
-| `references/90-anti-patterns.md` | What to refuse to emit and why |
+| `references/90-anti-patterns.md` | What to refuse to emit and why; lint codes |
 | `references/91-output-contract.md` | Final response format |
+| `references/92-not-plantuml.md` | Exit cases: when to point at Mermaid / D2 instead |
+| `scripts/lint.py` | Mechanical first pass over the generated `.puml`; called by VERIFY |
+| `evals/evals.json` | 10 test cases (skill-creator schema) — what "good" means |
+
+---
+
+## Changelog
+
+### 2026-05-19 — refinement v1
+
+Evaluation + refinement pass against current PlantUML (v1.2026.x) and C4-PlantUML (v2.13.0). Architecture unchanged; edges sharpened.
+
+- **Added** `evals/evals.json` (10 cases, skill-creator schema) and `evals/baseline.json` recording pre-change behavior.
+- **Added** `scripts/lint.py` (Python 3 stdlib, no deps). Deterministic anti-pattern checks; VERIFY's mechanical first pass.
+- **Added** `references/92-not-plantuml.md` — exit cases when Mermaid / D2 / Excalidraw is the right tool. Skill now redirects rather than silently producing PlantUML for GitHub-README / gantt / journey / mindmap / etc.
+- **Updated** `references/18-c4.md` — `SHOW_LEGEND()` preferred over `LAYOUT_WITH_LEGEND()`; tag system (`AddElementTag` / `AddRelTag`) documented as the canonical replacement for color-only semantics inside C4; `!ROUNDED_STYLE=1` and `!NEW_C4_STYLE=1` opt-ins; `LAYOUT_LANDSCAPE()` / `!NO_LAY_ROTATE=1` layout interactions.
+- **Updated** all four C4 templates — `LAYOUT_WITH_LEGEND()` → `SHOW_LEGEND()`; commented `!ROUNDED_STYLE=1` opt-in.
+- **Updated** `references/10-sequence.md` — `return` shorthand, `autonumber` format strings (`autonumber 10 "<b>[000]"`), `autonumber stop` / `resume`, `!pragma teoz true` (advanced).
+- **Updated** `templates/sequence.puml` — commented examples of `return` and `autonumber` format string.
+- **Updated** `references/90-anti-patterns.md` — `!theme` must precede `!include` (`E010`); `!theme plain` on C4 (`E011`); cross-reference to `scripts/lint.py` and its code vocabulary.
+- **Updated** `SKILL.md` VERIFY — mechanical lint pass added as step 1, prose walk as step 2.

@@ -27,8 +27,13 @@ database Users
 '     control AuthService as Auth
 ' end box
 
-' Optional: autonumber when there are 6+ messages
+' Optional: autonumber when there are 6+ messages.
 ' autonumber
+' Format-string form (numbers look like doc references):
+' autonumber 1 "<b>[000]"
+' Pause/resume within one diagram:
+' autonumber stop
+' autonumber resume
 
 ' Messages.
 ' Convention: -> for request (sync), --> for response (dashed), ->> for fire-and-forget.
@@ -40,6 +45,15 @@ Users --> Auth: row
 Auth --> API: ok
 API --> Web: response
 Web --> User: result
+
+' Return shorthand replaces explicit B --> A reply lines, BUT requires `++`
+' activation on the call. Pattern when you adopt it consistently:
+'
+'     User -> Web ++: action
+'     Web -> API ++: request
+'     return response  ' implicit Web --> User, deactivates Web
+'     return ok
+'     return result
 
 ' Optional control flow:
 ' alt happy path
