@@ -68,7 +68,7 @@ For the routed type:
 
 **Universal defaults** applied in every template:
 - `@startuml <descriptive-name>` and `@enduml` always.
-- `!theme plain` as the first non-comment line. (Fallback if a user's PlantUML build doesn't ship `plain`: drop the line and use the inline `skinparam` block documented in `references/91-output-contract.md`.)
+- `!theme plain` as the first non-comment line **for non-C4 diagrams**. C4 templates skip this — the C4-PlantUML stdlib applies its own visual style, and stacking `!theme plain` on top fights it. (Fallback if a user's PlantUML build doesn't ship `plain`: drop the line and use the inline `skinparam` block documented in `references/91-output-contract.md`.)
 - `left to right direction` only for diagrams that read horizontally (use case, ER, short flows); top-to-bottom otherwise.
 - No color-only semantics. If something needs to stand out, use a stereotype or note, not a color.
 
