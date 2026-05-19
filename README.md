@@ -56,4 +56,4 @@ ak-skills/
 
 ## License
 
-MIT (edit before pushing publicly).
+MIT — see [LICENSE](LICENSE).
