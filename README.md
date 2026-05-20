@@ -11,6 +11,7 @@ This repo is the generic counterpart to domain-specific skill repos (e.g. `flink
 | Skill | Purpose | Status |
 |-------|---------|--------|
 | [`plantuml/`](plantuml/) | Generate valid PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 diagrams. Elicits intent when ambiguous, routes by diagram type, enforces structural rules + anti-patterns, emits a render command. | active |
+| [`system-design/`](system-design/) | Design real production systems end-to-end: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions. Numbers first, anti-overengineering, "boring tech until a constraint forces otherwise." Not interview prep. | active |
 
 ## Install
 
