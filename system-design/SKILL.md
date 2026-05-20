@@ -1,6 +1,6 @@
 ---
 name: system-design
-description: Design real production systems end-to-end: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions, each tied to a binding constraint and an explicit sacrifice. Numbers first; complexity must be earned; default to boring tech with a single-machine baseline check. Trigger on architecture work even when phrased in product terms: "the database is falling over", "we keep getting paged for X", "should we use Kafka", "how do we scale this", "what datastore for", "design a notification service", "capacity estimate for", "writing an ADR", "split into services", "resilience review", "SLO design", "thundering herd / hot shard / cascading failures", architectural tradeoff questions. Do NOT use for interview / whiteboard / LeetCode-style design prep, "design Twitter" drills, pure UI/frontend architecture, or implementation-level code review.
+description: Design real production systems and evolve existing ones — greenfield, critique, diagnose, or migrate. Phases: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions, each tied to a binding constraint and an explicit sacrifice. Numbers first; complexity must be earned; default to boring tech with a single-machine baseline check. Trigger in any framing: "the database is falling over", "should we use Kafka", "how do we scale this", "what datastore for", "design a notification service", "capacity estimate for", "writing an ADR", "split into services", "resilience review", "SLO design", "critique this design", "review our architecture", "diagnose why X is slow", "next step to scale", architectural tradeoff questions. Do NOT use for interview / whiteboard / LeetCode-style design prep, "design Twitter" drills, pure UI/frontend architecture, or implementation-level code review.
 ---
 
 # system-design skill
@@ -15,7 +15,32 @@ This is for building **real** systems. Not interview prep. Not whiteboard drills
 
 ---
 
-## Seven phases
+## Mode routing
+
+Before phases, name the mode. Most prompts are greenfield; the others have different phase sequences.
+
+| Signal | Mode | Workflow |
+|---|---|---|
+| "design X" / "build a system for Y" / "what's the architecture for Z" | **greenfield** | ELICIT → ESTIMATE → DATA → ARCHITECT → SCALE → FAILURE → JUSTIFY |
+| "critique this design" / "review our architecture for X" / pastes a design + asks for feedback | **review** | ELICIT(design) → CRITIQUE → PRIORITIZED FINDINGS |
+| "the DB is falling over" / "we keep getting paged for X" / "why is this slow" | **diagnose** | ELICIT(symptoms + state) → DIAGNOSE → SMALLEST-FIX → NEXT-SIGNAL |
+| "we need to scale this" / "how do we add geo" / "extract X service" / "next step from here" | **evolve** | ELICIT(state + wall) → NEXT-STEP → MIGRATION-PLAN → NEXT-SIGNAL |
+
+When the mode signal is ambiguous, **default to greenfield with propose-and-go** ("Treating this as greenfield design — say so if you actually want a critique of an existing X"). The cost of a wrong mode is one turn; the user corrects.
+
+Cross-cutting rules in every mode:
+
+- Constraints gate the work — no architecture, critique, diagnosis, or migration plan without them (inferred + flagged is fine).
+- The anti-pattern catalog in `references/anti-patterns.md` is walked in JUSTIFY (greenfield) and CRITIQUE (review). For diagnose and evolve, it's walked against the proposed fix or next step.
+- Output matches the user's depth. Narrow question → narrow answer.
+
+Full rules for non-greenfield modes live in `references/modes.md`. Load it when the mode is not greenfield.
+
+---
+
+## Greenfield workflow (default)
+
+### Seven phases
 
 ```
 1. ELICIT       The gate. Constraints in or block.                    (inline)
@@ -121,9 +146,49 @@ For a **narrow question** (one decision, scoped) — drop unused sections. A "Ka
 
 ---
 
+## Review, diagnose, evolve workflows
+
+Brief shape; full phase rules in `references/modes.md`. Load it when the mode is not greenfield.
+
+### Review
+
+User describes or pastes an existing design and asks for critique. **Do not redesign.** Walk the design against:
+
+1. **Binding-constraint mismatches.** Is the design solving a constraint that was actually binding? "We picked Cassandra for horizontal scale" — but the workload is 50k QPS that Postgres absorbs.
+2. **Over-engineering smells.** Walk `references/anti-patterns.md` against the design.
+3. **Missing failure-mode coverage.** Per dependency, is slow/down/wrong actually handled? Untested failover assumed working is the most common gap.
+4. **Hidden one-way doors.** Shard key, identifier scheme, wire format on persisted data, multi-region commitment.
+5. **Consistency-boundary count.** Polyglot stores without a sync mechanism (outbox / CDC). Dual-write hazards.
+
+Output is **prioritized findings** (P0 / P1 / P2), each naming the binding constraint it concerns and the smallest fix. If the user wants a redesign, switch to greenfield mode and say so.
+
+### Diagnose
+
+User describes a production problem as symptoms. **Diagnose before prescribing.**
+
+1. Pin symptoms to numbers (latency p50/p99, error rate, queue depth, saturation, working set vs RAM). Ask if unstated.
+2. Reason backward to the binding constraint. Rule out cheap causes (connection pool exhaustion, missing index, working set vs RAM, GC pause, slow query) before expensive ones (sharding, rewrite, new datastore).
+3. Propose the **smallest fix** that addresses the binding constraint.
+4. Name the signal that says "the fix worked" and the signal that would force the next step.
+
+Hard rule: "the DB is falling over" does not necessarily mean "shard the DB." The diagnosis usually finds something cheaper.
+
+### Evolve
+
+User has a working system and is hitting a wall. **Propose the next step, not a rewrite.**
+
+1. Confirm the wall — the specific binding constraint, with numbers.
+2. Pick the next step from the scaling order of reach (`references/patterns.md`) or the storage migration ladder (`references/datastores.md`). Skipping steps requires naming the constraint that forces the skip.
+3. Plan the migration: **parallel-write window** if storage is touched, **two-way-door preference** at every choice point, runbook for rollback.
+4. Name the next wall after this step lands.
+
+Existing systems have operational knowledge baked in; throwing it away has a cost. "We'd build it differently now" is a real consideration, but the migration cost is the honest comparison.
+
+---
+
 ## When to push back
 
-Common over-engineering smells. If you see one, challenge it before producing the design:
+The full anti-pattern catalog lives in `references/anti-patterns.md` — walk it during JUSTIFY (greenfield) and CRITIQUE (review). Common smells worth challenging up front:
 
 - **"Let's split this into microservices."** → What coupling problem is the monolith causing? Microservices add network, deployment, and observability cost; the binding constraint has to be team-coupling or deploy-coupling, not "modernity."
 - **"We need to shard the database."** → Have you exhausted read replicas + caching? Sharding multiplies operational cost permanently; it's a one-way door for the shard key.
@@ -160,3 +225,5 @@ The output is decisions, not a textbook. Every paragraph should change what the 
 | `references/patterns.md` | Scaling order of reach, caching layers + hazards, async/messaging (queue vs log), CQRS / ES warnings, idempotency, coordination primitives. |
 | `references/failure-modes.md` | Failure taxonomy, mitigation catalogue, degradation strategy, minimum-viable-function, per-dependency resilience checklist. |
 | `references/tradeoffs.md` | Core axes, 5-step tradeoff method, ADR template, "when NOT to write an ADR." |
+| `references/modes.md` | Full rules for the four working modes (greenfield / review / diagnose / evolve), per-mode elicitation questions, phase sequences, propose-and-go templates, output shapes. |
+| `references/anti-patterns.md` | Catalogued over-engineering smells with named symptoms, why-bad, and the question to ask instead. Walked in JUSTIFY (greenfield) and CRITIQUE (review). |
