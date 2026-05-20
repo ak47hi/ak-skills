@@ -1,0 +1,106 @@
+[
+  {
+    "query": "ok so our postgres is dying at peak hours. like p99 went from 200ms to 800ms over the last quarter, we're on a db.r6g.4xlarge in rds, 95% reads on a product catalog. some of the senior folks are saying we need to shard or move to microservices but i'm not sure that's right? we get 50k qps at peak. what should we actually do here",
+    "should_trigger": true
+  },
+  {
+    "query": "im writing a design doc for a new notifications service. 5M users, push/email/sms, we'd send launch announcements to everyone within ~5min. team of 3 engineers on aws, we already have postgres and redis. what should the architecture look like and what tradeoffs should i be thinking about",
+    "should_trigger": true
+  },
+  {
+    "query": "we have 12 microservices, 6 engineers, and we've had 3 cascading-failure incidents in the last quarter where one service taking down everyone. our setup is honestly nuts: kafka between every service, postgres + cassandra + elasticsearch + redis, on k8s. 50 qps peak total across like 2k tenants. what's wrong here",
+    "should_trigger": true
+  },
+  {
+    "query": "should we use kafka or just postgres with FOR UPDATE SKIP LOCKED for our background job queue. like ~300 jobs/hr currently, bursts to 1k/hr. we have a small team and i'm worried about operating kafka",
+    "should_trigger": true
+  },
+  {
+    "query": "our team wants to extract billing from the monolith into its own service. the billing folks want to deploy multiple times a week, the rest of us are weekly. plus billing's invoice queries sometimes slow down the rest of the app. 12 engineers total, 2 on billing. should we do it and how",
+    "should_trigger": true
+  },
+  {
+    "query": "writing an ADR for our decision to use rds proxy in front of postgres. can you help me think through what alternatives to list and what the actual tradeoffs are",
+    "should_trigger": true
+  },
+  {
+    "query": "p99 has been climbing on our api - was 200ms 3 months ago, now 1200ms. p50 is fine (~30ms). no specific endpoint stands out. cpu and memory look normal on the app boxes. postgres cpu is moderate. 4-instance app cluster behind alb, 5k req/sec at peak. wtf is going on",
+    "should_trigger": true
+  },
+  {
+    "query": "doing a capacity estimate for an event ingest pipeline. 5k events/sec sustained, 20k/sec burst, ~500B JSON, 90 day raw retention + 2yr rollups. team's already on postgres+kafka+s3+snowflake. how big does this need to be",
+    "should_trigger": true
+  },
+  {
+    "query": "we want 99.99% on our checkout flow that calls inventory, payments, and fraud sync. currently we're getting 99.5% during peak. how should i think about hardening this",
+    "should_trigger": true
+  },
+  {
+    "query": "what's the right datastore for storing user notification preferences - like 50M users, simple key-value lookups, super read heavy. dynamo? redis? postgres with the right indexes? want to think this through properly",
+    "should_trigger": true
+  },
+  {
+    "query": "we need a distributed lock so only one worker picks up each job at a time. options i've seen are redis redlock, zookeeper, or postgres advisory locks. team's small, already runs postgres + redis. we'd use this for like ~500 lock acquisitions per minute. which is the right call here",
+    "should_trigger": true
+  },
+  {
+    "query": "thinking about adding a cache layer in front of our postgres. ~30k qps reads, most of them are user profile lookups with a small hot set. would we use redis as a remote cache, or memcached, or some in-process cache like caffeine on each app server. team is 4 engineers on aws",
+    "should_trigger": true
+  },
+  {
+    "query": "we have ~50TB of historical event data in s3 standard. only ~5% gets queried anymore, and even that is rare. cfo is asking about cost. should we move to s3 glacier? glacier instant? deep archive? what are the gotchas with gdpr delete and retrieval costs",
+    "should_trigger": true
+  },
+  {
+    "query": "i need to design a system design interview question for our junior eng position. something about a url shortener or a chat app. can you give me a template for what to look for from candidates",
+    "should_trigger": false
+  },
+  {
+    "query": "im preparing for system design interviews at faang. can we work through 'design twitter' together. i've got a whiteboard and want to practice talking through it the way they want",
+    "should_trigger": false
+  },
+  {
+    "query": "our react app has a weird re-render issue on the dashboard page. when i scroll down past 50 rows the whole table re-mounts. i think it's a key prop issue. can you look at the component",
+    "should_trigger": false
+  },
+  {
+    "query": "this fastapi route handler is 150 lines, can you suggest how to refactor it. it's the order-creation endpoint and does too much. mostly looking for code-level cleanup suggestions",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the cli to deploy our terraform changes to staging. we use atlantis but i can never remember the comment syntax",
+    "should_trigger": false
+  },
+  {
+    "query": "im thinking about whether we should even build this internal tool or use a vendor. it's a customer feedback collection thing. takes maybe 2 weeks to build vs $30/seat/mo for a saas. mostly a build-vs-buy product call",
+    "should_trigger": false
+  },
+  {
+    "query": "i need to choose a state management library for our new react app. zustand vs jotai vs redux toolkit. our team is mid-size, fairly experienced",
+    "should_trigger": false
+  },
+  {
+    "query": "build me a simple python script that parses our access logs and tells me the top 10 user-agents",
+    "should_trigger": false
+  },
+  {
+    "query": "i'm designing the prompt for our customer service LLM agent - want it to handle escalation, lookups in our orders db, and refund processing. how should i structure the system prompt",
+    "should_trigger": false
+  },
+  {
+    "query": "can you help me figure out why our ml model's f1 score dropped 8% after retraining. we changed the loss function and now precision is up but recall tanked",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the right syntax for SETNX in redis with a TTL for a distributed lock. i just need the command, not a discussion of whether we should use it",
+    "should_trigger": false
+  },
+  {
+    "query": "can you explain what the difference is between cache-aside and write-through? just looking for the textbook definitions for a doc i'm writing",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the aws cli flag to enable server-side encryption when uploading to s3? i think it's --sse but i can never remember the exact form",
+    "should_trigger": false
+  }
+]
