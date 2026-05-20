@@ -2,6 +2,8 @@
 
 Load when entering **Phase 2 (Estimate)**. Goal: produce four numbers (peak QPS, storage at 12 months, bandwidth, working-set size), then run the **single-machine baseline check** before any architecture is drawn. An estimate that fits one box reshapes the design.
 
+For sharper per-component numbers (Postgres on a specific instance class, Kafka per broker, Redis ops/sec by cluster shape, etc.), load `references/benchmarks.md` after this file. This file gives the formulas and the order-of-magnitude ratios; `benchmarks.md` gives the calibrated component ceilings.
+
 ## The latency ladder (orders of magnitude that matter)
 
 Memorize the ratios, not the exact nanoseconds. The exact numbers shift with hardware; the **ratios** decide design.
@@ -119,7 +121,7 @@ Rough ceilings for a modern commodity instance (32 vCPU, 128 GB RAM, NVMe SSD, 1
 | Working set in RAM | ~100 GB |
 | Storage on one disk | several TB |
 
-These are not benchmarks; they're rough ceilings to sanity-check an estimate.
+These are not benchmarks; they're rough ceilings to sanity-check an estimate. Sharper per-component numbers (specific instance classes, latency profiles, scaling cliffs) live in `references/benchmarks.md`.
 
 **The rule:** if the estimate fits one box with headroom (say, 30%), distribution must be justified by something **other than throughput**:
 
