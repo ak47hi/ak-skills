@@ -30,6 +30,10 @@ Is the user describing a data model (entities + cardinality)?
 Is the user describing actor goals against a system?
   └─ Yes → USE CASE                 (17-usecase.md / usecase.puml)
 
+Is the user describing a left-to-right data flow / stream / pipeline / "system design"
+(producers → broker → processors → sinks)?
+  └─ Yes → PIPELINE                 (19-pipeline.md / pipeline.puml)
+
 Is the user describing where things run (hosts, pods, infra)?
   └─ Yes → DEPLOYMENT               (15-deployment.md / deployment.puml)
 
@@ -75,6 +79,22 @@ Both show "boxes and lines". Heuristic:
 - **Deployment** when the question is *where* it runs (hosts, pods, regions, clouds).
 
 If both matter, produce two diagrams.
+
+### Pipeline vs deployment
+
+Both can show infrastructure-flavored boxes. Heuristic:
+- **Pipeline** when the question is *what stages does data flow through* (Producer → Topic → Processor → Sink). Reads left-to-right. Stage discipline.
+- **Deployment** when the question is *where things physically run* (cloud → cluster → node → pod). Reads top-to-bottom. Hierarchy discipline.
+
+Phrases that point at pipeline: "data pipeline", "streaming architecture", "system design", "Kafka flow", "ETL diagram", "how data moves through", "left-to-right". Phrases that point at deployment: "infra topology", "where things run", "k8s cluster", "multi-region", "what's on what host".
+
+### Pipeline vs sequence
+
+Both can describe data movement. Heuristic:
+- **Pipeline** when the user wants the *steady-state shape* of a stream (multiple events, no specific message of interest).
+- **Sequence** when the user wants the *ordered steps for one event* round-trip through participants.
+
+"How a click event flows through Kafka and Flink to the warehouse" → pipeline (steady state). "Trace what happens for one specific user signup event" → sequence (one event's journey).
 
 ### Component vs C4 container
 

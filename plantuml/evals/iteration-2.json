@@ -1,0 +1,55 @@
+{
+  "skill_name": "plantuml",
+  "iteration": "iteration-2",
+  "skill_snapshot": "post-refinement-v2 (pipeline diagram + sprite catalogue)",
+  "evaluator": "mental dry-run + lint self-test; predicts subagent outcome on the 3 new pipeline cases",
+  "limitations": [
+    "plantuml CLI not installed locally — render-correctness still by static lint",
+    "single-shot mental dry-run; subagent-run-2 would give a real signal"
+  ],
+  "summary": {
+    "new_cases": 3,
+    "predicted_pass": 3,
+    "predicted_partial": 0,
+    "predicted_fail": 0,
+    "negative_trigger_check": "PASS — 'draw our microservice architecture' routes to component / C4 container, not pipeline (verified by walking 01-routing.md decision tree mentally)"
+  },
+  "results": [
+    {
+      "eval_id": 10,
+      "eval_name": "pipeline-kafka-stream",
+      "summary": "pass (predicted)",
+      "rationale": "Prompt mentions 'Kafka stream' explicitly — the new pipeline row in 01-routing.md fires above deployment. Template default (templates/pipeline.puml) supplies `left to right direction`, queue for Kafka, node for enrichment, database for warehouse, gilbarbara sprite preamble with kafka/postgresql/apache includes, labeled arrows. Lint passes (no W090/W091/W092)."
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "system-design-streaming-platform",
+      "summary": "pass (predicted)",
+      "rationale": "'system design' is one of the trigger phrases in the SKILL.md description and the 01-routing.md disambiguation. Flink uses `<$apache>` + 'Flink' label per the Flink-gap rule documented in both 19-pipeline.md and 20-sprites.md. ClickHouse + S3 as parallel terminal sinks per 19-pipeline.md § 'Branching and fan-out'."
+    },
+    {
+      "eval_id": 12,
+      "eval_name": "pipeline-flink-gap-fallback",
+      "summary": "pass (predicted)",
+      "rationale": "Direct test of the Flink-gap rule. 20-sprites.md § 'The Flink gap' is explicit: no `<$flink>` sprite exists in gilbarbara; use `<$apache>` + the word 'Flink' in the visible label. Lint W092 would catch a `<$flink>` reference because no `flink.puml` would be in the includes."
+    }
+  ],
+  "lint_self_test": {
+    "all_12_templates_clean": true,
+    "expected_W003_only": true,
+    "synthetic_bad_pipeline_no_lr_fires_W090": true,
+    "synthetic_bad_sprite_no_include_fires_W092": true,
+    "no_false_positives_on_component_or_deployment_templates": true,
+    "notes": "Initial implementation over-triggered pipeline on component.puml and deployment.puml because both have queue + ≥3 relations. Fixed by adding two exclusions to pipeline detection: NO nested cloud/node block (signals deployment) AND NO `component` keyword (signals component)."
+  },
+  "comparison_to_prior_iterations": {
+    "baseline_pass_rate": "8/10",
+    "iteration_1_pass_rate": "9/10 (subagent confirmed)",
+    "iteration_2_predicted_pass_rate": "12/13 (all new cases PASS; case 0 still PARTIAL via subagent over-listing, unchanged by v2)"
+  },
+  "follow_up_candidates": [
+    "Real subagent run on cases 10–12 (~$0.50/case = $1.50 total) to confirm the mental dry-run.",
+    "Render the pipeline template via plantuml.com remote server (same trick as docs/example-renders/photo-sharing-arch.md) to visually confirm sprites render correctly. Particularly the Flink-via-apache-sprite case.",
+    "Optional: add a fifth sprite collection if a real Apache Flink sprite lands in gilbarbara upstream — track https://github.com/plantuml-stdlib/gilbarbara-plantuml-sprites/blob/main/sprites-list.md."
+  ]
+}

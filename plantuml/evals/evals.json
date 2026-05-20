@@ -129,6 +129,49 @@
         {"text": "Skill either stops (offering to switch if user insists on PlantUML) OR offers both: a Mermaid snippet AND a PlantUML one, with the trade-off called out"},
         {"text": "Skill does NOT silently produce a PlantUML diagram as if the request were ordinary"}
       ]
+    },
+    {
+      "id": 10,
+      "name": "pipeline-kafka-stream",
+      "prompt": "Draw the Kafka stream from our API to Postgres: API publishes click events to Kafka, an enrichment service consumes and writes the enriched events to a warehouse table.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram (not deployment, not sequence)"},
+        {"text": "`@startuml` is present with a non-placeholder name (not `pipeline-diagram`)"},
+        {"text": "`left to right direction` is the layout directive"},
+        {"text": "At least one `queue \"...\"` declaration for the Kafka topic"},
+        {"text": "Includes the gilbarbara sprite preamble (`!define SPRITESURL .../v1.1/sprites`) AND `!include SPRITESURL/kafka.puml`, OR explicitly chooses the no-sprites variant with the Kafka topic labeled `queue \"Kafka: ...\"`"},
+        {"text": "Every arrow has a label describing the protocol or payload (e.g. 'JSON events', 'Kafka consumer', 'JDBC sink')"},
+        {"text": "At least 3 stages present (producer → Kafka → enrichment → warehouse, or equivalent decomposition)"}
+      ]
+    },
+    {
+      "id": 11,
+      "name": "system-design-streaming-platform",
+      "prompt": "Give me a system design diagram for our streaming platform: events come from web and mobile, land in Kafka, get processed by a Flink job, then write to ClickHouse for analytics and to S3 for archival.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram"},
+        {"text": "`left to right direction` is set"},
+        {"text": "Two parallel sinks (ClickHouse + S3) are both shown as separate terminal stages on the right edge"},
+        {"text": "Flink is included with the Flink-gap fallback: `<$apache>` sprite (NOT a made-up `<$flink>`) AND the label says 'Flink' explicitly"},
+        {"text": "ClickHouse is rendered as a `database` shape (or with `<$clickhouse>` sprite if gilbarbara include is present)"},
+        {"text": "S3 is rendered as a `cloud` shape (or with `<$amazon-aws>` sprite, if gilbarbara include is present)"},
+        {"text": "Every arrow is labeled with the schema or protocol crossing it"}
+      ]
+    },
+    {
+      "id": 12,
+      "name": "pipeline-flink-gap-fallback",
+      "prompt": "Show how Flink consumes Kafka events and writes results to a Postgres reference table.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram"},
+        {"text": "`left to right direction` is set"},
+        {"text": "Flink does NOT use a non-existent `<$flink>` sprite — instead uses `<$apache>` from gilbarbara WITH the word 'Flink' in the visible label (the documented Flink-gap workaround in references/20-sprites.md)"},
+        {"text": "If sprites are used, `!include SPRITESURL/apache.puml` is present (the include line covers the apache sprite)"},
+        {"text": "Pipeline lint passes (no W090 — `left to right direction` present; no W091 — semantic containers used; no W092 — every `<$name>` has a matching include)"}
+      ]
     }
   ]
 }

@@ -43,21 +43,26 @@ Which diagram fits best?
 7. Deployment — where things physically run
 8. ER — data model and cardinality
 9. Use case — actor goals against a system boundary
+10. Pipeline — left-to-right data flow (producers → broker → processors → sinks); use for streaming / "system design" prompts
 
 (Or describe what you want to communicate and I'll pick.)
 ```
 
-**Cap the list at 3 candidates, always.** The full nine-option list above is the master reference for you to pick from — what the user sees is at most three options trimmed to what their prompt suggests. Showing all nine signals indecision and forces the user to do triage work.
+**Cap the list at 3 candidates, always.** The full ten-option list above is the master reference for you to pick from — what the user sees is at most three options trimmed to what their prompt suggests. Showing all ten signals indecision and forces the user to do triage work.
 
 How to pick the three:
 
 - **Specific prompt** ("I want to show how login works") — list the obvious 2–3 (sequence / activity / C4-dynamic). Drop anything irrelevant.
+- **Streaming / pipeline / system-design prompt** ("kafka flow", "streaming architecture", "system design for our ingest", "data pipeline", "ETL diagram") — default three are:
+  1. **Pipeline** — left-to-right data flow (top pick)
+  2. **C4 Container** — if architecture-level abstraction matters more than stages
+  3. **Deployment** — if the user is asking about where the pipeline runs more than how it's shaped
 - **Maximally vague prompt** ("draw a diagram of our system") — even when nothing else trims the candidate set, **still cap at 3**. The default three for production software are:
   1. **C4 Container** — the architecture map (most common ask for "our system")
   2. **Sequence** — message flow for one scenario
   3. **ER** — data model
 
-  In the rare case those three don't fit the implied domain, swap one out (e.g. State for an embedded/device-control product, Deployment for an ops-heavy ask). Three options is the ceiling regardless.
+  In the rare case those three don't fit the implied domain, swap one out (e.g. State for an embedded/device-control product, Deployment for an ops-heavy ask, Pipeline for a data-heavy ask). Three options is the ceiling regardless.
 
 Resist the urge to list 5–6 "just in case." That defeats the purpose of trimming. If you can't decide between 4 candidates, pick the 3 most likely and offer "Or describe what you want to communicate and I'll pick" as the escape hatch — that catches the rest.
 

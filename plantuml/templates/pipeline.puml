@@ -1,0 +1,57 @@
+' Pipeline diagram skeleton — horizontal left-to-right data flow.
+' Rename the diagram (after @startuml) and the file to match the scope.
+'
+' Pipeline is a focused variant of deployment. Reads left-to-right.
+' Producers on the left, transports / processors in the middle, sinks on the right.
+' Sprites are OPTIONAL — keep the !define / !include block if you want vendor
+' identity, drop it for plain-monochrome output that renders offline.
+'
+' Sprite catalogue: ../references/20-sprites.md
+' Pipeline rules:    ../references/19-pipeline.md
+
+@startuml pipeline-diagram
+!theme plain
+
+' ---- gilbarbara sprite library (default for data / infra technologies) ----
+' Pinned to v1.1. Drop the !define + !include lines to get a plain-monochrome
+' diagram (then also remove the <$name> sprite refs from the shape labels below).
+!define SPRITESURL https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/v1.1/sprites
+!include SPRITESURL/kafka.puml
+!include SPRITESURL/apache.puml
+!include SPRITESURL/postgresql.puml
+!include SPRITESURL/amazon-aws.puml
+
+left to right direction
+
+' ---- Producers (left edge) ----
+node "Web / Mobile App" as producer
+
+' ---- Transport / broker ----
+queue "<$kafka>\nevents-topic" as events_topic
+
+' ---- Stream processor ----
+' Flink has no sprite in gilbarbara — use <$apache> with "Flink" in the label.
+node "<$apache>\nFlink job\n(enrichment + filtering)" as flink
+
+' ---- Optional lookup store consulted mid-stream ----
+' database "<$postgresql>\nreference-data" as ref_db
+
+' ---- Sinks (right edge) ----
+database "<$postgresql>\nanalytics-warehouse" as wh
+cloud "<$amazon-aws>\nS3 archive\n(raw events, retained 90d)" as s3
+queue "<$kafka>\ndownstream-topic" as out
+
+' ---- Flow ----
+' Every arrow labeled with the protocol / schema / contract.
+producer --> events_topic : "JSON events\n(Kafka producer)"
+events_topic --> flink     : "Kafka consumer"
+
+flink --> wh  : "JDBC sink (batched)"
+flink --> s3  : "Parquet (hourly partitions)"
+flink --> out : "enriched events"
+
+' Optional side-channel (uncomment if Flink reads a lookup store):
+' flink --> ref_db : "feature lookup (sync)"
+' ref_db --> flink
+
+@enduml

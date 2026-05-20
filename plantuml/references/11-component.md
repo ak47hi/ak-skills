@@ -134,6 +134,19 @@ Place this immediately after `!theme plain`.
 - **Implicit subsystem boundaries.** If three components are clearly part of one subsystem, wrap them in a `package` or `node`. Don't leave the grouping to the reader.
 - **Mixing physical and logical containers.** `package "Backend" { node "K8s" { ... } }` is fine. `node "K8s" { package "Backend" { ... } }` is confused — physical containers should be outer, logical inner.
 
+## Sprites (optional vendor identity)
+
+Component diagrams can optionally pull in technology sprites for vendor-recognizable elements (Kafka, Redis, Postgres, etc.) — useful when the audience benefits from logo recognition. See `references/20-sprites.md` for the include syntax and sprite catalogue. Minimal example:
+
+```puml
+!define SPRITESURL https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/v1.1/sprites
+!include SPRITESURL/redis.puml
+
+database "<$redis>\nsession-cache" as cache
+```
+
+Sprites are opt-in and don't change the structural rules above.
+
 ## Template
 
 See `templates/component.puml`.

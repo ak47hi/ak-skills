@@ -1,6 +1,6 @@
 ---
 name: plantuml
-description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Trigger on the intent to diagram software — phrases like "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container diagram", "draw the architecture", "sketch the system" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio/diagrams.net, Excalidraw, ASCII box art, or diagram families PlantUML handles poorly (gantt, sankey, user journey, mindmap, gitGraph, timeline) — those go to other tools; see `references/92-not-plantuml.md`.
+description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib), and pipeline (streaming / system design / left-to-right data flow). Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the spec is complete. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Trigger on the intent to diagram software — "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container", "draw the architecture", "kafka pipeline", "system design", "sketch the system" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio, Excalidraw, ASCII box art, or diagram families PlantUML handles poorly (gantt, sankey, journey, mindmap, gitGraph, timeline) — see `references/92-not-plantuml.md`.
 ---
 
 # PlantUML skill
@@ -52,6 +52,7 @@ Read `references/01-routing.md`. The decision tree maps user intent to one diagr
 | Data model entities and their cardinality | ER | `references/16-er.md` | `templates/er.puml` |
 | Actor goals against a system boundary | use case | `references/17-usecase.md` | `templates/usecase.puml` |
 | C4 abstraction levels (Context/Container/Component/Dynamic) | C4 | `references/18-c4.md` | `templates/c4-*.puml` |
+| Streaming / "system design" / left-to-right data pipeline (producers → broker → processors → sinks) | pipeline | `references/19-pipeline.md` | `templates/pipeline.puml` |
 
 If a request honestly needs two diagrams (e.g. "C4 container diagram + a sequence diagram of one critical path"), generate both — but produce them as separate named `.puml` files, not a single mixed diagram.
 
@@ -123,11 +124,13 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 | `references/16-er.md` | ER: `entity`, `*`, `<<FK>>`, crow's-foot cardinality |
 | `references/17-usecase.md` | Use case: actors, system boundary, include/extend |
 | `references/18-c4.md` | C4: stdlib includes, macros, abstraction levels |
+| `references/19-pipeline.md` | Pipeline: left-to-right data flow, stage discipline, sprite use |
+| `references/20-sprites.md` | Sprite catalogue (gilbarbara, tupadr3, awslib, kubernetes-PlantUML) — opt-in vendor icons |
 | `references/90-anti-patterns.md` | What to refuse to emit and why; lint codes |
 | `references/91-output-contract.md` | Final response format |
 | `references/92-not-plantuml.md` | Exit cases: when to point at Mermaid / D2 instead |
 | `scripts/lint.py` | Mechanical first pass over the generated `.puml`; called by VERIFY |
-| `evals/evals.json` | 10 test cases (skill-creator schema) — what "good" means |
+| `evals/evals.json` | Test cases (skill-creator schema) — what "good" means |
 
 ---
 
@@ -160,3 +163,17 @@ Conclusion: the original description was already doing its job. Applied a small 
 ### 2026-05-19 — elicitation cap fix
 
 Subagent eval run (see `evals/subagent-run-1.json`) flagged case 0 (ambiguous "draw a diagram of our system") as the lone PARTIAL because the model listed 6 candidate diagram types instead of the rule's 2–3. Root cause: the rule said "trim to 2–3 that fit" but didn't say what to do when nothing trims (maximally vague prompt). Tightened `references/00-elicitation.md` Q1 section: **cap at 3 candidates, always**. Added explicit fallback for the maximally-vague case (default to C4 Container / Sequence / ER as the three most common production-software intents; swap one out when the implied domain calls for it). Master nine-option list stays as the internal reference; the user sees at most three.
+
+### 2026-05-19 — refinement v2: pipeline diagram + sprite catalogue
+
+New diagram family + a generic sprite-inclusion reference any diagram type can pull in. Implements the plan in `docs/plans/refinement-v2.md`.
+
+- **Added** `references/19-pipeline.md` — pipeline diagram type for horizontal data-flow / streaming / "system design" prompts. A focused variant of deployment (no new PlantUML primitives), with `left to right direction` as the non-negotiable, stage discipline, semantic-container rules per stage role, and a tight set of anti-patterns.
+- **Added** `references/20-sprites.md` — catalogue of four sprite collections this skill knows: `gilbarbara-plantuml-sprites` (default for streaming/data tech, URL form pinned to v1.1), `tupadr3/plantuml-icon-font-sprites` (devicons / font-awesome fallback, different macro syntax), `aws-icons-for-plantuml` (AWS services, pinned to v23.0), `kubernetes-PlantUML` (k8s resources). Documents the Flink gap (no Flink sprite in plantuml-stdlib — use `<$apache>` + "Flink" label), the C4-PlantUML `$sprite="kafka"` integration, and the monochrome / labels-carry-meaning discipline.
+- **Added** `templates/pipeline.puml` — horizontal Kafka-shaped pipeline skeleton: producer → Kafka topic → Flink (via `<$apache>` sprite) → Postgres / S3 / downstream Kafka topic, with the gilbarbara sprite preamble + labeled arrows. Drop the sprite preamble to get a plain-monochrome version.
+- **Updated** `references/01-routing.md` — new pipeline row above deployment; "Pipeline vs deployment" and "Pipeline vs sequence" disambiguation paragraphs.
+- **Updated** `references/00-elicitation.md` — pipeline added as option 10 in the master Q1 list; new "Streaming / pipeline / system-design prompt" entry in the trimmed-3-defaults rules with pipeline as the top pick.
+- **Updated** `references/11-component.md`, `15-deployment.md`, `18-c4.md` — one cross-reference paragraph each pointing to `20-sprites.md`. C4 specifically documents the `$sprite="<name>"` arg on Container macros (preferred over raw `<$sprite>` syntax inside C4).
+- **Updated** `SKILL.md` — pipeline added to the description's type list and trigger phrases ("kafka pipeline", "system design"); description now 988 chars (cap 1024). Pipeline row added to the GENERATE-phase routing table. References-at-a-glance gains rows for 19 and 20.
+
+Notable correction to the plan during execution: the plan assumed `!include <gilbarbara/kafka>` worked via plantuml-stdlib short-form. WebFetch against the current plantuml-stdlib repo confirmed it doesn't — gilbarbara ships only as a separate `plantuml-stdlib/gilbarbara-plantuml-sprites` repo accessible via URL form (`!define SPRITESURL .../v1.1/sprites` + `!include SPRITESURL/<name>.puml`). The reference doc uses the URL form. Same for tupadr3 (uses prefix macros `DEV2_MYSQL(db1)`, not `<$>` — documented as the second-choice fallback).

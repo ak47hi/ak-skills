@@ -87,6 +87,24 @@ def detect_types(lines: list[str]) -> set[str]:
         elif _ACTOR_KW.search(line) and not has_usecase_signal:
             found.add("sequence")
 
+    # Pipeline: queue + chain of relations, FLAT structure (no nested cloud/node
+    # blocks — those signal deployment), NO `component` keyword (signals
+    # component), NOT usecase, NOT C4. LR direction is preferred but not
+    # required for detection — check_pipeline will warn (W090) if missing.
+    has_queue_decl = any(re.match(r"\s*queue\s+\"", line, re.IGNORECASE) for line in lines)
+    relation_count = sum(1 for line in lines if re.search(r"-->|->|\.\.>", line))
+    has_nested_node_cloud = any(_DEPLOYMENT_NESTED.search(line) for line in lines)
+    has_component_kw = any(_COMPONENT_KW.search(line) for line in lines)
+    if (
+        has_queue_decl
+        and relation_count >= 3
+        and not has_usecase_signal
+        and not has_c4
+        and not has_nested_node_cloud
+        and not has_component_kw
+    ):
+        found.add("pipeline")
+
     # Fallback: if no diagram type matched and there are message-style lines
     # (`X -> Y: msg` with colon), classify as sequence with implicit participants.
     # This catches the common anti-pattern of using `Alice -> Bob: hi` with no
@@ -113,6 +131,7 @@ def check_universal(lines: list[str]) -> list[Violation]:
         "state-diagram", "activity-diagram", "deployment-diagram",
         "er-diagram", "usecase-diagram",
         "c4-context", "c4-container", "c4-component", "c4-dynamic",
+        "pipeline-diagram",
     }
     for i, line in enumerate(lines, start=1):
         m = re.match(r"\s*@startuml\b(.*)$", line)
@@ -346,6 +365,44 @@ def check_deployment(lines: list[str]) -> list[Violation]:
     return out
 
 
+def check_pipeline(lines: list[str]) -> list[Violation]:
+    """Pipeline = horizontal data-flow shape. Required: left to right direction.
+    Strong preference: semantic containers (queue / database / cloud / node).
+    """
+    out: list[Violation] = []
+    has_lr = any(re.match(r"\s*left to right direction\s*$", line) for line in lines)
+    if not has_lr:
+        out.append(Violation(1, "W090", "pipeline-like diagram is missing `left to right direction` — horizontal layout is the point of pipeline; add the directive"))
+    has_semantic = any(re.search(r"^\s*(queue|database|cloud|node|artifact|stack)\s+", line, re.IGNORECASE) for line in lines)
+    if not has_semantic:
+        out.append(Violation(1, "W091", "pipeline diagram uses no semantic containers (queue / database / cloud / node) — typed shapes carry stage-role information"))
+    return out
+
+
+def check_sprites_have_includes(lines: list[str]) -> list[Violation]:
+    """W092: best-effort string match. If a `<$name>` sprite reference appears
+    in the body, at least one `!include` line should mention "<name>" somewhere
+    (`!include SPRITESURL/<name>.puml`). Warning only — sprite collections name
+    files differently and we don't want false positives. Skips PlantUML comment
+    lines (`'` prefix) so example syntax in comments doesn't false-fire."""
+    out: list[Violation] = []
+    sprite_refs: dict[str, int] = {}
+    for i, line in enumerate(lines, start=1):
+        stripped = line.lstrip()
+        if stripped.startswith("'") or stripped.startswith("/'"):
+            continue  # PlantUML line comment / block-comment start
+        for m in re.finditer(r"<\$([a-zA-Z][\w\-]*)>", line):
+            name = m.group(1).lower()
+            sprite_refs.setdefault(name, i)
+    if not sprite_refs:
+        return out
+    include_text = "\n".join(line.lower() for line in lines if "!include" in line.lower())
+    for name, first_line in sprite_refs.items():
+        if name not in include_text:
+            out.append(Violation(first_line, "W092", f"sprite reference `<${name}>` has no matching `!include` for a sprite named '{name}' — check that the sprite file is included"))
+    return out
+
+
 def lint(source: str, name: str = "<stdin>") -> tuple[list[Violation], int]:
     """Return (violations, exit_code) for a single .puml source."""
     lines = source.splitlines()
@@ -366,6 +423,11 @@ def lint(source: str, name: str = "<stdin>") -> tuple[list[Violation], int]:
         violations += check_component(lines)
     if "deployment" in types:
         violations += check_deployment(lines)
+    if "pipeline" in types:
+        violations += check_pipeline(lines)
+
+    # Universal: any sprite reference must be preceded by an include for it.
+    violations += check_sprites_have_includes(lines)
 
     # Sort by line.
     violations.sort(key=lambda v: (v.line, v.code))

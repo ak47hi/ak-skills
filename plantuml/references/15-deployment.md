@@ -88,6 +88,19 @@ left to right direction
 - **No protocols on cross-boundary lines.** "X talks to Y" tells the reader nothing. Label with protocol (HTTPS, gRPC, SQL, Kafka).
 - **Mixing logical and physical inconsistently.** Pick: are you showing logical components on physical hosts (preferred), or pure physical infra? Don't mix the two granularities arbitrarily.
 
+## Sprites (optional vendor identity)
+
+Deployment diagrams often benefit from technology sprites — the AWS S3 icon reads faster than "S3 bucket" text in a multi-region cluster view, and a Kubernetes logo over a `node` block instantly signals what's running there. See `references/20-sprites.md` for the four sprite collections this skill knows: gilbarbara (default), tupadr3 (fallback), aws-icons-for-plantuml (AWS services), kubernetes-PlantUML (k8s resources). Minimal example:
+
+```puml
+!define SPRITESURL https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/v1.1/sprites
+!include SPRITESURL/kafka.puml
+
+queue "<$kafka>\nevents-topic" as bus
+```
+
+Sprites are opt-in. Default monochrome deployment diagrams stay as-is. If the diagram is more about *stages of data flow* than *where things run*, route to **pipeline** instead (see `references/19-pipeline.md`).
+
 ## Template
 
 See `templates/deployment.puml`.
