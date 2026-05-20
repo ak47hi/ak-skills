@@ -162,6 +162,36 @@ For a **narrow question** (one decision, scoped) — drop unused sections. A "Ka
 
 ---
 
+## Artifacts (opt-in, never silent)
+
+When the session produces durable work — a full design, a significant decision, a substantial critique, a migration plan, a postmortem — **offer to write it to disk**. The skill never silently creates files. Load `references/artifacts.md` for the full rules.
+
+The flow:
+
+1. Identify which artifacts the work justifies (RFC + ADRs for a full design; critique doc for a review with substantial findings; migration plan for an evolve step; postmortem for a diagnosed incident the user wants written up; capacity worksheet for a non-trivial estimate).
+2. Offer them as a numbered list with proposed paths under `docs/` (or the repo's existing convention if different). Mention which templates from `templates/` will be used.
+3. Wait for explicit confirmation. The user may accept all, accept some, redirect paths, or decline.
+4. Write only what was confirmed.
+
+**Defaults to no when in doubt.** Narrow questions, conversational iteration, quick fixes — chat is the deliverable; don't offer files.
+
+**Per-mode defaults:**
+
+| Mode | Artifacts to consider offering |
+|---|---|
+| Greenfield, full design | `rfc.md` (the whole design) + one `adr.md` per significant choice + `capacity-worksheet.md` |
+| Greenfield, narrow | None — chat-mode answer is the deliverable |
+| Review with 3+ P0/P1 findings | `critique.md` |
+| Diagnose, smallest-fix proposal | None — chat answer. Offer `postmortem.md` only if the user is writing up an actual incident |
+| Evolve, multi-phase migration | `migration-plan.md` + ADR for the chosen step |
+| User explicit request ("write this up") | Whatever was requested, regardless of scope |
+
+**Significant-choice criteria for ADRs** (from `references/tradeoffs.md`): one-way door, new operational surface, deviation from the team's existing stack, or a non-obvious tradeoff. Two-way-door / already-team-standard / implementation-level choices don't get ADRs — say so out loud and move on.
+
+**Diagrams.** If a C4 / sequence / deployment diagram would strengthen the design, **point the user at the sibling `plantuml` skill** rather than embedding PlantUML output. Cross-skill separation is preserved.
+
+---
+
 ## Review, diagnose, evolve workflows
 
 Brief shape; full phase rules in `references/modes.md`. Load it when the mode is not greenfield.
@@ -245,3 +275,5 @@ The output is decisions, not a textbook. Every paragraph should change what the 
 | `references/anti-patterns.md` | Catalogued over-engineering smells with named symptoms, why-bad, and the question to ask instead. Walked in JUSTIFY (greenfield) and CRITIQUE (review). |
 | `references/archetypes/` | Catalog of nine recurring system shapes (multi-tenant SaaS, real-time streaming, batch ETL, ML inference, geo-distributed, read-heavy/mobile, write-heavy, observability, hot-cold-tiered). Per archetype: when it fires, additional elicitation questions, recurring failure modes, the questions a god-tier designer always asks, common pitfalls, anchor numbers. Loaded during ELICIT when signals match. Index in `archetypes/README.md`. |
 | `references/benchmarks.md` | Calibrated throughput ceilings, latency profiles, and known scaling cliffs per component (network, storage, Postgres / MySQL, Redis / Memcached / DynamoDB, MongoDB / Cassandra, Kafka / SQS / Kinesis / RabbitMQ, ClickHouse / BigQuery / Snowflake, Elasticsearch, HTTP services by runtime, Lambda, ALB / CDN) plus per-architecture-layer latency budgets. Anchor numbers for ESTIMATE and ADR alternatives. Reviewed annually. |
+| `references/artifacts.md` | When to offer durable artifacts (ADR / RFC / capacity worksheet / postmortem / critique / migration plan), the opt-in confirmation flow, file naming + path conventions, significant-choice criteria for ADRs, cross-skill plantuml-for-diagrams handoff. |
+| `templates/` | Fillable artifact skeletons used when the user confirms artifact creation: `adr.md`, `rfc.md`, `capacity-worksheet.md`, `postmortem.md`, `critique.md`, `migration-plan.md`. The teaching/inline ADR template in `tradeoffs.md` complements these; this directory is the fillable companion. |
