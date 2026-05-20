@@ -89,6 +89,22 @@ Run in order. Skip a phase only if its output is already supplied (e.g. user pas
 
 Short, numbered, replaceable. Don't dress it up.
 
+### Archetype recognition (during ELICIT, every mode)
+
+After pinning the universal seven dimensions, check `references/archetypes/README.md` for archetype signals. The catalog covers nine recurring shapes: multi-tenant SaaS, real-time streaming, batch ETL, ML inference, geo-distributed, read-heavy/mobile, write-heavy, observability, hot-cold-tiered.
+
+If **one or more archetypes fire**, load their files. Each archetype contributes:
+- Additional elicitation questions (beyond the universal seven).
+- Recurring failure modes specific to that shape.
+- The questions a god-tier designer always asks before recommending.
+- Common pitfalls and anchor numbers for calibration.
+
+If **no archetype fires**, the universal foundation handles it. Most systems are not exotic; don't force a label.
+
+If **multiple archetypes fire** (common — a system can be multi-tenant + geo-distributed + read-heavy), load each. Conflicts between archetype recommendations are **surfaced to the user**, not hidden — e.g., "multi-tenant says isolate per tenant; geo-distributed says minimize cross-region writes — reconciling these constrains your tenant→region mapping."
+
+Loading an archetype does **not** mean producing a canned design. The archetype brings questions and failure modes; the design still derives from the elicited constraints. Two multi-tenant SaaS systems with different scales and operational realities have different designs.
+
 ---
 
 ## Phase 2: ESTIMATE
@@ -227,3 +243,4 @@ The output is decisions, not a textbook. Every paragraph should change what the 
 | `references/tradeoffs.md` | Core axes, 5-step tradeoff method, ADR template, "when NOT to write an ADR." |
 | `references/modes.md` | Full rules for the four working modes (greenfield / review / diagnose / evolve), per-mode elicitation questions, phase sequences, propose-and-go templates, output shapes. |
 | `references/anti-patterns.md` | Catalogued over-engineering smells with named symptoms, why-bad, and the question to ask instead. Walked in JUSTIFY (greenfield) and CRITIQUE (review). |
+| `references/archetypes/` | Catalog of nine recurring system shapes (multi-tenant SaaS, real-time streaming, batch ETL, ML inference, geo-distributed, read-heavy/mobile, write-heavy, observability, hot-cold-tiered). Per archetype: when it fires, additional elicitation questions, recurring failure modes, the questions a god-tier designer always asks, common pitfalls, anchor numbers. Loaded during ELICIT when signals match. Index in `archetypes/README.md`. |
