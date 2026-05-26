@@ -172,6 +172,37 @@
         {"text": "If sprites are used, `!include SPRITESURL/apache.puml` is present (the include line covers the apache sprite)"},
         {"text": "Pipeline lint passes (no W090 — `left to right direction` present; no W091 — semantic containers used; no W092 — every `<$name>` has a matching include)"}
       ]
+    },
+    {
+      "id": 13,
+      "name": "coloring-sequence-participant",
+      "prompt": "PlantUML sequence diagram for a login flow with three participants — User, WebApp, AuthService. Color the WebApp box light blue (#AED6F1) so it stands out as the entry point. AuthService should keep the default styling. Show the request/response for a successful login.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to sequence diagram"},
+        {"text": "@startuml has a non-default name (not literally 'sequence-diagram')"},
+        {"text": "WebApp participant is declared with `#AED6F1` background-color suffix on the declaration line (e.g., `participant WebApp #AED6F1` or `participant \"Web App\" as WebApp #AED6F1`)"},
+        {"text": "Does NOT use the `;line:` border-color syntax on any sequence participant or note (would produce 'No such color' render error)"},
+        {"text": "AuthService is declared without a color suffix (kept default as requested)"},
+        {"text": "All three participants (User, WebApp, AuthService) are declared explicitly with participant/actor keyword — not inferred from message lines"},
+        {"text": "Arrow style is consistent: -> for requests, --> for responses"}
+      ]
+    },
+    {
+      "id": 14,
+      "name": "coloring-activity-step-status",
+      "prompt": "PlantUML activity diagram for a payment processing flow. Steps: validate input, charge card; on success send receipt; on failure log error. Color the successful steps green (#D5F5E3), the error step red (#FFCCCC). I want to use color in addition to text labels so the happy and sad paths are visually obvious.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to activity diagram"},
+        {"text": "Uses beta syntax `:action;` (not legacy `(*) --> action`)"},
+        {"text": "Color is applied via `<<#HexColor>>` AFTER the closing semicolon (e.g., `:Send receipt; <<#D5F5E3>>`) — not the deprecated pre-colon form `#D5F5E3:text;`"},
+        {"text": "At least one step uses `<<#D5F5E3>>` for the success color"},
+        {"text": "At least one step uses `<<#FFCCCC>>` for the error color"},
+        {"text": "Contains an if/endif (or switch/endswitch) for the success/failure branch"},
+        {"text": "start and stop (or end) are both present"},
+        {"text": "Action text labels distinguish success vs error (e.g., 'Send receipt' vs 'Log error') — color is layered on top of textual signal, not the only carrier of meaning"}
+      ]
     }
   ]
 }

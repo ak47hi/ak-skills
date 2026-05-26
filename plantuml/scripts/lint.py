@@ -188,7 +188,7 @@ def check_sequence(lines: list[str]) -> list[Violation]:
     # Implicit participants: lines like `Alice -> Bob: ...` with no prior
     # `participant Alice` / `actor Alice` declaration.
     declared = set()
-    decl_re = re.compile(r"^\s*(participant|actor|boundary|control|entity|database|collections|queue)\s+\"?([\w\s\-]+?)\"?(\s+as\s+(\w+))?\s*$", re.IGNORECASE)
+    decl_re = re.compile(r"^\s*(participant|actor|boundary|control|entity|database|collections|queue)\s+\"?([\w\s\-]+?)\"?(\s+as\s+(\w+))?(\s+#\w+)?\s*$", re.IGNORECASE)
     alias_for = {}
     for line in lines:
         m = decl_re.match(line.strip())

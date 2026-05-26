@@ -158,7 +158,7 @@ For multiline actions, the `<<#color>>` goes after the closing semicolon:
 second line of action; <<#D5F5E3>>
 ```
 
-Inline color is for one-off highlights. For systematic coloring (start/end markers, decision diamonds, action backgrounds applied uniformly), use the colored preset in `references/22-styling-colored.md` — it ships a `skinparam activity { ... }` block. Color is decoration; pair with explicit labels ("Successful step", "Error step") so the diagram still reads in monochrome.
+For one or two action highlights, the inline `<<#HexColor>>` above is enough — no preset, no extra read. The colored preset in `references/22-styling-colored.md` is only for systematic whole-diagram restyles (when the user explicitly asks for "colored", "styled", or "Confluence-ready" output). Color is decoration; pair with explicit labels ("Successful step", "Error step") so the diagram still reads in monochrome.
 
 ## Anti-patterns specific to activity
 

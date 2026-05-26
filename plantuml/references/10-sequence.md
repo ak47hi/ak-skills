@@ -40,7 +40,7 @@ database Users #A9DFBF
 
 The `;line:ColorName` border syntax does **not** work on sequence diagram elements (participants, notes, lifelines). It causes `No such color` errors at render time. That syntax only works in component, deployment, and other rectangle-based diagrams.
 
-For systematic coloring across the whole diagram (borders, lifelines, group backgrounds), use the colored preset in `references/22-styling-colored.md` — its `skinparam sequence { ... }` block sets `ParticipantBorderColor`, `LifeLineBorderColor`, and friends consistently. A one-off `skinparam sequenceParticipantBorderColor #3B7DD8` works but is bespoke styling (see `references/90-anti-patterns.md` § "Decorative skinparams"); reach for the preset or inline `#HexColor` background overrides instead.
+For one or two participant highlights, the inline `#HexColor` above is enough — no preset, no extra read. The colored preset in `references/22-styling-colored.md` is only for systematic whole-diagram restyles (when the user explicitly asks for "colored", "styled", or "Confluence-ready" output). Bespoke `skinparam sequenceParticipantBorderColor`-style blocks are anti-pattern (see `references/90-anti-patterns.md` § "Decorative skinparams") — pick inline overrides or the preset, never a one-off `skinparam`.
 
 ## Grouping participants (`box`)
 
@@ -217,15 +217,7 @@ Default is top-to-bottom (each participant is a column, time flows down). Don't 
 
 ## Advanced: `!pragma teoz true`
 
-Adding `!pragma teoz true` as the first directive switches PlantUML to its newer sequence renderer. It unlocks:
-
-- **Nested boxes** (`box "Auth" { box "Token Service" { ... } }`) — useful for showing logical grouping within a subsystem.
-- **Anchors and `&`** for parallel messages that happen at the same logical timestep: `User -> Web: A & Web -> Audit: B` renders A and B as simultaneous.
-- **Duration** of activations rendered more precisely.
-
-Trade-offs: layout differs subtly from the default engine; some older diagrams render slightly differently under teoz. Opt-in, file-by-file — don't enable globally.
-
-Don't include teoz in the template by default. Reach for it only when you need one of the above features.
+Opt-in alternate renderer that unlocks nested boxes, `&`-paired simultaneous messages, and more precise activation duration. Subtle layout differences from the default engine — file-by-file only, never globally. Skip in the template; reach for it only if a diagram genuinely needs one of those features.
 
 ## Anti-patterns specific to sequence
 
