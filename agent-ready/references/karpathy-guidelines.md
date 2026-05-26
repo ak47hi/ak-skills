@@ -1,10 +1,6 @@
 # Karpathy Guidelines (verbatim block for CLAUDE.md)
 
-<!--
-Source: https://github.com/forrestchang/andrej-karpathy-skills (CLAUDE.md)
-Derived from Andrej Karpathy's observations on LLM coding pitfalls.
-License: MIT. Redistributed with attribution.
--->
+<!-- Source: forrestchang/andrej-karpathy-skills (CLAUDE.md). License attribution + redistribution terms: see THIRD_PARTY_LICENSES.md in this directory. -->
 
 Paste everything between the `<<<BEGIN>>>` and `<<<END>>>` markers (exclusive) into the project's `CLAUDE.md` under a `## Karpathy Guidelines` heading. Do not modify the wording — these are the canonical guidelines and the value comes from their exact phrasing.
 
