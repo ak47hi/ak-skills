@@ -1,0 +1,22 @@
+commit 6583d8f3962d03885371c093e0a4a002b8a53bd5
+Author:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+AuthorDate: Mon May 25 23:23:13 2026 -0700
+Commit:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+CommitDate: Mon May 25 23:23:13 2026 -0700
+
+    feat: make repo agent-ready with knowledge graph auto-update and design doc
+
+ .agent-docs/algorithms.md                 |   35 +
+ .agent-docs/business-rules.md             |   17 +
+ .agent-docs/configuration.md              |   22 +
+ .agent-docs/data-structures.md            |   35 +
+ .agent-docs/error-handling.md             |   15 +
+ .agent-docs/integrations.md               |   17 +
+ .agent-docs/testing.md                    |   17 +
+ .understand-anything/config.json          |    1 +
+ .understand-anything/fingerprints.json    | 1438 ++++++++++++++++++++++
+ .understand-anything/knowledge-graph.json | 1841 +++++++++++++++++++++++++++++
+ .understand-anything/meta.json            |    6 +
+ AGENT_DESIGN_DOC.md                       |  112 ++
+ CLAUDE.md                                 |   67 ++
+ 13 files changed, 3623 insertions(+)

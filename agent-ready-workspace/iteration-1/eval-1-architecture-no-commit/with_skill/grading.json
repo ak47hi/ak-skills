@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "All 10 sections present (slim + .agent-docs)",
+      "passed": true,
+      "evidence": "all 10 sections present (slim + .agent-docs)"
+    },
+    {
+      "text": "ARCHITECTURE.md exists",
+      "passed": true,
+      "evidence": "exists"
+    },
+    {
+      "text": "4-6 Mermaid blocks",
+      "passed": true,
+      "evidence": "6 mermaid blocks (expected 4-6)"
+    },
+    {
+      "text": "Uses flowchart TB (not graph TD)",
+      "passed": true,
+      "evidence": "flowchart TB directive present"
+    },
+    {
+      "text": "No Mermaid reserved keywords as participant IDs",
+      "passed": true,
+      "evidence": "no reserved keywords used as IDs"
+    },
+    {
+      "text": "config.json has architecture:true",
+      "passed": true,
+      "evidence": "architecture=True (expected True)"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": true,
+      "evidence": "autoUpdate=True (expected True)"
+    },
+    {
+      "text": "No new git commit",
+      "passed": true,
+      "evidence": "HEAD is still original itsdangerous merge commit (no new commit)"
+    },
+    {
+      "text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line",
+      "passed": true,
+      "evidence": "@AGENT_DESIGN_DOC.md line present"
+    }
+  ]
+}

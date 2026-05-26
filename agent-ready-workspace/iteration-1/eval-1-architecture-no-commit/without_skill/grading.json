@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "All 10 sections present",
+      "passed": false,
+      "evidence": "missing: ['What This Project Does', 'Core Data Structures', 'Key Algorithms', 'Business Logic Rules', 'External Dependencies', 'Configuration', 'Error Handling', 'Testing Strategy', 'Open Questions']"
+    },
+    {
+      "text": "ARCHITECTURE.md exists",
+      "passed": true,
+      "evidence": "exists"
+    },
+    {
+      "text": "4-6 Mermaid blocks",
+      "passed": false,
+      "evidence": "8 mermaid blocks (expected 4-6)"
+    },
+    {
+      "text": "Uses flowchart TB (not graph TD)",
+      "passed": false,
+      "evidence": "no flowchart directive found (may use other diagram types)"
+    },
+    {
+      "text": "No Mermaid reserved keywords as participant IDs",
+      "passed": true,
+      "evidence": "no reserved keywords used as IDs"
+    },
+    {
+      "text": "config.json has architecture:true",
+      "passed": false,
+      "evidence": "baseline didn't create config.json"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": false,
+      "evidence": "baseline didn't create config.json"
+    },
+    {
+      "text": "No new git commit",
+      "passed": true,
+      "evidence": "untracked / no new commit"
+    },
+    {
+      "text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line",
+      "passed": false,
+      "evidence": "no @AGENT_DESIGN_DOC.md line"
+    }
+  ]
+}

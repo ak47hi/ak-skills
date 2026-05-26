@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "AGENT_DESIGN_DOC.md regenerated (non-empty)",
+      "passed": true,
+      "evidence": "6683 bytes"
+    },
+    {
+      "text": "All 10 sections present after refresh",
+      "passed": true,
+      "evidence": "all 10 present"
+    },
+    {
+      "text": "ARCHITECTURE.md exists with 4-6 mermaid blocks",
+      "passed": true,
+      "evidence": "6 blocks"
+    },
+    {
+      "text": "KG preserved (16277 bytes, identical to seed)",
+      "passed": true,
+      "evidence": "16277 bytes (seed was 16277)"
+    },
+    {
+      "text": "config.json has architecture:true",
+      "passed": true,
+      "evidence": "architecture=True"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": true,
+      "evidence": "autoUpdate=True"
+    },
+    {
+      "text": "New commit on top of seed",
+      "passed": true,
+      "evidence": "2 commit(s) total, seed_present=True"
+    },
+    {
+      "text": "New commit message exact match",
+      "passed": true,
+      "evidence": "exact match"
+    },
+    {
+      "text": "No Co-Authored-By trailer",
+      "passed": true,
+      "evidence": "no trailer"
+    },
+    {
+      "text": "Staged files in allowlist",
+      "passed": true,
+      "evidence": "all 12 in allowlist"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "AGENT_DESIGN_DOC.md exists",
+      "passed": true,
+      "evidence": "exists"
+    },
+    {
+      "text": "All 10 sections present",
+      "passed": false,
+      "evidence": "missing: ['What This Project Does', 'Core Data Structures', 'Key Algorithms', 'Business Logic Rules', 'External Dependencies', 'Error Handling', 'Testing Strategy', 'Open Questions']"
+    },
+    {
+      "text": "At least 3 file:line citations",
+      "passed": true,
+      "evidence": "36 citations found"
+    },
+    {
+      "text": "knowledge-graph.json non-empty",
+      "passed": true,
+      "evidence": "9641 bytes"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": false,
+      "evidence": "baseline didn't create config.json"
+    },
+    {
+      "text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line",
+      "passed": false,
+      "evidence": "no @AGENT_DESIGN_DOC.md line"
+    },
+    {
+      "text": "If >200 lines, .agent-docs/ has 7 files (doc is 206 lines)",
+      "passed": false,
+      "evidence": "doc too big, no split"
+    },
+    {
+      "text": "Commit message matches feat: ...agent-ready... pattern",
+      "passed": false,
+      "evidence": "no feat: line found"
+    },
+    {
+      "text": "No Co-Authored-By trailer in commit",
+      "passed": true,
+      "evidence": "no Co-Authored-By trailer"
+    },
+    {
+      "text": "Staged files are subset of allowlist",
+      "passed": false,
+      "evidence": "files outside allowlist: ['knowledge-graph.json']"
+    }
+  ]
+}
