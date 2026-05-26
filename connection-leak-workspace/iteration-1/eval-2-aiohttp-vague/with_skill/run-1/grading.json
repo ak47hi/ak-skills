@@ -1,0 +1,43 @@
+{
+  "eval_id": 2,
+  "eval_name": "aiohttp-fd-climb-vague",
+  "condition": "with_skill",
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "expectations": [
+    {
+      "text": "Starts with cross-cutting triage (FD trend over time, FD classification, top remotes via ss/lsof) \u2014 does NOT jump straight to a guessed aiohttp fix",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Identifies the multi-remote socket-climb signature as a per-client construction leak (vs per-request body-not-closed), based on the 'many different remote services' clue",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends a single aiohttp.ClientSession per process, constructed in FastAPI `lifespan` (async context manager), and closed at shutdown",
+      "passed": true,
+      "evidence": "Found keyword: 'lifespan'"
+    },
+    {
+      "text": "Provides an instrumentation snippet (e.g., monkey-patching `ClientSession.__init__`) to log construction stacks if the offending call site isn't obvious from grep",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends `py-spy dump --pid 1` to find coroutines parked in aiohttp request methods (which indicates missing timeouts masquerading as leaks)",
+      "passed": true,
+      "evidence": "Found keyword: 'py-spy dump'"
+    },
+    {
+      "text": "Calls out per-request ClientSession construction as the dominant aiohttp leak in production code; doesn't suggest just adding more `async with` blocks at every call site without hoisting the session",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    }
+  ]
+}

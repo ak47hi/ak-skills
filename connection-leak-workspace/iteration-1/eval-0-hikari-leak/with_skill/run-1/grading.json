@@ -1,0 +1,43 @@
+{
+  "eval_id": 0,
+  "eval_name": "hikari-leak-with-stack",
+  "condition": "with_skill",
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.8333
+  },
+  "expectations": [
+    {
+      "text": "Diagnoses the root cause as the DB connection being held across the outbound Stripe HTTP call (transaction scope too wide), not just a missing close",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends splitting into two short transactions (load before HTTP call, save after), with the Stripe call OUTSIDE the @Transactional boundary; shows code",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends enabling HikariCP `leak-detection-threshold` (typically 30000ms or similar) so future leaks log a stack trace of the holder",
+      "passed": true,
+      "evidence": "Found keyword: 'leak-detection-threshold'"
+    },
+    {
+      "text": "Explicitly warns against just raising maximumPoolSize as 'the fix' \u2014 calls it masking the leak",
+      "passed": false,
+      "evidence": "Semantic check 'warns-against-pool-size-bump' missed at least one required phrase group"
+    },
+    {
+      "text": "Verification plan re-uses pg_stat_activity to confirm no sessions stuck idle in transaction post-fix",
+      "passed": true,
+      "evidence": "Found keyword: 'pg_stat_activity'"
+    },
+    {
+      "text": "References HikariCP MBean attribute(s) such as ActiveConnections, ThreadsAwaitingConnection for live diagnosis or verification",
+      "passed": true,
+      "evidence": "Found keyword: 'ActiveConnections'"
+    }
+  ]
+}

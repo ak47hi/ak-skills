@@ -1,0 +1,53 @@
+{
+  "eval_id": 1,
+  "eval_name": "flink-tm-fd-step-up",
+  "condition": "with_skill",
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  },
+  "expectations": [
+    {
+      "text": "Diagnoses this as a lifecycle leak (cleanup on cancel, not steady-state) tied to job restart count, not a per-record leak",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Identifies the missing or insufficient ManagedChannel.shutdown() / .awaitTermination() call in RichAsyncFunction.close() as the proximate cause",
+      "passed": true,
+      "evidence": "Found keyword: 'shutdown()'"
+    },
+    {
+      "text": "Provides a corrected close() body that shuts down the ManagedChannel (with awaitTermination + shutdownNow fallback)",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends an idempotent close() (volatile closed flag) because Flink can call close() multiple times",
+      "passed": true,
+      "evidence": "Found keyword: 'idempotent'"
+    },
+    {
+      "text": "Mentions overriding RichAsyncFunction.timeout() to cancel in-flight requests so timed-out requests don't hold sockets",
+      "passed": true,
+      "evidence": "Found keyword: 'timeout('"
+    },
+    {
+      "text": "Verification plan: restart the job 5x in quick succession on the same TM pod and confirm FD count returns to baseline between restarts (does not step up)",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends a harness-level / unit test that loops open() and close() N times and asserts the FD count returned to baseline \u2014 catches the bug at PR time",
+      "passed": true,
+      "evidence": "Found keyword: 'harness'"
+    },
+    {
+      "text": "Mentions a per-TM ref-counted channel registry (or static singleton with caveats) as a sophistication option to share one ManagedChannel across subtasks on the same TM",
+      "passed": true,
+      "evidence": "Found keyword: 'ref-count'"
+    }
+  ]
+}

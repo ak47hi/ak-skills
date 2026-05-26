@@ -13,6 +13,7 @@ This repo is the generic counterpart to domain-specific skill repos (e.g. `flink
 | [`plantuml/`](plantuml/) | Generate valid PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 diagrams. Elicits intent when ambiguous, routes by diagram type, enforces structural rules + anti-patterns, emits a render command. | — | active |
 | [`system-design/`](system-design/) | Design real production systems end-to-end: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions. Numbers first, anti-overengineering, "boring tech until a constraint forces otherwise." Not interview prep. | — | active |
 | [`agent-ready/`](agent-ready/) | Prepare any repository for AI agents: generate a knowledge graph, write a cited `AGENT_DESIGN_DOC.md` (10 sections, every claim traced to `file:line`), optionally produce an `ARCHITECTURE.md` with validated Mermaid diagrams, wire `CLAUDE.md` with the design-doc import + Karpathy Guidelines, then commit only the generated files. Flags: `--skip-understand`, `--skip-commit`, `--architecture`, `--no-split`. | Claude Code plugin: [`Lum1104/Understand-Anything`](https://github.com/Lum1104/Understand-Anything) | active |
+| [`connection-leak/`](connection-leak/) | Diagnose and fix connection leaks in JVM (Java/Kotlin) and Python services across three resource classes: JDBC/DB pools (HikariCP, asyncpg, SQLAlchemy), Apache Flink 1.18 operator lifecycle (`RichFunction.close`, AsyncIO, RocksDB iterators), and HTTP/gRPC clients (OkHttp, Apache HC, Netty, gRPC, ktor, aiohttp, httpx, requests). Runs cross-cutting triage (FD trend, FD classification, runtime ID) before routing to the matching domain reference. Replaces an earlier 4-skill family (`connection-leak-hunt` + 3 siblings). | — | active |
 
 ## Install
 
@@ -76,12 +77,15 @@ ak-skills/
 │   ├── references/
 │   └── templates/
 ├── system-design/
-└── agent-ready/
-    ├── SKILL.md
-    ├── references/        ← rules, license attribution
-    ├── templates/         ← the design-doc skeleton
-    ├── scripts/           ← validate-mermaid.sh
-    └── evals/             ← skill-creator eval prompts
+├── agent-ready/
+│   ├── SKILL.md
+│   ├── references/        ← rules, license attribution
+│   ├── templates/         ← the design-doc skeleton
+│   ├── scripts/           ← validate-mermaid.sh
+│   └── evals/             ← skill-creator eval prompts
+└── connection-leak/
+    ├── SKILL.md           ← six-phase router (ELICIT → TRIAGE → ROUTE → DIAGNOSE → FIX → VERIFY)
+    └── references/        ← 00-elicitation, 01-routing, 10-triage, 20-jdbc, 21-flink, 22-http-grpc, 90-anti-patterns, 91-output-contract
 ```
 
 ## License

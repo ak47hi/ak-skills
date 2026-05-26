@@ -1,0 +1,413 @@
+{
+  "metadata": {
+    "skill_name": "connection-leak",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-05-26T12:04:40Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 112.6,
+        "tokens": 49781,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Diagnoses the root cause as the DB connection being held across the outbound Stripe HTTP call (transaction scope too wide), not just a missing close",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends splitting into two short transactions (load before HTTP call, save after), with the Stripe call OUTSIDE the @Transactional boundary; shows code",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends enabling HikariCP `leak-detection-threshold` (typically 30000ms or similar) so future leaks log a stack trace of the holder",
+          "passed": true,
+          "evidence": "Found keyword: 'leak-detection-threshold'"
+        },
+        {
+          "text": "Explicitly warns against just raising maximumPoolSize as 'the fix' \u2014 calls it masking the leak",
+          "passed": true,
+          "evidence": "Found keyword: 'masks the leak'"
+        },
+        {
+          "text": "Verification plan re-uses pg_stat_activity to confirm no sessions stuck idle in transaction post-fix",
+          "passed": true,
+          "evidence": "Found keyword: 'pg_stat_activity'"
+        },
+        {
+          "text": "References HikariCP MBean attribute(s) such as ActiveConnections, ThreadsAwaitingConnection for live diagnosis or verification",
+          "passed": true,
+          "evidence": "Found keyword: 'ActiveConnections'"
+        },
+        {
+          "text": "Mentions Postgres-side guardrail (idle_in_transaction_session_timeout and/or statement_timeout) as a server-side circuit breaker",
+          "passed": true,
+          "evidence": "Found keyword: 'idle_in_transaction_session_timeout'"
+        },
+        {
+          "text": "Notes that splitting a transaction around an external API call introduces a crash window and recommends an idempotency key (and/or reconciliation job)",
+          "passed": true,
+          "evidence": "Found keyword: 'idempotency'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 110.7,
+        "tokens": 44655,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Diagnoses this as a lifecycle leak (cleanup on cancel, not steady-state) tied to job restart count, not a per-record leak",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Identifies the missing or insufficient ManagedChannel.shutdown() / .awaitTermination() call in RichAsyncFunction.close() as the proximate cause",
+          "passed": true,
+          "evidence": "Found keyword: 'shutdown()'"
+        },
+        {
+          "text": "Provides a corrected close() body that shuts down the ManagedChannel (with awaitTermination + shutdownNow fallback)",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends an idempotent close() (volatile closed flag) because Flink can call close() multiple times",
+          "passed": true,
+          "evidence": "Found keyword: 'idempotent'"
+        },
+        {
+          "text": "Mentions overriding RichAsyncFunction.timeout() to cancel in-flight requests so timed-out requests don't hold sockets",
+          "passed": true,
+          "evidence": "Found keyword: 'timeout('"
+        },
+        {
+          "text": "Verification plan: restart the job 5x in quick succession on the same TM pod and confirm FD count returns to baseline between restarts (does not step up)",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends a harness-level / unit test that loops open() and close() N times and asserts the FD count returned to baseline \u2014 catches the bug at PR time",
+          "passed": true,
+          "evidence": "Found keyword: 'harness'"
+        },
+        {
+          "text": "Mentions a per-TM ref-counted channel registry (or static singleton with caveats) as a sophistication option to share one ManagedChannel across subtasks on the same TM",
+          "passed": true,
+          "evidence": "Found keyword: 'ref-count'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 100.6,
+        "tokens": 45135,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with cross-cutting triage (FD trend over time, FD classification, top remotes via ss/lsof) \u2014 does NOT jump straight to a guessed aiohttp fix",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Identifies the multi-remote socket-climb signature as a per-client construction leak (vs per-request body-not-closed), based on the 'many different remote services' clue",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends a single aiohttp.ClientSession per process, constructed in FastAPI `lifespan` (async context manager), and closed at shutdown",
+          "passed": true,
+          "evidence": "Found keyword: 'lifespan'"
+        },
+        {
+          "text": "Provides an instrumentation snippet (e.g., monkey-patching `ClientSession.__init__`) to log construction stacks if the offending call site isn't obvious from grep",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends `py-spy dump --pid 1` to find coroutines parked in aiohttp request methods (which indicates missing timeouts masquerading as leaks)",
+          "passed": true,
+          "evidence": "Found keyword: 'py-spy dump'"
+        },
+        {
+          "text": "Calls out per-request ClientSession construction as the dominant aiohttp leak in production code; doesn't suggest just adding more `async with` blocks at every call site without hoisting the session",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Mentions `PYTHONTRACEMALLOC=10` (allocation traceback in warnings) and/or `-W error::ResourceWarning` (escalate ResourceWarning in CI) \u2014 the highest-leverage way to surface the offending call site",
+          "passed": true,
+          "evidence": "Found keyword: 'PYTHONTRACEMALLOC'"
+        },
+        {
+          "text": "Mentions `enable_cleanup_closed=True` on `TCPConnector` (workaround for TLS sockets stuck in CLOSE_WAIT)",
+          "passed": true,
+          "evidence": "Found keyword: 'enable_cleanup_closed'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.875,
+        "passed": 7,
+        "failed": 1,
+        "total": 8,
+        "time_seconds": 90.2,
+        "tokens": 28140,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Diagnoses the root cause as the DB connection being held across the outbound Stripe HTTP call (transaction scope too wide), not just a missing close",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends splitting into two short transactions (load before HTTP call, save after), with the Stripe call OUTSIDE the @Transactional boundary; shows code",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends enabling HikariCP `leak-detection-threshold` (typically 30000ms or similar) so future leaks log a stack trace of the holder",
+          "passed": true,
+          "evidence": "Found keyword: 'leak-detection-threshold'"
+        },
+        {
+          "text": "Explicitly warns against just raising maximumPoolSize as 'the fix' \u2014 calls it masking the leak",
+          "passed": true,
+          "evidence": "Found keyword: 'anti-pattern'"
+        },
+        {
+          "text": "Verification plan re-uses pg_stat_activity to confirm no sessions stuck idle in transaction post-fix",
+          "passed": true,
+          "evidence": "Found keyword: 'pg_stat_activity'"
+        },
+        {
+          "text": "References HikariCP MBean attribute(s) such as ActiveConnections, ThreadsAwaitingConnection for live diagnosis or verification",
+          "passed": false,
+          "evidence": "None of keywords ['ActiveConnections', 'ThreadsAwaitingConnection', 'MBean'] found"
+        },
+        {
+          "text": "Mentions Postgres-side guardrail (idle_in_transaction_session_timeout and/or statement_timeout) as a server-side circuit breaker",
+          "passed": true,
+          "evidence": "Found keyword: 'idle_in_transaction_session_timeout'"
+        },
+        {
+          "text": "Notes that splitting a transaction around an external API call introduces a crash window and recommends an idempotency key (and/or reconciliation job)",
+          "passed": true,
+          "evidence": "Found keyword: 'idempotency'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 120.5,
+        "tokens": 29825,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Diagnoses this as a lifecycle leak (cleanup on cancel, not steady-state) tied to job restart count, not a per-record leak",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Identifies the missing or insufficient ManagedChannel.shutdown() / .awaitTermination() call in RichAsyncFunction.close() as the proximate cause",
+          "passed": true,
+          "evidence": "Found keyword: 'shutdown()'"
+        },
+        {
+          "text": "Provides a corrected close() body that shuts down the ManagedChannel (with awaitTermination + shutdownNow fallback)",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends an idempotent close() (volatile closed flag) because Flink can call close() multiple times",
+          "passed": true,
+          "evidence": "Found keyword: 'idempotent'"
+        },
+        {
+          "text": "Mentions overriding RichAsyncFunction.timeout() to cancel in-flight requests so timed-out requests don't hold sockets",
+          "passed": true,
+          "evidence": "Found keyword: 'timeout('"
+        },
+        {
+          "text": "Verification plan: restart the job 5x in quick succession on the same TM pod and confirm FD count returns to baseline between restarts (does not step up)",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends a harness-level / unit test that loops open() and close() N times and asserts the FD count returned to baseline \u2014 catches the bug at PR time",
+          "passed": true,
+          "evidence": "Found keyword: 'harness'"
+        },
+        {
+          "text": "Mentions a per-TM ref-counted channel registry (or static singleton with caveats) as a sophistication option to share one ManagedChannel across subtasks on the same TM",
+          "passed": true,
+          "evidence": "Found keyword: 'ref-count'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 80.8,
+        "tokens": 27571,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with cross-cutting triage (FD trend over time, FD classification, top remotes via ss/lsof) \u2014 does NOT jump straight to a guessed aiohttp fix",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Identifies the multi-remote socket-climb signature as a per-client construction leak (vs per-request body-not-closed), based on the 'many different remote services' clue",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends a single aiohttp.ClientSession per process, constructed in FastAPI `lifespan` (async context manager), and closed at shutdown",
+          "passed": true,
+          "evidence": "Found keyword: 'lifespan'"
+        },
+        {
+          "text": "Provides an instrumentation snippet (e.g., monkey-patching `ClientSession.__init__`) to log construction stacks if the offending call site isn't obvious from grep",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Recommends `py-spy dump --pid 1` to find coroutines parked in aiohttp request methods (which indicates missing timeouts masquerading as leaks)",
+          "passed": true,
+          "evidence": "Found keyword: 'py-spy dump'"
+        },
+        {
+          "text": "Calls out per-request ClientSession construction as the dominant aiohttp leak in production code; doesn't suggest just adding more `async with` blocks at every call site without hoisting the session",
+          "passed": true,
+          "evidence": "All semantic phrase groups matched"
+        },
+        {
+          "text": "Mentions `PYTHONTRACEMALLOC=10` (allocation traceback in warnings) and/or `-W error::ResourceWarning` (escalate ResourceWarning in CI) \u2014 the highest-leverage way to surface the offending call site",
+          "passed": true,
+          "evidence": "Found keyword: 'PYTHONTRACEMALLOC'"
+        },
+        {
+          "text": "Mentions `enable_cleanup_closed=True` on `TCPConnector` (workaround for TLS sockets stuck in CLOSE_WAIT)",
+          "passed": true,
+          "evidence": "Found keyword: 'enable_cleanup_closed'"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 107.9667,
+        "stddev": 6.4501,
+        "min": 100.6,
+        "max": 112.6
+      },
+      "tokens": {
+        "mean": 46523.6667,
+        "stddev": 2831.1244,
+        "min": 44655,
+        "max": 49781
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.9583,
+        "stddev": 0.0722,
+        "min": 0.875,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 97.1667,
+        "stddev": 20.7466,
+        "min": 80.8,
+        "max": 120.5
+      },
+      "tokens": {
+        "mean": 28512.0,
+        "stddev": 1172.1421,
+        "min": 27571,
+        "max": 29825
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.04",
+      "time_seconds": "+10.8",
+      "tokens": "+18012"
+    }
+  },
+  "notes": []
+}
