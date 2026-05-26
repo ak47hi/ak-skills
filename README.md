@@ -49,6 +49,19 @@ Remove the symlinks (without deleting source):
 3. Follow the authoring pattern documented in [`CONVENTIONS.md`](CONVENTIONS.md): elicitation-first where intent is ambiguous, phase-routed where workflow has stages, templates separated from logic.
 4. Re-run `./install.sh`.
 
+## Validating a skill against open-source projects
+
+When changing a skill, generate sample outputs against a handful of well-known open-source projects to eyeball the result before shipping. Drop them in `docs/skill-sample-outputs/`:
+
+```bash
+mkdir -p docs/skill-sample-outputs
+# Have Claude apply the skill to e.g. Kafka, Redis, nginx, etc.
+# Save the generated markdown / .puml / artifacts under that directory.
+# Render and review.
+```
+
+`docs/skill-sample-outputs/` is gitignored — it's a local sandbox for manual validation, not a checked-in artifact. The repo-tracked equivalent is `evals/` inside each skill, which holds the formal eval set (skill-creator schema).
+
 ## Repo layout
 
 ```
