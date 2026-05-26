@@ -1,0 +1,29 @@
+{
+  "skill_name": "agent-ready",
+  "evals": [
+    {
+      "id": 0,
+      "name": "greenfield-bootstrap",
+      "prompt": "Bootstrap this repo so a Claude agent can navigate it — generate a design doc and a knowledge graph, then commit it.",
+      "expected_output": "Phase 1-5 run end to end: .understand-anything/{config,knowledge-graph,meta,fingerprints}.json created with autoUpdate:true; AGENT_DESIGN_DOC.md (and .agent-docs/*.md if >200 lines) written with file:line citations; CLAUDE.md wired with @AGENT_DESIGN_DOC.md + Karpathy block (after diff approval); single local commit containing only the allowlisted files, no Co-Authored-By trailer.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 1,
+      "name": "architecture-no-commit",
+      "prompt": "Make this codebase agent-ready and include architecture diagrams. Don't auto-commit, I want to review first.",
+      "expected_output": "Phases 1-4 + 2.5 run; Phase 5 skipped. ARCHITECTURE.md exists with 4-6 Mermaid blocks, each validated by mmdc (or carrying %% VALIDATION WARNING). .understand-anything/config.json has both autoUpdate:true and architecture:true. No git commit happens.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "refresh-architecture-only",
+      "prompt": "Refresh the AGENT_DESIGN_DOC and architecture for this project — the KG is already current.",
+      "expected_output": "Phase 1 skipped (--skip-understand). Phase 2 re-reads the existing KG + source, regenerates design doc preserving [NEEDS_CONTEXT] markers where possible. Phase 2.5 regenerates ARCHITECTURE.md. Phase 5 produces a commit with only the regenerated files.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}
