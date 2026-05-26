@@ -1,0 +1,36 @@
+' C4 Container diagram for an Order Management System.
+' Stdlib include. Fallback for older PlantUML builds:
+'   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+@startuml c4-container-order-management
+!include <C4/C4_Container>
+
+SHOW_LEGEND()
+
+title Container Diagram — Order Management System
+
+Person(customer, "Customer", "Places orders, tracks status, manages account.")
+
+System_Boundary(oms, "Order Management System") {
+    Container(web, "Web App", "React, TypeScript", "Customer-facing SPA.")
+    Container(api, "API Gateway", "Go, gRPC", "Edge API; authn/authz, routes RPCs.")
+    Container(auth, "Auth Service", "Go", "Login, sessions, token issuance.")
+    Container(orders, "Order Service", "Go", "Order lifecycle, business rules.")
+    ContainerDb(db, "Application DB", "Postgres", "Customers, orders, payments metadata.")
+    ContainerQueue(bus, "Event Bus", "AWS SQS", "Domain events: order placed, paid, shipped.")
+}
+
+System_Ext(stripe, "Stripe", "Payment processing.")
+System_Ext(sendgrid, "SendGrid", "Transactional email delivery.")
+
+Rel(customer, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "gRPC-Web / HTTPS")
+Rel(api, auth, "Verifies sessions via", "gRPC")
+Rel(api, orders, "Routes order ops to", "gRPC")
+Rel(auth, db, "Reads/writes user data", "SQL")
+Rel(orders, db, "Reads/writes order data", "SQL")
+Rel(orders, bus, "Publishes domain events to", "AWS SDK")
+Rel(orders, stripe, "Charges and refunds via", "HTTPS / REST")
+Rel(orders, sendgrid, "Sends order email via", "HTTPS / REST")
+
+@enduml

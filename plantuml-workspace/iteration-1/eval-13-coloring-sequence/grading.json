@@ -1,0 +1,42 @@
+{
+  "eval_id": 13,
+  "eval_name": "coloring-sequence-participant",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Routed to sequence diagram",
+      "passed": true,
+      "evidence": "sequence routed"
+    },
+    {
+      "text": "@startuml has a non-default name (not literally 'sequence-diagram')",
+      "passed": true,
+      "evidence": "@startuml login-flow-sequence (non-default)"
+    },
+    {
+      "text": "WebApp participant is declared with `#AED6F1` background-color suffix on the declaration line (e.g., `participant WebApp #AED6F1` or `participant \"Web App\" as WebApp #AED6F1`)",
+      "passed": true,
+      "evidence": "participant WebApp #AED6F1 on declaration line \u2014 exact syntax from the new docs"
+    },
+    {
+      "text": "Does NOT use the `;line:` border-color syntax on any sequence participant or note (would produce 'No such color' render error)",
+      "passed": true,
+      "evidence": "no ;line: syntax"
+    },
+    {
+      "text": "AuthService is declared without a color suffix (kept default as requested)",
+      "passed": true,
+      "evidence": "AuthService declared without color suffix"
+    },
+    {
+      "text": "All three participants (User, WebApp, AuthService) are declared explicitly with participant/actor keyword \u2014 not inferred from message lines",
+      "passed": true,
+      "evidence": "actor User + participant WebApp/AuthService \u2014 all explicit"
+    },
+    {
+      "text": "Arrow style is consistent: -> for requests, --> for responses",
+      "passed": true,
+      "evidence": "consistent -> / --> arrows"
+    }
+  ]
+}

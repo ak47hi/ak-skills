@@ -1,0 +1,22 @@
+[
+  {"query": "I need a sequence diagram for our checkout flow. Browser → API → Stripe → back. Include the retry path on 5xx.", "should_trigger": true},
+  {"query": "Can you draw an ERD of our orders schema in plantuml? customer, order, line_item, payment_method.", "should_trigger": true},
+  {"query": "make me a c4 container diagram for the auth subsystem. we have api gateway in go, an auth service in go, postgres for the user table, redis for sessions.", "should_trigger": true},
+  {"query": "swimlane flow for the support refund process — customer submits, agent reviews, billing system processes", "should_trigger": true},
+  {"query": "i need to show the state machine for orders. draft → submitted → paid → shipped, plus the cancel paths", "should_trigger": true},
+  {"query": "small flow diagram for the readme. 3 steps. signup → email verify → first login.", "should_trigger": true},
+  {"query": "can u draw the architecture of our system as a c4 container? web app, mobile app, api, two postgres dbs, a redis cache, and stripe webhooks", "should_trigger": true},
+  {"query": "draw me a uml class diagram for the OrderAggregate. include LineItem, ShippingAddress, PaymentMethod", "should_trigger": true},
+  {"query": "deployment diagram for prod: 3 k8s nodes in us-east, 2 in eu-west, rds postgres multi-az, sqs queue", "should_trigger": true},
+  {"query": "use case diagram for our admin portal: support agent, billing admin, security admin. their main use cases.", "should_trigger": true},
+  {"query": "make me a gantt chart for the q3 roadmap with the auth rewrite, mobile launch, and the analytics revamp", "should_trigger": false},
+  {"query": "give me a mermaid diagram for our github readme — flowchart of the build pipeline, 4 steps", "should_trigger": false},
+  {"query": "render a mindmap of our product themes for an offsite slide", "should_trigger": false},
+  {"query": "i need a quadrantChart in mermaid showing effort vs impact for our backlog items", "should_trigger": false},
+  {"query": "ascii art of a simple binary tree for a blog post i'm writing", "should_trigger": false},
+  {"query": "graphviz dot file for the call graph of this go package — see /Users/me/code/foo/bar.go", "should_trigger": false},
+  {"query": "i want a sankey diagram in mermaid for the funnel: visit → signup → verified → active → churned", "should_trigger": false},
+  {"query": "drawio xml for the design review on tuesday — i'll embed it in confluence", "should_trigger": false},
+  {"query": "user journey in mermaid for a new sign-up: aware → interested → trial → paid", "should_trigger": false},
+  {"query": "gitGraph in mermaid showing the release branching strategy", "should_trigger": false}
+]

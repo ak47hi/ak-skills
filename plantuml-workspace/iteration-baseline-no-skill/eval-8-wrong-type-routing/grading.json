@@ -1,0 +1,22 @@
+{
+  "eval_id": 8,
+  "eval_name": "wrong-type-routing",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Skill notes the type mismatch (sequence is wrong for schema)",
+      "passed": true,
+      "evidence": "explicitly flags type mismatch"
+    },
+    {
+      "text": "Skill proposes ER as the right type and proceeds with ER, OR asks one clarifying question and routes to ER on confirmation",
+      "passed": true,
+      "evidence": "proposes ER and produces one (with placeholder schema)"
+    },
+    {
+      "text": "If a diagram is produced, it is an ER diagram (entity keyword + crow's-foot relations), not a sequence diagram",
+      "passed": true,
+      "evidence": "ER diagram with entity keyword + <<PK>>/<<FK>> + crow's-foot"
+    }
+  ]
+}

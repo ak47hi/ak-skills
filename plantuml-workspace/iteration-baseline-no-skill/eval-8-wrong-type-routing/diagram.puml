@@ -1,0 +1,40 @@
+@startuml
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "users" as users {
+  *id : bigint <<PK>>
+  --
+  email : varchar
+  created_at : timestamp
+}
+
+entity "orders" as orders {
+  *id : bigint <<PK>>
+  --
+  *user_id : bigint <<FK>>
+  total_cents : int
+  placed_at : timestamp
+}
+
+entity "order_items" as items {
+  *id : bigint <<PK>>
+  --
+  *order_id : bigint <<FK>>
+  *product_id : bigint <<FK>>
+  qty : int
+  unit_price_cents : int
+}
+
+entity "products" as products {
+  *id : bigint <<PK>>
+  --
+  sku : varchar
+  name : varchar
+}
+
+users ||--o{ orders   : places
+orders ||--o{ items   : contains
+products ||--o{ items : "ordered as"
+@enduml

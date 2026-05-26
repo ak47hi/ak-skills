@@ -1,0 +1,33 @@
+Pipeline diagram: upstream service publishes JSON events to Kafka, a Flink job consumes the topic, transforms each record, and upserts results into a Postgres reference table.
+
+```puml
+@startuml flink-kafka-postgres-pipeline
+!theme plain
+
+left to right direction
+
+' ---- Producer (left edge) ----
+node "Upstream Service\n(event producer)" as producer
+
+' ---- Transport / broker ----
+queue "Kafka:\nevents-topic" as events_topic
+
+' ---- Stream processor ----
+node "Flink job\n(consume, transform, upsert)" as flink
+
+' ---- Sink (right edge) ----
+database "Postgres:\nreference table\n(results)" as pg
+
+' ---- Flow ----
+producer     --> events_topic : "JSON events\n(Kafka producer)"
+events_topic --> flink        : "Kafka consumer\n(KafkaSource)"
+flink        --> pg           : "JDBC sink\n(upsert by key)"
+
+@enduml
+```
+
+Render:
+
+```
+plantuml -tsvg diagram.puml
+```

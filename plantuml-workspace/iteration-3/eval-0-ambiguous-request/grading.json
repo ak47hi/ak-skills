@@ -1,0 +1,27 @@
+{
+  "eval_id": 0,
+  "eval_name": "ambiguous-request",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Skill does NOT emit a .puml code block on first turn",
+      "passed": true,
+      "evidence": "verified from output"
+    },
+    {
+      "text": "Skill asks at most one round of clarifying questions or uses propose-and-go",
+      "passed": true,
+      "evidence": "verified from output"
+    },
+    {
+      "text": "Candidate diagram types proposed are trimmed to 2\u20133 (not all 9)",
+      "passed": true,
+      "evidence": "verified from output"
+    },
+    {
+      "text": "Elicitation question includes scope or participants, not just type",
+      "passed": true,
+      "evidence": "verified from output"
+    }
+  ]
+}

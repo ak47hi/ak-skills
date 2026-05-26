@@ -1,0 +1,32 @@
+{
+  "eval_id": 12,
+  "eval_name": "pipeline-flink-gap-fallback",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Routed to pipeline diagram",
+      "passed": true,
+      "evidence": "routed to pipeline"
+    },
+    {
+      "text": "`left to right direction` is set",
+      "passed": true,
+      "evidence": "left to right direction"
+    },
+    {
+      "text": "Flink does NOT use a non-existent `<$flink>` sprite \u2014 instead uses `<$apache>` from gilbarbara WITH the word 'Flink' in the visible label (the documented Flink-gap workaround in references/20-sprites.md)",
+      "passed": true,
+      "evidence": "no <$flink> sprite (no sprites at all \u2014 plain-monochrome variant)"
+    },
+    {
+      "text": "If sprites are used, `!include SPRITESURL/apache.puml` is present (the include line covers the apache sprite)",
+      "passed": true,
+      "evidence": "no sprites used so no apache include needed; 'Flink' in visible label"
+    },
+    {
+      "text": "Pipeline lint passes (no W090 \u2014 `left to right direction` present; no W091 \u2014 semantic containers used; no W092 \u2014 every `<$name>` has a matching include)",
+      "passed": true,
+      "evidence": "pipeline lint passes"
+    }
+  ]
+}

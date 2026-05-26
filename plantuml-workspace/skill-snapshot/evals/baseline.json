@@ -1,0 +1,135 @@
+{
+  "skill_name": "plantuml",
+  "iteration": "baseline",
+  "skill_snapshot": "commit 176b9f4 (pre-refinement)",
+  "evaluator": "mental dry-run against SKILL.md + references; no subagent or live render available locally",
+  "limitations": [
+    "plantuml CLI not installed locally — render-correctness assertions are by static reading, not actual SVG output",
+    "single-shot mental dry-run, not 3× subagent runs — variance not measurable in this iteration"
+  ],
+  "summary": {
+    "pass": 8,
+    "partial": 1,
+    "fail": 1
+  },
+  "results": [
+    {
+      "eval_id": 0,
+      "eval_name": "ambiguous-request",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Skill does NOT emit a .puml code block on first turn", "passed": true, "evidence": "00-elicitation.md § 'Decision: skip or ask' marks 'doesn't name a type, scope vague, participants vague' as ASK-all-three"},
+        {"text": "Skill asks at most one round of clarifying questions or uses propose-and-go", "passed": true, "evidence": "00-elicitation.md § 'One round of questions max'"},
+        {"text": "Candidate diagram types proposed are trimmed to 2–3 (not all 9)", "passed": true, "evidence": "00-elicitation.md § 'Trim to the 2–3 candidates that actually fit the user's prompt'"},
+        {"text": "Elicitation question includes scope or participants, not just type", "passed": true, "evidence": "00-elicitation.md Q3 (scope) fires when scope is 'the whole system'"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "full-spec-sequence-oauth2-pkce",
+      "summary": "pass",
+      "assertions": [
+        {"text": "@startuml has a non-default name", "passed": true, "evidence": "SKILL.md GENERATE step 2 requires rename"},
+        {"text": "@enduml is present", "passed": true, "evidence": "template includes it"},
+        {"text": "!theme plain is the first non-comment directive", "passed": true, "evidence": "sequence.puml template has it"},
+        {"text": "All three participants declared explicitly with type keyword", "passed": true, "evidence": "10-sequence.md § 'Participants' requires explicit declaration"},
+        {"text": "autonumber is enabled", "passed": true, "evidence": "user asked; 10-sequence.md documents it"},
+        {"text": "Arrow style consistent: -> for requests, --> for responses", "passed": true, "evidence": "10-sequence.md § 'Convention this skill follows'"},
+        {"text": "Routed to sequence diagram", "passed": true, "evidence": "01-routing.md tree first match: behavior over time"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "full-spec-c4-container",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Uses C4 stdlib include", "passed": true, "evidence": "c4-container.puml template + 18-c4.md"},
+        {"text": "Does NOT include !theme plain", "passed": true, "evidence": "18-c4.md § 'No !theme plain on C4 diagrams' (added in commit 176b9f4)"},
+        {"text": "Tech label on every Container/ContainerDb/ContainerQueue", "passed": true, "evidence": "18-c4.md § Anti-patterns: 'Missing tech labels on Container/Component'"},
+        {"text": "Stripe and SendGrid declared with System_Ext", "passed": true, "evidence": "18-c4.md § 'System_Ext confused with System'"},
+        {"text": "Person() declared for customer", "passed": true, "evidence": "template defaults + 18-c4.md § 'No Person' anti-pattern"},
+        {"text": "Every Rel() has non-empty label", "passed": true, "evidence": "18-c4.md § 'Rel with empty label'"},
+        {"text": "Routed to C4 container — no level mixing", "passed": true, "evidence": "18-c4.md § 'Abstraction-level discipline'"}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "state-payment-lifecycle",
+      "summary": "pass",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true, "evidence": "SKILL.md GENERATE step 2"},
+        {"text": "Diagram contains [*] for entry pseudostate", "passed": true, "evidence": "13-state.md § 'Start and end' requires it"},
+        {"text": "All 5 states present", "passed": true, "evidence": "user listed; no reason to drop"},
+        {"text": "Every transition has a label after colon", "passed": true, "evidence": "13-state.md § Anti-patterns: 'Transitions without triggers'"},
+        {"text": "Routed to state diagram", "passed": true, "evidence": "01-routing.md: 'lifecycle / states of one entity → STATE'"}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "er-billing-schema",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Uses entity keyword", "passed": true, "evidence": "16-er.md mandates entity"},
+        {"text": "Crow's-foot notation on every relation", "passed": true, "evidence": "16-er.md + anti-patterns"},
+        {"text": "Primary keys marked", "passed": true, "evidence": "template + 16-er.md"},
+        {"text": "<<FK>> on FK columns", "passed": true, "evidence": "16-er.md § Anti-patterns: 'No <<FK>>'"},
+        {"text": "Routed to ER", "passed": true, "evidence": "01-routing.md: 'data model + cardinality → ER'"}
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "activity-refund-swimlanes",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Beta syntax (:action;)", "passed": true, "evidence": "14-activity.md mandates beta"},
+        {"text": "Three swimlanes via |name|", "passed": true, "evidence": "14-activity.md § 'Swimlanes'"},
+        {"text": "Contains if/endif for branch", "passed": true, "evidence": "14-activity.md § 'Conditionals'"},
+        {"text": "start and stop both present", "passed": true, "evidence": "template default"},
+        {"text": "Routed to activity", "passed": true, "evidence": "01-routing.md + user mentions 'swimlanes' → activity"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "component-backend-interfaces",
+      "summary": "partial",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true, "evidence": "SKILL.md GENERATE"},
+        {"text": "Semantic containers (database, queue) at leaf level", "passed": true, "evidence": "11-component.md § Anti-patterns: '[box] for everything'"},
+        {"text": "At least one interface declared", "passed": false, "evidence": "11-component.md says interfaces are required, but the template comments them out as optional and there's no enforcement. Model may default to interfaceless component diagram unless it actively reads the rule."},
+        {"text": "Components grouped via package or node", "passed": true, "evidence": "11-component.md § 'Grouping containers'"},
+        {"text": "Routed to component (not C4)", "passed": true, "evidence": "01-routing.md tree: not C4 because audience is internal"}
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "god-diagram-pushback",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Skill pushes back or proposes decomposition", "passed": true, "evidence": "SKILL.md § 'When to push back': '>20 participants in one sequence diagram... Suggest decomposition'"},
+        {"text": "If diagram produced, decomposed", "passed": true, "evidence": "implied by push-back guidance"},
+        {"text": "Mentions decomposition strategy", "passed": true, "evidence": "SKILL.md names per-use-case + sub-component"}
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "wrong-type-routing",
+      "summary": "pass",
+      "assertions": [
+        {"text": "Notes type mismatch", "passed": true, "evidence": "SKILL.md § 'When to push back' has this exact example: 'sequence diagram of a database schema'"},
+        {"text": "Proposes ER and proceeds OR asks once", "passed": true, "evidence": "SKILL.md: 'Explain the mismatch in one sentence and propose the right type'"},
+        {"text": "If diagram produced, it's ER", "passed": true, "evidence": "implied"}
+      ]
+    },
+    {
+      "eval_id": 9,
+      "eval_name": "mermaid-better-fit",
+      "summary": "fail",
+      "assertions": [
+        {"text": "Names Mermaid as better tool", "passed": false, "evidence": "SKILL.md description says 'Do NOT use for Mermaid' — refusal, not redirection. No reference file recommends Mermaid for any case."},
+        {"text": "Explains GitHub renders Mermaid natively", "passed": false, "evidence": "no skill content covers this"},
+        {"text": "Stops OR offers both with trade-off called out", "passed": false, "evidence": "most likely the skill silently produces a PlantUML diagram"},
+        {"text": "Does NOT silently produce PlantUML as if request were ordinary", "passed": false, "evidence": "no guidance to do otherwise; this is the motivating gap for refinement #2"}
+      ]
+    }
+  ]
+}

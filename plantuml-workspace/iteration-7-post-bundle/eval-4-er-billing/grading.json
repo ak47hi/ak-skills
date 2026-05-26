@@ -1,0 +1,32 @@
+{
+  "eval_id": 4,
+  "eval_name": "er-billing-schema",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Uses entity keyword for each table (not class)",
+      "passed": true,
+      "evidence": "entity keyword used for each table"
+    },
+    {
+      "text": "Every relationship line uses crow's-foot notation tokens: ||, |o, }|, or }o (and not class arrows like *-- or <|--)",
+      "passed": true,
+      "evidence": "crow's-foot tokens on relations (||--o{, ||--|{)"
+    },
+    {
+      "text": "Primary keys are marked (e.g., * id : uuid <<generated>>) \u2014 at least one entity",
+      "passed": true,
+      "evidence": "PKs marked * id : uuid <<generated>>"
+    },
+    {
+      "text": "Foreign-key columns are marked <<FK>>",
+      "passed": true,
+      "evidence": "FK columns marked <<FK>>"
+    },
+    {
+      "text": "Routed to ER diagram",
+      "passed": true,
+      "evidence": "routed to ER"
+    }
+  ]
+}

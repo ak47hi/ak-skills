@@ -1,0 +1,42 @@
+{
+  "eval_id": 10,
+  "eval_name": "pipeline-kafka-stream",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Routed to pipeline diagram (not deployment, not sequence)",
+      "passed": true,
+      "evidence": "routed to pipeline"
+    },
+    {
+      "text": "`@startuml` is present with a non-placeholder name (not `pipeline-diagram`)",
+      "passed": true,
+      "evidence": "@startuml clickstream-ingest non-default"
+    },
+    {
+      "text": "`left to right direction` is the layout directive",
+      "passed": true,
+      "evidence": "left to right direction"
+    },
+    {
+      "text": "At least one `queue \"...\"` declaration for the Kafka topic",
+      "passed": true,
+      "evidence": "queue \"Kafka:\\nclick-events\" \u2014 no-sprites variant accepted"
+    },
+    {
+      "text": "Includes the gilbarbara sprite preamble (`!define SPRITESURL .../v1.1/sprites`) AND `!include SPRITESURL/kafka.puml`, OR explicitly chooses the no-sprites variant with the Kafka topic labeled `queue \"Kafka: ...\"`",
+      "passed": true,
+      "evidence": "no-sprites variant: Kafka topic labeled with Kafka prefix"
+    },
+    {
+      "text": "Every arrow has a label describing the protocol or payload (e.g. 'JSON events', 'Kafka consumer', 'JDBC sink')",
+      "passed": true,
+      "evidence": "every arrow labeled (JSON click events / Kafka consumer / INSERT JDBC)"
+    },
+    {
+      "text": "At least 3 stages present (producer \u2192 Kafka \u2192 enrichment \u2192 warehouse, or equivalent decomposition)",
+      "passed": true,
+      "evidence": "4 stages (API \u2192 Kafka \u2192 Enrichment \u2192 warehouse)"
+    }
+  ]
+}

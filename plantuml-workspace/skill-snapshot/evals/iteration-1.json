@@ -1,0 +1,159 @@
+{
+  "skill_name": "plantuml",
+  "iteration": "iteration-1",
+  "skill_snapshot": "post-refinement (Phase 5 of docs/plans/refinement.md applied)",
+  "evaluator": "mental dry-run against refined SKILL.md + references; no subagent or live render available locally",
+  "limitations": [
+    "plantuml CLI not installed locally — render-correctness assertions remain static-only",
+    "single-shot mental dry-run, not 3× subagent variance",
+    "model adherence to VERIFY step 1 (run scripts/lint.py) is assumed; whether a real session actually invokes the script depends on model behavior"
+  ],
+  "summary": {
+    "pass": 9,
+    "partial": 1,
+    "fail": 0,
+    "delta_vs_baseline": "+1 pass (case 9: FAIL → PASS); 0 regressions; case 6 still PARTIAL (untargeted by this refinement)"
+  },
+  "results": [
+    {
+      "eval_id": 0,
+      "eval_name": "ambiguous-request",
+      "summary": "pass",
+      "delta": "unchanged",
+      "notes": "Refinement didn't alter elicitation behavior. 00-elicitation.md still routes 'draw a diagram of our system' to ASK-all-three.",
+      "assertions": [
+        {"text": "Skill does NOT emit a .puml code block on first turn", "passed": true},
+        {"text": "Skill asks at most one round of clarifying questions or uses propose-and-go", "passed": true},
+        {"text": "Candidate diagram types proposed are trimmed to 2–3", "passed": true},
+        {"text": "Elicitation question includes scope or participants, not just type", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "full-spec-sequence-oauth2-pkce",
+      "summary": "pass",
+      "delta": "unchanged + lint.py mechanical pass available; model may now optionally use `return` shorthand on activated calls (commented example in template)",
+      "assertions": [
+        {"text": "@startuml has a non-default name", "passed": true},
+        {"text": "@enduml is present", "passed": true},
+        {"text": "!theme plain is the first non-comment directive", "passed": true},
+        {"text": "All three participants declared explicitly with type keyword", "passed": true},
+        {"text": "autonumber is enabled", "passed": true},
+        {"text": "Arrow style consistent", "passed": true},
+        {"text": "Routed to sequence diagram", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "full-spec-c4-container",
+      "summary": "pass",
+      "delta": "improved: output now uses SHOW_LEGEND() instead of legacy LAYOUT_WITH_LEGEND() (templates updated). Tag system available for emphasis if asked.",
+      "assertions": [
+        {"text": "Uses C4 stdlib include", "passed": true},
+        {"text": "Does NOT include !theme plain", "passed": true, "evidence": "lint.py E011 would catch any regression"},
+        {"text": "Tech label on every Container/ContainerDb/ContainerQueue", "passed": true, "evidence": "lint.py W050 would catch missing tech label"},
+        {"text": "Stripe and SendGrid declared with System_Ext", "passed": true},
+        {"text": "Person() declared for customer", "passed": true},
+        {"text": "Every Rel() has non-empty label", "passed": true, "evidence": "lint.py E052 backstop"},
+        {"text": "Routed to C4 container — no level mixing", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "state-payment-lifecycle",
+      "summary": "pass",
+      "delta": "unchanged + lint.py E030 backstop on missing [*]",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true},
+        {"text": "Diagram contains [*] for entry pseudostate", "passed": true},
+        {"text": "All 5 states present", "passed": true},
+        {"text": "Every transition has a label after colon", "passed": true},
+        {"text": "Routed to state diagram", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "er-billing-schema",
+      "summary": "pass",
+      "delta": "unchanged + lint.py E040/W041 backstops on class-arrow-in-ER and missing crow's-foot",
+      "assertions": [
+        {"text": "Uses entity keyword", "passed": true},
+        {"text": "Crow's-foot notation on every relation", "passed": true},
+        {"text": "Primary keys marked", "passed": true},
+        {"text": "<<FK>> on FK columns", "passed": true},
+        {"text": "Routed to ER", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "activity-refund-swimlanes",
+      "summary": "pass",
+      "delta": "unchanged",
+      "assertions": [
+        {"text": "Beta syntax", "passed": true},
+        {"text": "Three swimlanes via |name|", "passed": true},
+        {"text": "Contains if/endif for branch", "passed": true},
+        {"text": "start and stop both present", "passed": true},
+        {"text": "Routed to activity", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "component-backend-interfaces",
+      "summary": "partial",
+      "delta": "unchanged — refinement did not target this gap. The user explicitly asks for 'public REST and gRPC interfaces' but the component.puml template still keeps interfaces commented out as optional, so model adherence to 11-component.md's 'interfaces required' rule is the only thing forcing them. Follow-up candidate: uncomment one interface line in component.puml as the default.",
+      "assertions": [
+        {"text": "@startuml with non-default name", "passed": true},
+        {"text": "Semantic containers (database, queue)", "passed": true},
+        {"text": "At least one interface declared", "passed": false, "evidence": "template default omits; depends on model reading the explicit 'show the public REST and gRPC interfaces' ask"},
+        {"text": "Components grouped via package or node", "passed": true},
+        {"text": "Routed to component (not C4)", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "god-diagram-pushback",
+      "summary": "pass",
+      "delta": "unchanged + lint.py W020 catches 28-participant sequence if model produces it anyway",
+      "assertions": [
+        {"text": "Skill pushes back or proposes decomposition", "passed": true},
+        {"text": "If diagram produced, decomposed", "passed": true},
+        {"text": "Mentions decomposition strategy", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "wrong-type-routing",
+      "summary": "pass",
+      "delta": "unchanged",
+      "assertions": [
+        {"text": "Notes type mismatch", "passed": true},
+        {"text": "Proposes ER and proceeds OR asks once", "passed": true},
+        {"text": "If diagram produced, it's ER", "passed": true}
+      ]
+    },
+    {
+      "eval_id": 9,
+      "eval_name": "mermaid-better-fit",
+      "summary": "pass",
+      "delta": "FAIL → PASS. Refinement #2 directly targets this: 92-not-plantuml.md enumerates 'embed-in-markdown' as Exit Case 1, with explicit phrasing. 01-routing.md now consults 92 first.",
+      "assertions": [
+        {"text": "Names Mermaid as better tool", "passed": true, "evidence": "92-not-plantuml.md § 'Exit case 1'"},
+        {"text": "Explains GitHub renders Mermaid natively", "passed": true, "evidence": "92-not-plantuml.md says exactly this"},
+        {"text": "Stops OR offers both with trade-off called out", "passed": true, "evidence": "92-not-plantuml.md § 'How to phrase the exit' prescribes a 3-sentence diagnosis+recommendation+offer"},
+        {"text": "Does NOT silently produce PlantUML as if request were ordinary", "passed": true, "evidence": "01-routing.md now routes to 92 BEFORE the decision tree"}
+      ]
+    }
+  ],
+  "improvements_not_captured_by_assertions": [
+    "C4 templates now use SHOW_LEGEND() — modernized output, more flexible if user later wants to filter legend entries with tags",
+    "Sequence rules now document `return` shorthand and `autonumber` format strings — diagrams using these features are more idiomatic when activations are present",
+    "lint.py provides mechanical backstops for E001–E004, E010–E011, E030, E040, E051–E052, W003, W020–W022, W031, W041, W050, W060, W070, W080 — many of which the model might miss in a long generation",
+    "C4 tag system (AddElementTag) documented as canonical replacement for color-only semantics inside C4 — gives the right answer to 'highlight the legacy/hot-path/deprecated containers' instead of falling back to ad-hoc colors"
+  ],
+  "follow_up_candidates": [
+    "Case 6 — uncomment one interface declaration in component.puml so the template default surfaces interfaces. Currently they're documented but the user has to read the rule to include them.",
+    "Phase 5 (description tuning) — per the plan, this is gated on evals re-running. Now that they have, run the skill-creator description-optimization loop with a 20-query trigger eval set.",
+    "Variance — when running in a session with subagents available, run each of the 10 cases 3× and report mean / variance. Mental dry-run is deterministic and doesn't reveal flakiness."
+  ]
+}

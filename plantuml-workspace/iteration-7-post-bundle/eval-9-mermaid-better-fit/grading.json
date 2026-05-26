@@ -1,0 +1,22 @@
+{
+  "eval_id": 9,
+  "eval_name": "mermaid-better-fit",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Skill names Mermaid as the better tool for GitHub-native rendering",
+      "passed": true,
+      "evidence": "mentions GitHub renders Mermaid natively but not PlantUML"
+    },
+    {
+      "text": "Skill explains the relevant difference (GitHub renders Mermaid in markdown; PlantUML needs an external renderer)",
+      "passed": true,
+      "evidence": "does not emit .puml"
+    },
+    {
+      "text": "Skill either stops (offering to switch if user insists on PlantUML) OR offers both: a Mermaid snippet AND a PlantUML one, with the trade-off called out",
+      "passed": true,
+      "evidence": "offers to switch to Mermaid OR continue with PlantUML"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "eval_id": 6,
+  "eval_name": "component-backend-interfaces",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "@startuml has a non-default name",
+      "passed": true,
+      "evidence": "@startuml backend-components non-default"
+    },
+    {
+      "text": "Uses semantic containers (database, queue) at the leaf level \u2014 not generic [box] for the datastore and the queue",
+      "passed": true,
+      "evidence": "semantic containers database + queue at leaf level"
+    },
+    {
+      "text": "At least one interface is declared (lollipop () or 'interface' keyword) \u2014 diagrams that show only components and lines are component-diagrams-in-name-only",
+      "passed": true,
+      "evidence": "lollipop interfaces declared via ()"
+    },
+    {
+      "text": "Components are grouped via package or node (logical or physical grouping)",
+      "passed": true,
+      "evidence": "components grouped via package (Edge/Services/Infrastructure)"
+    },
+    {
+      "text": "Routed to component diagram (not C4)",
+      "passed": true,
+      "evidence": "routed to component, not C4"
+    }
+  ]
+}

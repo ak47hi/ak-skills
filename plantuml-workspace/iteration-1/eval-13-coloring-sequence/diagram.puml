@@ -1,0 +1,13 @@
+@startuml login-flow-sequence
+!theme plain
+
+actor User
+participant WebApp #AED6F1
+participant AuthService
+
+User -> WebApp: POST /login {email, password}
+WebApp -> AuthService: verifyCredentials(email, password)
+AuthService --> WebApp: {ok, token}
+WebApp --> User: 200 OK {token}
+
+@enduml

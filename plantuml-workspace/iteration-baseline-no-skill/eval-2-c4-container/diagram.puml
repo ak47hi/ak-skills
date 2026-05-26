@@ -1,0 +1,37 @@
+@startuml C4_Container_OrderManagement
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+title Container Diagram - Order Management System
+
+Person(customer, "Customer", "Places and tracks orders")
+
+System_Boundary(oms, "Order Management System") {
+    Container(web, "Web App", "React, TypeScript", "Single-page app for browsing products, placing orders, and viewing order history")
+    Container(api, "API Gateway", "Go, gRPC", "Public-facing API; authenticates requests and routes to internal services")
+    Container(orderSvc, "Order Service", "Go", "Manages order lifecycle: create, update, fulfill, cancel")
+    Container(authSvc, "Auth Service", "Go", "Issues and validates auth tokens; manages user identities")
+    ContainerDb(db, "Database", "PostgreSQL", "Stores users, orders, line items, and payment metadata")
+    ContainerQueue(bus, "Event Bus", "AWS SQS", "Asynchronous order/payment/email events")
+}
+
+System_Ext(stripe, "Stripe", "Payment processing")
+System_Ext(sendgrid, "SendGrid", "Transactional email delivery")
+
+Rel(customer, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "gRPC-Web / HTTPS")
+
+Rel(api, authSvc, "Validates tokens, signs in users", "gRPC")
+Rel(api, orderSvc, "Forwards order requests", "gRPC")
+
+Rel(orderSvc, db, "Reads/writes orders", "SQL/TCP")
+Rel(authSvc, db, "Reads/writes users", "SQL/TCP")
+
+Rel(orderSvc, bus, "Publishes order events", "AWS SDK")
+Rel(bus, orderSvc, "Delivers async events", "AWS SDK")
+
+Rel(orderSvc, stripe, "Charges customer cards", "HTTPS/REST")
+Rel_R(bus, sendgrid, "Sends order confirmation emails", "HTTPS/REST")
+
+SHOW_LEGEND()
+@enduml

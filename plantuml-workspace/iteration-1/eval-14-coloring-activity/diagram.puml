@@ -1,0 +1,17 @@
+@startuml payment-processing
+!theme plain
+
+start
+
+:Validate input;
+:Charge card;
+
+if (charge succeeded?) then (yes)
+    :Send receipt (success); <<#D5F5E3>>
+    stop
+else (no)
+    :Log error (failure); <<#FFCCCC>>
+    stop
+endif
+
+@enduml

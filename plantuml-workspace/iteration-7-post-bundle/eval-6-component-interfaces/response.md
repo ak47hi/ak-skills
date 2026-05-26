@@ -1,0 +1,47 @@
+```puml
+@startuml backend-components
+!theme plain
+
+' Backend component diagram: API gateway, Auth service, Order service, Postgres, event queue.
+' Public interfaces (REST, gRPC) shown via lollipop notation on their owning components.
+' Services grouped logically: edge (gateway), domain services, and shared infrastructure.
+
+package "Edge" {
+    component "API Gateway" as Gateway
+}
+
+package "Services" {
+    component "Auth Service" as Auth
+    component "Order Service" as Orders
+}
+
+package "Infrastructure" {
+    database "Postgres" as DB
+    queue "Event Bus" as Bus
+}
+
+' Public interfaces (north-facing — exposed to external clients).
+() "Public REST" as PublicREST
+Gateway -up- PublicREST
+
+' Internal interfaces (south-facing — gateway -> services).
+() "Auth gRPC" as AuthGRPC
+() "Orders gRPC" as OrdersGRPC
+Auth -up- AuthGRPC
+Orders -up- OrdersGRPC
+
+' Wiring.
+Gateway --> AuthGRPC : authenticate / issue token
+Gateway --> OrdersGRPC : place / query order
+
+Auth --> DB : SQL
+Orders --> DB : SQL
+Orders --> Bus : publish order.* events
+Auth ..> Bus : publish user.* events
+
+@enduml
+```
+
+Render: `plantuml -tsvg backend-components.puml`
+
+Backend component diagram with the API Gateway exposing a public REST lollipop, Auth and Order services exposing internal gRPC lollipops consumed by the Gateway, and both services backed by Postgres and publishing to the event queue.

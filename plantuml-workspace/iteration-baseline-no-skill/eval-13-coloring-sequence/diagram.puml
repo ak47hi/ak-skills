@@ -1,0 +1,21 @@
+@startuml
+title Successful Login Flow
+
+actor User
+participant "WebApp" as WebApp #AED6F1
+participant "AuthService" as AuthService
+
+User -> WebApp : Enter username & password
+activate WebApp
+
+WebApp -> AuthService : POST /login (credentials)
+activate AuthService
+
+AuthService -> AuthService : Validate credentials
+AuthService --> WebApp : 200 OK (auth token)
+deactivate AuthService
+
+WebApp --> User : Redirect to dashboard (session established)
+deactivate WebApp
+
+@enduml

@@ -1,0 +1,25 @@
+```puml
+@startuml oauth2-pkce-login
+!theme plain
+
+boundary Browser
+control "Auth Server" as AuthServer
+entity "Resource Server" as ResourceServer
+
+autonumber
+
+Browser -> Browser: generate code_verifier\nderive code_challenge = S256(code_verifier)
+Browser -> AuthServer: GET /authorize\n(client_id, redirect_uri, code_challenge, S256, state)
+AuthServer --> Browser: 302 redirect_uri?code=AUTH_CODE&state=...
+Browser -> AuthServer: POST /token\n(grant_type=authorization_code, code, code_verifier, client_id, redirect_uri)
+note right of AuthServer: verify\nSHA256(code_verifier)\n== stored code_challenge
+AuthServer --> Browser: 200 {access_token, token_type, expires_in, refresh_token?}
+Browser -> ResourceServer: GET /resource\nAuthorization: Bearer access_token
+ResourceServer --> Browser: 200 {resource representation}
+
+@enduml
+```
+
+Render: `plantuml -tsvg diagram.puml`
+
+OAuth2 Authorization Code flow with PKCE: the Browser generates a code_verifier and S256-derived code_challenge, exchanges them with the Auth Server for an authorization code and then an access token, and uses that token to call the Resource Server.

@@ -1,0 +1,48 @@
+' C4 Component diagram skeleton.
+' Shows: the components INSIDE one container, and how they collaborate.
+' Other containers appear as endpoints/boundaries — not their internals.
+'
+' Stdlib include. Fallback for older PlantUML builds:
+'   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+@startuml c4-component
+!include <C4/C4_Component>
+
+' Optional modernized style (C4-PlantUML v2.13.0+).
+' !ROUNDED_STYLE=1
+' !NEW_C4_STYLE=1
+
+' Optional: switch direction.
+' LAYOUT_LEFT_RIGHT()
+' LAYOUT_LANDSCAPE()    ' add !NO_LAY_ROTATE=1 if Lay_*() hints stop working
+
+SHOW_LEGEND()
+
+title Component Diagram — Order Service
+
+Container(api, "API Gateway", "Go", "Upstream caller.")
+ContainerDb(db, "Application DB", "Postgres", "Orders, line items, payments.")
+ContainerQueue(bus, "Event Bus", "SQS", "Domain events.")
+System_Ext(stripe, "Stripe", "Payment processing.")
+
+Container_Boundary(orders, "Order Service") {
+    Component(orderController, "Order Controller", "Go HTTP handler", "Maps requests to commands.")
+    Component(orderCmd, "Order Command Handler", "Go", "Business rules for order state transitions.")
+    Component(orderQuery, "Order Query Handler", "Go", "Read-side queries.")
+    Component(paymentClient, "Payment Client", "Go", "Abstracts Stripe API.")
+    Component(eventPublisher, "Event Publisher", "Go", "Publishes domain events.")
+    ComponentDb(orderRepo, "Order Repository", "Go + Postgres", "CRUD for Order aggregates.")
+}
+
+Rel(api, orderController, "Calls", "gRPC")
+Rel(orderController, orderCmd, "Dispatches commands to")
+Rel(orderController, orderQuery, "Dispatches queries to")
+Rel(orderCmd, orderRepo, "Uses")
+Rel(orderQuery, orderRepo, "Uses")
+Rel(orderCmd, paymentClient, "Charges via")
+Rel(orderCmd, eventPublisher, "Emits events via")
+Rel(orderRepo, db, "Reads/writes", "SQL")
+Rel(paymentClient, stripe, "Calls", "HTTPS")
+Rel(eventPublisher, bus, "Publishes to", "AWS SDK")
+
+@enduml

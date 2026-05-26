@@ -1,0 +1,22 @@
+{
+  "eval_id": 7,
+  "eval_name": "god-diagram-pushback",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Skill pushes back: explicitly names the god-diagram anti-pattern OR proposes decomposition (per use case / per subsystem)",
+      "passed": true,
+      "evidence": "flags type mismatch (sequence wrong for whole-system map)"
+    },
+    {
+      "text": "If it produces a diagram anyway, it produces one decomposed view (e.g., one scenario), not a 28-participant mega-diagram",
+      "passed": true,
+      "evidence": "flags >20 participants scale"
+    },
+    {
+      "text": "Mentions a decomposition strategy (per-use-case, per-subsystem, C4 zoom-in)",
+      "passed": true,
+      "evidence": "offers alternative: C4 grouped by bounded context + per-flow sequences"
+    }
+  ]
+}

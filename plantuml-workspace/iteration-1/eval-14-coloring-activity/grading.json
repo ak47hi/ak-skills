@@ -1,0 +1,47 @@
+{
+  "eval_id": 14,
+  "eval_name": "coloring-activity-step-status",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Routed to activity diagram",
+      "passed": true,
+      "evidence": "activity routed"
+    },
+    {
+      "text": "Uses beta syntax `:action;` (not legacy `(*) --> action`)",
+      "passed": true,
+      "evidence": "beta :action; syntax"
+    },
+    {
+      "text": "Color is applied via `<<#HexColor>>` AFTER the closing semicolon (e.g., `:Send receipt; <<#D5F5E3>>`) \u2014 not the deprecated pre-colon form `#D5F5E3:text;`",
+      "passed": true,
+      "evidence": "<<#hex>> POST-semicolon form: ':Send receipt (success); <<#D5F5E3>>'"
+    },
+    {
+      "text": "At least one step uses `<<#D5F5E3>>` for the success color",
+      "passed": true,
+      "evidence": "<<#D5F5E3>> used for success step"
+    },
+    {
+      "text": "At least one step uses `<<#FFCCCC>>` for the error color",
+      "passed": true,
+      "evidence": "<<#FFCCCC>> used for error step"
+    },
+    {
+      "text": "Contains an if/endif (or switch/endswitch) for the success/failure branch",
+      "passed": true,
+      "evidence": "if/endif"
+    },
+    {
+      "text": "start and stop (or end) are both present",
+      "passed": true,
+      "evidence": "start + stop"
+    },
+    {
+      "text": "Action text labels distinguish success vs error (e.g., 'Send receipt' vs 'Log error') \u2014 color is layered on top of textual signal, not the only carrier of meaning",
+      "passed": true,
+      "evidence": "labels distinguish success/failure textually; color is reinforcement"
+    }
+  ]
+}

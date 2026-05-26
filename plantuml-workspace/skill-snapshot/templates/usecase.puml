@@ -1,0 +1,38 @@
+' Use case diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+' Actors live OUTSIDE the system rectangle; use cases live INSIDE.
+
+@startuml usecase-diagram
+!theme plain
+
+' Use cases almost always read better left-to-right.
+left to right direction
+
+' Actors outside the boundary.
+actor "Customer" as C
+actor "Support Agent" as S
+actor "Payment Gateway" as PG <<system>>
+
+rectangle "Order Management System" {
+    usecase "Place Order" as UC1
+    usecase "Cancel Order" as UC2
+    usecase "View Order History" as UC3
+    usecase "Process Refund" as UC4
+    usecase "Authenticate" as UCA
+}
+
+' Associations.
+C --> UC1
+C --> UC2
+C --> UC3
+S --> UC4
+
+' Include / extend use the dashed arrow (..>).
+UC1 ..> UCA : <<include>>
+UC2 ..> UCA : <<include>>
+UC4 --> PG
+
+' Notes.
+' note right of UC1 : requires authenticated session
+
+@enduml

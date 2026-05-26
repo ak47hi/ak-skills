@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>plantuml — Skill Description Optimization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', Georgia, serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #faf9f5;
+            color: #141413;
+        }
+        h1 { font-family: 'Poppins', sans-serif; color: #141413; }
+        .explainer {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #e8e6dc;
+            color: #b0aea5;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        .summary {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #e8e6dc;
+        }
+        .summary p { margin: 5px 0; }
+        .best { color: #788c5d; font-weight: bold; }
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+        table {
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e8e6dc;
+            border-radius: 6px;
+            font-size: 12px;
+            min-width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #e8e6dc;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        th {
+            font-family: 'Poppins', sans-serif;
+            background: #141413;
+            color: #faf9f5;
+            font-weight: 500;
+        }
+        th.test-col {
+            background: #6a9bcc;
+        }
+        th.query-col { min-width: 200px; }
+        td.description {
+            font-family: monospace;
+            font-size: 11px;
+            word-wrap: break-word;
+            max-width: 400px;
+        }
+        td.result {
+            text-align: center;
+            font-size: 16px;
+            min-width: 40px;
+        }
+        td.test-result {
+            background: #f0f6fc;
+        }
+        .pass { color: #788c5d; }
+        .fail { color: #c44; }
+        .rate {
+            font-size: 9px;
+            color: #b0aea5;
+            display: block;
+        }
+        tr:hover { background: #faf9f5; }
+        .score {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .score-good { background: #eef2e8; color: #788c5d; }
+        .score-ok { background: #fef3c7; color: #d97706; }
+        .score-bad { background: #fceaea; color: #c44; }
+        .train-label { color: #b0aea5; font-size: 10px; }
+        .test-label { color: #6a9bcc; font-size: 10px; font-weight: bold; }
+        .best-row { background: #f5f8f2; }
+        th.positive-col { border-bottom: 3px solid #788c5d; }
+        th.negative-col { border-bottom: 3px solid #c44; }
+        th.test-col.positive-col { border-bottom: 3px solid #788c5d; }
+        th.test-col.negative-col { border-bottom: 3px solid #c44; }
+        .legend { font-family: 'Poppins', sans-serif; display: flex; gap: 20px; margin-bottom: 10px; font-size: 13px; align-items: center; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-swatch { width: 16px; height: 16px; border-radius: 3px; display: inline-block; }
+        .swatch-positive { background: #141413; border-bottom: 3px solid #788c5d; }
+        .swatch-negative { background: #141413; border-bottom: 3px solid #c44; }
+        .swatch-test { background: #6a9bcc; }
+        .swatch-train { background: #141413; }
+    </style>
+</head>
+<body>
+    <h1>plantuml — Skill Description Optimization</h1>
+    <div class="explainer">
+        <strong>Optimizing your skill's description.</strong> This page updates automatically as Claude tests different versions of your skill's description. Each row is an iteration — a new description attempt. The columns show test queries: green checkmarks mean the skill triggered correctly (or correctly didn't trigger), red crosses mean it got it wrong. The "Train" score shows performance on queries used to improve the description; the "Test" score shows performance on held-out queries the optimizer hasn't seen. When it's done, Claude will apply the best-performing description to your skill.
+    </div>
+
+    <div class="summary">
+        <p><strong>Original:</strong> Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Use whenever the user asks for any UML / sequence / component / class / state / activity / ER / use-case / C4 / &quot;architecture diagram&quot; / &quot;flow diagram&quot; in PlantUML, or pastes a `.puml` file, or asks Claude to &quot;draw&quot; / &quot;diagram&quot; / &quot;sketch&quot; a system, flow, or schema. Do NOT use for Mermaid, Graphviz, drawio/diagrams.net, or ASCII box art — those need their own tooling.</p>
+        <p class="best"><strong>Best:</strong> Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Use whenever the user asks for any UML / sequence / component / class / state / activity / ER / use-case / C4 / &quot;architecture diagram&quot; / &quot;flow diagram&quot; in PlantUML, or pastes a `.puml` file, or asks Claude to &quot;draw&quot; / &quot;diagram&quot; / &quot;sketch&quot; a system, flow, or schema. Do NOT use for Mermaid, Graphviz, drawio/diagrams.net, or ASCII box art — those need their own tooling.</p>
+        <p><strong>Best Score:</strong> 4/8 (test)</p>
+        <p><strong>Iterations:</strong> 5 | <strong>Train:</strong> 12 | <strong>Test:</strong> 8</p>
+    </div>
+
+    <div class="legend">
+        <span style="font-weight:600">Query columns:</span>
+        <span class="legend-item"><span class="legend-swatch swatch-positive"></span> Should trigger</span>
+        <span class="legend-item"><span class="legend-swatch swatch-negative"></span> Should NOT trigger</span>
+        <span class="legend-item"><span class="legend-swatch swatch-train"></span> Train</span>
+        <span class="legend-item"><span class="legend-swatch swatch-test"></span> Test</span>
+    </div>
+
+    <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Iter</th>
+                <th>Train</th>
+                <th>Test</th>
+                <th class="query-col">Description</th>
+                <th class="positive-col">can u draw the architecture of our system as a c4 container? web app, mobile app, api, two postgres dbs, a redis cache, and stripe webhooks</th>
+                <th class="positive-col">small flow diagram for the readme. 3 steps. signup → email verify → first login.</th>
+                <th class="positive-col">use case diagram for our admin portal: support agent, billing admin, security admin. their main use cases.</th>
+                <th class="positive-col">i need to show the state machine for orders. draft → submitted → paid → shipped, plus the cancel paths</th>
+                <th class="positive-col">I need a sequence diagram for our checkout flow. Browser → API → Stripe → back. Include the retry path on 5xx.</th>
+                <th class="positive-col">Can you draw an ERD of our orders schema in plantuml? customer, order, line_item, payment_method.</th>
+                <th class="negative-col">give me a mermaid diagram for our github readme — flowchart of the build pipeline, 4 steps</th>
+                <th class="negative-col">user journey in mermaid for a new sign-up: aware → interested → trial → paid</th>
+                <th class="negative-col">drawio xml for the design review on tuesday — i&#x27;ll embed it in confluence</th>
+                <th class="negative-col">make me a gantt chart for the q3 roadmap with the auth rewrite, mobile launch, and the analytics revamp</th>
+                <th class="negative-col">i want a sankey diagram in mermaid for the funnel: visit → signup → verified → active → churned</th>
+                <th class="negative-col">gitGraph in mermaid showing the release branching strategy</th>
+                <th class="test-col positive-col">draw me a uml class diagram for the OrderAggregate. include LineItem, ShippingAddress, PaymentMethod</th>
+                <th class="test-col positive-col">swimlane flow for the support refund process — customer submits, agent reviews, billing system processes</th>
+                <th class="test-col positive-col">make me a c4 container diagram for the auth subsystem. we have api gateway in go, an auth service in go, postgres for the user table, redis for sessions.</th>
+                <th class="test-col positive-col">deployment diagram for prod: 3 k8s nodes in us-east, 2 in eu-west, rds postgres multi-az, sqs queue</th>
+                <th class="test-col negative-col">i need a quadrantChart in mermaid showing effort vs impact for our backlog items</th>
+                <th class="test-col negative-col">graphviz dot file for the call graph of this go package — see /Users/me/code/foo/bar.go</th>
+                <th class="test-col negative-col">render a mindmap of our product themes for an offsite slide</th>
+                <th class="test-col negative-col">ascii art of a simple binary tree for a blog post i&#x27;m writing</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="best-row">
+                <td>1</td>
+                <td><span class="score score-ok">18/36</span></td>
+                <td><span class="score score-ok">12/24</span></td>
+                <td class="description">Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib) diagrams. Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the user gives a complete spec. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Use whenever the user asks for any UML / sequence / component / class / state / activity / ER / use-case / C4 / &quot;architecture diagram&quot; / &quot;flow diagram&quot; in PlantUML, or pastes a `.puml` file, or asks Claude to &quot;draw&quot; / &quot;diagram&quot; / &quot;sketch&quot; a system, flow, or schema. Do NOT use for Mermaid, Graphviz, drawio/diagrams.net, or ASCII box art — those need their own tooling.</td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+            </tr>
+            <tr class="">
+                <td>2</td>
+                <td><span class="score score-ok">18/36</span></td>
+                <td><span class="score score-ok">12/24</span></td>
+                <td class="description">Use this skill whenever the user wants to create a diagram of software structure or behavior — sequence diagrams, ER diagrams / ERDs, state machines, class diagrams, component / architecture diagrams, C4 (Context/Container/Component/Dynamic), use case diagrams, deployment diagrams, activity / flow diagrams. Trigger on intent, not just the word &quot;PlantUML&quot;: phrases like &quot;draw the architecture&quot;, &quot;sequence diagram for checkout&quot;, &quot;ERD of our schema&quot;, &quot;state machine for orders&quot;, &quot;C4 container diagram&quot;, &quot;use case diagram&quot;, &quot;flow diagram for the readme&quot;, or any request to &quot;draw / diagram / sketch&quot; a system, flow, schema, or lifecycle should activate this skill by default. Also trigger when the user pastes `.puml` content or explicitly says PlantUML. Do NOT trigger when the user explicitly names a different tool (Mermaid, Graphviz, drawio / diagrams.net, D2, Excalidraw, ASCII art) or asks for diagram types PlantUML doesn&#x27;t do well (gantt, sankey, user journey, gitGraph, mindmap) — those belong to other tooling.</td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+            </tr>
+            <tr class="">
+                <td>3</td>
+                <td><span class="score score-ok">18/36</span></td>
+                <td><span class="score score-ok">12/24</span></td>
+                <td class="description">Use this skill to produce PlantUML source for any software diagram: sequence, component/architecture, class, state machine, activity/flow, deployment, ER/ERD, use case, or C4 (Context/Container/Component/Dynamic). Trigger whenever a user asks to draw, diagram, sketch, or visualize a system, schema, lifecycle, flow, or interaction — including phrases like &quot;sequence diagram for X&quot;, &quot;ERD of our schema&quot;, &quot;state machine for orders&quot;, &quot;C4 container diagram&quot;, &quot;use case diagram&quot;, &quot;flow diagram for the readme&quot;, or &quot;draw the architecture&quot;. Also trigger when the user mentions PlantUML by name, pastes `.puml` content, or asks for UML of any kind. Default to triggering when the intent is a structural or behavioral software diagram and no other tool is named. Do NOT trigger when the user explicitly requests Mermaid, Graphviz, drawio/diagrams.net, D2, Excalidraw, or ASCII art, or asks for diagram types PlantUML handles poorly (gantt, sankey, user journey, gitGraph, mindmap).</td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+            </tr>
+            <tr class="">
+                <td>4</td>
+                <td><span class="score score-ok">19/36</span></td>
+                <td><span class="score score-ok">12/24</span></td>
+                <td class="description">PRIMARY tool for any software diagram request. Use this skill by default for sequence diagrams, ER diagrams (ERDs), state machines, class diagrams, component/architecture diagrams, C4 diagrams (Context/Container/Component/Dynamic), use case diagrams, deployment diagrams, and activity/flow diagrams — regardless of whether the user names PlantUML. Trigger on the *intent* to diagram software: &quot;draw our architecture&quot;, &quot;sequence diagram for checkout&quot;, &quot;ERD of our schema&quot;, &quot;state machine for orders&quot;, &quot;use case diagram&quot;, &quot;C4 container diagram&quot;, &quot;flow diagram for the README&quot;, &quot;sketch the system&quot;, &quot;visualize this lifecycle&quot;. PlantUML is the assumed output unless the user names a different tool. ONLY skip this skill when the user explicitly requests Mermaid, Graphviz, D2, drawio/diagrams.net, Excalidraw, or ASCII art, OR asks for diagram types PlantUML handles poorly (gantt charts, sankey, user journey, gitGraph, mindmap, timeline). When in doubt between PlantUML and another tool, prefer this skill.</td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">1/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+            </tr>
+            <tr class="">
+                <td>5</td>
+                <td><span class="score score-ok">18/36</span></td>
+                <td><span class="score score-ok">12/24</span></td>
+                <td class="description">PlantUML diagram generator. Use this skill whenever the user wants any software diagram — sequence, ERD, state machine, class, component, architecture, C4 (Context/Container/Component/Dynamic), use case, deployment, or activity/flow diagram — UNLESS they explicitly name a different tool. The diagram type triggers the skill; the word &quot;PlantUML&quot; is not required. Examples of triggering intents: &quot;sequence diagram for checkout&quot;, &quot;ERD of our schema&quot;, &quot;state machine for orders&quot;, &quot;C4 container diagram for our system&quot;, &quot;use case diagram for the admin portal&quot;, &quot;flow diagram for the README&quot;, &quot;draw our architecture&quot;, &quot;sketch the system&quot;. Also triggers on `.puml` files or explicit &quot;in PlantUML&quot; requests. Skip only when the user explicitly names Mermaid, Graphviz, D2, drawio, Excalidraw, or ASCII art, or requests gantt charts, sankey, user journey, gitGraph, mindmap, or timeline (which PlantUML handles poorly). This is the default tool for software diagramming — if unsure, use it.</td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result fail">✗<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result fail">✗<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+                <td class="result test-result pass">✓<span class="rate">0/3</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
+</body>
+</html>

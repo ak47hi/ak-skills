@@ -1,0 +1,22 @@
+@startuml
+title Payment Processing Flow
+
+start
+
+:Validate input;
+
+if (Input valid?) then (yes)
+  #D5F5E3:Charge card;
+  if (Charge successful?) then (yes)
+    #D5F5E3:Send receipt;
+    stop
+  else (no)
+    #FFCCCC:Log error (charge failed);
+    stop
+  endif
+else (no)
+  #FFCCCC:Log error (invalid input);
+  stop
+endif
+
+@enduml

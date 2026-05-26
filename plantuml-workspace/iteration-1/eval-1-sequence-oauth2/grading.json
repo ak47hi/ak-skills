@@ -1,0 +1,42 @@
+{
+  "eval_id": 1,
+  "eval_name": "full-spec-sequence-oauth2-pkce",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "@startuml is present with a non-default name (not literally 'sequence-diagram')",
+      "passed": true,
+      "evidence": "@startuml oauth2-pkce-login (non-default name)"
+    },
+    {
+      "text": "@enduml is present",
+      "passed": true,
+      "evidence": "@enduml"
+    },
+    {
+      "text": "!theme plain is the first non-comment directive",
+      "passed": true,
+      "evidence": "!theme plain is first non-comment directive"
+    },
+    {
+      "text": "All three participants (Browser, AuthServer, ResourceServer) are declared with explicit participant/actor/boundary keywords \u2014 not inferred from message lines",
+      "passed": true,
+      "evidence": "Browser/AuthServer/ResourceServer all declared with participant keyword"
+    },
+    {
+      "text": "autonumber is enabled",
+      "passed": true,
+      "evidence": "autonumber on line 5"
+    },
+    {
+      "text": "Arrow style is consistent: -> for requests, --> for responses; not mixed randomly with ->>",
+      "passed": true,
+      "evidence": "-> requests, --> responses, consistent throughout"
+    },
+    {
+      "text": "Routed to sequence diagram (no other type produced)",
+      "passed": true,
+      "evidence": "sequence type"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+' Deployment diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+' Pick semantic containers — cloud, node, database, queue — not generic node for everything.
+
+@startuml deployment-diagram
+!theme plain
+
+' For wide multi-region topologies:
+' left to right direction
+
+node "Client" {
+    artifact "Browser app"
+}
+
+cloud "AWS (us-east-1)" {
+    node "EKS Cluster" as eks {
+        node "Pod: api" {
+            artifact "api-server.jar"
+        }
+        node "Pod: worker" {
+            artifact "worker.jar"
+        }
+    }
+    database "RDS Postgres" as db
+    queue "SQS: events" as bus
+}
+
+cloud "Stripe" as Stripe
+
+' Cross-boundary relations — always label with protocol.
+[Browser app] --> [api-server.jar] : HTTPS/JSON
+[api-server.jar] --> db : SQL
+[api-server.jar] --> bus : publish
+[worker.jar] --> bus : consume
+[api-server.jar] --> Stripe : HTTPS (Stripe API)
+
+@enduml

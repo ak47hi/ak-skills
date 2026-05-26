@@ -1,0 +1,32 @@
+{
+  "eval_id": 5,
+  "eval_name": "activity-refund-swimlanes",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Uses beta syntax (:action;), not legacy ((*) --> ...)",
+      "passed": true,
+      "evidence": "beta :action; syntax"
+    },
+    {
+      "text": "Three swimlanes are declared via |Customer|, |Agent|, |BillingSystem| markers",
+      "passed": true,
+      "evidence": "three swimlanes |Customer| |Agent| |BillingSystem|"
+    },
+    {
+      "text": "Contains an if/endif (or switch/endswitch) for the approve/reject branch",
+      "passed": true,
+      "evidence": "if/endif for approve/reject"
+    },
+    {
+      "text": "start and stop (or end) are both present",
+      "passed": true,
+      "evidence": "start + stop both present"
+    },
+    {
+      "text": "Routed to activity diagram",
+      "passed": true,
+      "evidence": "routed to activity"
+    }
+  ]
+}

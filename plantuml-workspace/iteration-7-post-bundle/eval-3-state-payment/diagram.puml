@@ -1,0 +1,14 @@
+@startuml payment-state
+!theme plain
+
+[*] --> Pending
+
+Pending --> Authorized : authorize success
+Pending --> Failed : decline
+Authorized --> Captured : capture
+Captured --> Refunded : refund
+
+Refunded --> [*]
+Failed --> [*]
+
+@enduml

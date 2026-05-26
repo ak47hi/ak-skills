@@ -1,0 +1,42 @@
+{
+  "eval_id": 2,
+  "eval_name": "full-spec-c4-container",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Uses the C4 stdlib include (!include <C4/C4_Container> or the GitHub URL fallback)",
+      "passed": true,
+      "evidence": "!include from C4_Container.puml URL"
+    },
+    {
+      "text": "Does NOT include !theme plain (C4 stdlib applies its own style)",
+      "passed": true,
+      "evidence": "no !theme plain"
+    },
+    {
+      "text": "Every Container() / ContainerDb() / ContainerQueue() call has a technology label as the 3rd positional arg",
+      "passed": true,
+      "evidence": "every Container has tech label"
+    },
+    {
+      "text": "Stripe and SendGrid are declared with System_Ext (greyed) \u2014 not System or Container",
+      "passed": true,
+      "evidence": "Stripe + SendGrid both System_Ext"
+    },
+    {
+      "text": "At least one Person() is declared (the customer)",
+      "passed": true,
+      "evidence": "Person(customer) declared"
+    },
+    {
+      "text": "Every Rel() has a non-empty label describing the relationship",
+      "passed": true,
+      "evidence": "every Rel has label"
+    },
+    {
+      "text": "Routed to C4 container diagram (no other level mixed in \u2014 no internal components, no Context-level wrap)",
+      "passed": true,
+      "evidence": "container-level only"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+@startuml login-flow-sequence
+!theme plain
+
+actor User
+participant "WebApp" as Web #AED6F1
+participant "AuthService" as Auth
+
+User -> Web: submit credentials (email, password)
+Web -> Auth: POST /authenticate {email, password}
+Auth --> Web: 200 {token, userId}
+Web --> User: 200 OK (session established)
+
+@enduml

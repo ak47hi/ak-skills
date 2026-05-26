@@ -1,0 +1,27 @@
+{
+  "eval_id": 0,
+  "eval_name": "ambiguous-request",
+  "summary": "partial",
+  "expectations": [
+    {
+      "text": "Skill does NOT emit a .puml code block on first turn",
+      "passed": true,
+      "evidence": "no .puml emitted"
+    },
+    {
+      "text": "Skill asks at most one round of clarifying questions or uses propose-and-go",
+      "passed": true,
+      "evidence": "single round of questions, ends with 'Reply with the three answers'"
+    },
+    {
+      "text": "Candidate diagram types proposed are trimmed to 2\u20133 (not all 9)",
+      "passed": false,
+      "evidence": "listed 5-6 candidate types (Architecture, Sequence, Class/ER, State, Deployment, C4) \u2014 not trimmed to 2-3"
+    },
+    {
+      "text": "Elicitation question includes scope or participants, not just type",
+      "passed": true,
+      "evidence": "asked scope + format"
+    }
+  ]
+}

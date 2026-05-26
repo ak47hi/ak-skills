@@ -1,0 +1,42 @@
+{
+  "eval_id": 11,
+  "eval_name": "system-design-streaming-platform",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "Routed to pipeline diagram",
+      "passed": true,
+      "evidence": "routed to pipeline"
+    },
+    {
+      "text": "`left to right direction` is set",
+      "passed": true,
+      "evidence": "left to right direction"
+    },
+    {
+      "text": "Two parallel sinks (ClickHouse + S3) are both shown as separate terminal stages on the right edge",
+      "passed": true,
+      "evidence": "ClickHouse + S3 both shown as separate terminal stages on right edge"
+    },
+    {
+      "text": "Flink is included with the Flink-gap fallback: `<$apache>` sprite (NOT a made-up `<$flink>`) AND the label says 'Flink' explicitly",
+      "passed": true,
+      "evidence": "Flink uses <$apache> + 'Flink' label (gap fallback)"
+    },
+    {
+      "text": "ClickHouse is rendered as a `database` shape (or with `<$clickhouse>` sprite if gilbarbara include is present)",
+      "passed": true,
+      "evidence": "ClickHouse rendered as database"
+    },
+    {
+      "text": "S3 is rendered as a `cloud` shape (or with `<$amazon-aws>` sprite, if gilbarbara include is present)",
+      "passed": true,
+      "evidence": "S3 rendered as cloud with <$amazon-aws>"
+    },
+    {
+      "text": "Every arrow is labeled with the schema or protocol crossing it",
+      "passed": true,
+      "evidence": "every arrow labeled with schema/protocol"
+    }
+  ]
+}

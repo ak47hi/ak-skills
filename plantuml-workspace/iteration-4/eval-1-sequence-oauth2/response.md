@@ -1,0 +1,27 @@
+```puml
+@startuml oauth2-pkce-login
+!theme plain
+
+participant Browser
+participant AuthServer
+participant ResourceServer
+
+autonumber
+
+note over Browser: generate code_verifier\nderive code_challenge = S256(code_verifier)
+
+Browser -> AuthServer: GET /authorize?code_challenge&method=S256
+AuthServer --> Browser: 302 redirect with auth code
+Browser -> AuthServer: POST /token (code, code_verifier)
+AuthServer --> Browser: access_token
+Browser -> ResourceServer: GET /resource (Authorization: Bearer access_token)
+ResourceServer --> Browser: 200 resource
+
+@enduml
+```
+
+```bash
+plantuml -tsvg oauth2-pkce-login.puml
+```
+
+Sequence diagram of the OAuth2 PKCE login flow: Browser derives the code_challenge, exchanges /authorize and /token with AuthServer, then calls ResourceServer with the bearer token, with autonumbering.

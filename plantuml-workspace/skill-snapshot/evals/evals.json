@@ -1,0 +1,208 @@
+{
+  "skill_name": "plantuml",
+  "evals": [
+    {
+      "id": 0,
+      "name": "ambiguous-request",
+      "prompt": "draw a diagram of our system",
+      "expected_output": "ELICIT triggers. The skill should NOT produce a .puml file. It should ask 1–3 trimmed candidate types (sequence vs component/C4-container vs ER) and one scope-narrowing question, OR use propose-and-go with a single most-likely interpretation. Acceptable: questions-list OR propose-and-go. Unacceptable: produces a diagram silently with an assumed type.",
+      "files": [],
+      "assertions": [
+        {"text": "Skill does NOT emit a .puml code block on first turn"},
+        {"text": "Skill asks at most one round of clarifying questions or uses propose-and-go"},
+        {"text": "Candidate diagram types proposed are trimmed to 2–3 (not all 9)"},
+        {"text": "Elicitation question includes scope or participants, not just type"}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "full-spec-sequence-oauth2-pkce",
+      "prompt": "PlantUML sequence diagram of OAuth2 PKCE login: Browser, AuthServer, ResourceServer. Browser generates code_verifier, derives code_challenge, sends /authorize with the challenge; AuthServer returns auth code; Browser exchanges code + verifier at /token for access token; Browser calls ResourceServer with the token. Autonumber.",
+      "files": [],
+      "assertions": [
+        {"text": "@startuml is present with a non-default name (not literally 'sequence-diagram')"},
+        {"text": "@enduml is present"},
+        {"text": "!theme plain is the first non-comment directive"},
+        {"text": "All three participants (Browser, AuthServer, ResourceServer) are declared with explicit participant/actor/boundary keywords — not inferred from message lines"},
+        {"text": "autonumber is enabled"},
+        {"text": "Arrow style is consistent: -> for requests, --> for responses; not mixed randomly with ->>"},
+        {"text": "Routed to sequence diagram (no other type produced)"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "full-spec-c4-container",
+      "prompt": "C4 container diagram for an order-management system. Internal containers: Web (React/TypeScript), API (Go, gRPC), OrderService (Go), AuthService (Go), Postgres, SQS event bus. External: Stripe for payments, SendGrid for transactional email. Show the customer as a Person.",
+      "files": [],
+      "assertions": [
+        {"text": "Uses the C4 stdlib include (!include <C4/C4_Container> or the GitHub URL fallback)"},
+        {"text": "Does NOT include !theme plain (C4 stdlib applies its own style)"},
+        {"text": "Every Container() / ContainerDb() / ContainerQueue() call has a technology label as the 3rd positional arg"},
+        {"text": "Stripe and SendGrid are declared with System_Ext (greyed) — not System or Container"},
+        {"text": "At least one Person() is declared (the customer)"},
+        {"text": "Every Rel() has a non-empty label describing the relationship"},
+        {"text": "Routed to C4 container diagram (no other level mixed in — no internal components, no Context-level wrap)"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "state-payment-lifecycle",
+      "prompt": "State diagram for a Payment entity with states: Pending, Authorized, Captured, Refunded, Failed. Pending → Authorized on authorize success; Pending → Failed on decline; Authorized → Captured on capture; Captured → Refunded on refund.",
+      "files": [],
+      "assertions": [
+        {"text": "@startuml has a non-default name"},
+        {"text": "Diagram contains [*] for the entry pseudostate"},
+        {"text": "All five states (Pending, Authorized, Captured, Refunded, Failed) appear as states"},
+        {"text": "Every transition arrow has a label after the colon (trigger / event), not just an unlabeled -->"},
+        {"text": "Routed to state diagram"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "er-billing-schema",
+      "prompt": "ER diagram for a billing schema. Customer (1) — (N) Order. Order (1) — (N) LineItem. Customer (1) — (N) PaymentMethod. Order (N) — (1) PaymentMethod (each order uses one of the customer's saved methods).",
+      "files": [],
+      "assertions": [
+        {"text": "Uses entity keyword for each table (not class)"},
+        {"text": "Every relationship line uses crow's-foot notation tokens: ||, |o, }|, or }o (and not class arrows like *-- or <|--)"},
+        {"text": "Primary keys are marked (e.g., * id : uuid <<generated>>) — at least one entity"},
+        {"text": "Foreign-key columns are marked <<FK>>"},
+        {"text": "Routed to ER diagram"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "activity-refund-swimlanes",
+      "prompt": "Activity diagram for the support refund flow with three swimlanes: Customer, Agent, BillingSystem. Customer submits refund request; Agent reviews; if approved, BillingSystem issues refund and notifies Customer; if rejected, Agent sends rejection email.",
+      "files": [],
+      "assertions": [
+        {"text": "Uses beta syntax (:action;), not legacy ((*) --> ...)"},
+        {"text": "Three swimlanes are declared via |Customer|, |Agent|, |BillingSystem| markers"},
+        {"text": "Contains an if/endif (or switch/endswitch) for the approve/reject branch"},
+        {"text": "start and stop (or end) are both present"},
+        {"text": "Routed to activity diagram"}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "component-backend-interfaces",
+      "prompt": "PlantUML component diagram of our backend: API gateway, Auth service, Order service, Postgres, event queue. Show the public REST and gRPC interfaces. Group services logically.",
+      "files": [],
+      "assertions": [
+        {"text": "@startuml has a non-default name"},
+        {"text": "Uses semantic containers (database, queue) at the leaf level — not generic [box] for the datastore and the queue"},
+        {"text": "At least one interface is declared (lollipop () or 'interface' keyword) — diagrams that show only components and lines are component-diagrams-in-name-only"},
+        {"text": "Components are grouped via package or node (logical or physical grouping)"},
+        {"text": "Routed to component diagram (not C4)"}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "god-diagram-pushback",
+      "prompt": "Make a sequence diagram showing every interaction between all 28 of our microservices.",
+      "files": [],
+      "assertions": [
+        {"text": "Skill pushes back: explicitly names the god-diagram anti-pattern OR proposes decomposition (per use case / per subsystem)"},
+        {"text": "If it produces a diagram anyway, it produces one decomposed view (e.g., one scenario), not a 28-participant mega-diagram"},
+        {"text": "Mentions a decomposition strategy (per-use-case, per-subsystem, C4 zoom-in)"}
+      ]
+    },
+    {
+      "id": 8,
+      "name": "wrong-type-routing",
+      "prompt": "I need a sequence diagram of our database schema — tables, columns, foreign keys.",
+      "files": [],
+      "assertions": [
+        {"text": "Skill notes the type mismatch (sequence is wrong for schema)"},
+        {"text": "Skill proposes ER as the right type and proceeds with ER, OR asks one clarifying question and routes to ER on confirmation"},
+        {"text": "If a diagram is produced, it is an ER diagram (entity keyword + crow's-foot relations), not a sequence diagram"}
+      ]
+    },
+    {
+      "id": 9,
+      "name": "mermaid-better-fit",
+      "prompt": "I need a small flow diagram I can paste into our GitHub README so it renders inline. Three or four steps, nothing fancy.",
+      "files": [],
+      "assertions": [
+        {"text": "Skill names Mermaid as the better tool for GitHub-native rendering"},
+        {"text": "Skill explains the relevant difference (GitHub renders Mermaid in markdown; PlantUML needs an external renderer)"},
+        {"text": "Skill either stops (offering to switch if user insists on PlantUML) OR offers both: a Mermaid snippet AND a PlantUML one, with the trade-off called out"},
+        {"text": "Skill does NOT silently produce a PlantUML diagram as if the request were ordinary"}
+      ]
+    },
+    {
+      "id": 10,
+      "name": "pipeline-kafka-stream",
+      "prompt": "Draw the Kafka stream from our API to Postgres: API publishes click events to Kafka, an enrichment service consumes and writes the enriched events to a warehouse table.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram (not deployment, not sequence)"},
+        {"text": "`@startuml` is present with a non-placeholder name (not `pipeline-diagram`)"},
+        {"text": "`left to right direction` is the layout directive"},
+        {"text": "At least one `queue \"...\"` declaration for the Kafka topic"},
+        {"text": "Includes the gilbarbara sprite preamble (`!define SPRITESURL .../v1.1/sprites`) AND `!include SPRITESURL/kafka.puml`, OR explicitly chooses the no-sprites variant with the Kafka topic labeled `queue \"Kafka: ...\"`"},
+        {"text": "Every arrow has a label describing the protocol or payload (e.g. 'JSON events', 'Kafka consumer', 'JDBC sink')"},
+        {"text": "At least 3 stages present (producer → Kafka → enrichment → warehouse, or equivalent decomposition)"}
+      ]
+    },
+    {
+      "id": 11,
+      "name": "system-design-streaming-platform",
+      "prompt": "Give me a system design diagram for our streaming platform: events come from web and mobile, land in Kafka, get processed by a Flink job, then write to ClickHouse for analytics and to S3 for archival.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram"},
+        {"text": "`left to right direction` is set"},
+        {"text": "Two parallel sinks (ClickHouse + S3) are both shown as separate terminal stages on the right edge"},
+        {"text": "Flink is included with the Flink-gap fallback: `<$apache>` sprite (NOT a made-up `<$flink>`) AND the label says 'Flink' explicitly"},
+        {"text": "ClickHouse is rendered as a `database` shape (or with `<$clickhouse>` sprite if gilbarbara include is present)"},
+        {"text": "S3 is rendered as a `cloud` shape (or with `<$amazon-aws>` sprite, if gilbarbara include is present)"},
+        {"text": "Every arrow is labeled with the schema or protocol crossing it"}
+      ]
+    },
+    {
+      "id": 12,
+      "name": "pipeline-flink-gap-fallback",
+      "prompt": "Show how Flink consumes Kafka events and writes results to a Postgres reference table.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to pipeline diagram"},
+        {"text": "`left to right direction` is set"},
+        {"text": "Flink does NOT use a non-existent `<$flink>` sprite — instead uses `<$apache>` from gilbarbara WITH the word 'Flink' in the visible label (the documented Flink-gap workaround in references/20-sprites.md)"},
+        {"text": "If sprites are used, `!include SPRITESURL/apache.puml` is present (the include line covers the apache sprite)"},
+        {"text": "Pipeline lint passes (no W090 — `left to right direction` present; no W091 — semantic containers used; no W092 — every `<$name>` has a matching include)"}
+      ]
+    },
+    {
+      "id": 13,
+      "name": "coloring-sequence-participant",
+      "prompt": "PlantUML sequence diagram for a login flow with three participants — User, WebApp, AuthService. Color the WebApp box light blue (#AED6F1) so it stands out as the entry point. AuthService should keep the default styling. Show the request/response for a successful login.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to sequence diagram"},
+        {"text": "@startuml has a non-default name (not literally 'sequence-diagram')"},
+        {"text": "WebApp participant is declared with `#AED6F1` background-color suffix on the declaration line (e.g., `participant WebApp #AED6F1` or `participant \"Web App\" as WebApp #AED6F1`)"},
+        {"text": "Does NOT use the `;line:` border-color syntax on any sequence participant or note (would produce 'No such color' render error)"},
+        {"text": "AuthService is declared without a color suffix (kept default as requested)"},
+        {"text": "All three participants (User, WebApp, AuthService) are declared explicitly with participant/actor keyword — not inferred from message lines"},
+        {"text": "Arrow style is consistent: -> for requests, --> for responses"}
+      ]
+    },
+    {
+      "id": 14,
+      "name": "coloring-activity-step-status",
+      "prompt": "PlantUML activity diagram for a payment processing flow. Steps: validate input, charge card; on success send receipt; on failure log error. Color the successful steps green (#D5F5E3), the error step red (#FFCCCC). I want to use color in addition to text labels so the happy and sad paths are visually obvious.",
+      "files": [],
+      "assertions": [
+        {"text": "Routed to activity diagram"},
+        {"text": "Uses beta syntax `:action;` (not legacy `(*) --> action`)"},
+        {"text": "Color is applied via `<<#HexColor>>` AFTER the closing semicolon (e.g., `:Send receipt; <<#D5F5E3>>`) — not the deprecated pre-colon form `#D5F5E3:text;`"},
+        {"text": "At least one step uses `<<#D5F5E3>>` for the success color"},
+        {"text": "At least one step uses `<<#FFCCCC>>` for the error color"},
+        {"text": "Contains an if/endif (or switch/endswitch) for the success/failure branch"},
+        {"text": "start and stop (or end) are both present"},
+        {"text": "Action text labels distinguish success vs error (e.g., 'Send receipt' vs 'Log error') — color is layered on top of textual signal, not the only carrier of meaning"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+' ER (entity-relationship) diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+' Use crow's-foot cardinality on every relation.
+
+@startuml er-diagram
+!theme plain
+
+' For dense schemas, orthogonal connectors improve readability:
+skinparam linetype ortho
+' For wide schemas:
+' left to right direction
+
+entity Customer {
+    * id : uuid <<generated>>
+    --
+    * email : varchar
+    * created_at : timestamp
+    name : varchar
+}
+
+entity Order {
+    * id : uuid <<generated>>
+    --
+    * customer_id : uuid <<FK>>
+    * status : varchar
+    * total_cents : int
+    * created_at : timestamp
+}
+
+entity LineItem {
+    * id : uuid <<generated>>
+    --
+    * order_id : uuid <<FK>>
+    * sku : varchar
+    * quantity : int
+    * unit_price_cents : int
+}
+
+entity PaymentMethod {
+    * id : uuid <<generated>>
+    --
+    * customer_id : uuid <<FK>>
+    * kind : varchar
+    last4 : varchar
+}
+
+' Crow's-foot cardinality:
+'   ||   exactly one         |o   zero or one
+'   }|   one or many         }o   zero or many
+Customer ||--o{ Order
+Customer ||--o{ PaymentMethod
+Order ||--|{ LineItem
+Order }o--|| PaymentMethod
+
+' Notes for constraints not expressible in the schema notation.
+' note right of Order : status ∈ {DRAFT, SUBMITTED, PAID, CANCELLED}
+
+@enduml

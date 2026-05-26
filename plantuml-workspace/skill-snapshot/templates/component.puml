@@ -1,0 +1,41 @@
+' Component diagram skeleton.
+' Rename the diagram (after @startuml) and the file to match the scope.
+
+@startuml component-diagram
+!theme plain
+
+' Direction default is top-to-bottom. For wide, shallow architectures:
+' left to right direction
+
+' Components — pick semantic containers where they apply (database, queue, cloud).
+package "Frontend" {
+    component "Web App" as Web
+    component "Mobile App" as Mobile
+}
+
+package "Backend" {
+    component "API Gateway" as Gateway
+    component "Auth Service" as Auth
+    component "Order Service" as Orders
+}
+
+database "Postgres" as DB
+queue "Event Bus" as Bus
+cloud "Stripe" as Stripe
+
+' Interfaces — lollipop notation for component-owned interfaces.
+' () "REST API" as RestAPI
+' Gateway -up- RestAPI
+
+' Relations.
+' Convention: --> for "uses/depends on", ..> for "knows about (looser)".
+Web --> Gateway : HTTPS/JSON
+Mobile --> Gateway : HTTPS/JSON
+Gateway --> Auth : gRPC
+Gateway --> Orders : gRPC
+Auth --> DB : SQL
+Orders --> DB : SQL
+Orders --> Bus : publish
+Orders ..> Stripe : webhook (callback)
+
+@enduml

@@ -1,0 +1,32 @@
+{
+  "eval_id": 3,
+  "eval_name": "state-payment-lifecycle",
+  "summary": "pass",
+  "expectations": [
+    {
+      "text": "@startuml has a non-default name",
+      "passed": true,
+      "evidence": "@startuml payment-state non-default"
+    },
+    {
+      "text": "Diagram contains [*] for the entry pseudostate",
+      "passed": true,
+      "evidence": "[*] entry pseudostate present"
+    },
+    {
+      "text": "All five states (Pending, Authorized, Captured, Refunded, Failed) appear as states",
+      "passed": true,
+      "evidence": "all 5 states present"
+    },
+    {
+      "text": "Every transition arrow has a label after the colon (trigger / event), not just an unlabeled -->",
+      "passed": true,
+      "evidence": "every transition labeled (authorize success / decline / capture / refund)"
+    },
+    {
+      "text": "Routed to state diagram",
+      "passed": true,
+      "evidence": "routed to state"
+    }
+  ]
+}
