@@ -87,7 +87,7 @@ Write `AGENT_DESIGN_DOC.md` at the project root with **exactly 10 sections** in 
 9. Testing Strategy
 10. Open Questions tracker
 
-**Read `references/design-doc-template.md` for the full template, the `[NEEDS_CONTEXT]` syntax, and concrete examples of good vs. bad citations.**
+**Read `references/design-doc-rules.md` for citation rules, the `[NEEDS_CONTEXT]` syntax, and the quality bar. Read `templates/agent-design-doc.md` for the literal 10-section skeleton to fill in.**
 
 ### Phase 2.4 — Progressive disclosure split
 
