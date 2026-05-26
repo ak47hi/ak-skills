@@ -2,6 +2,20 @@
 
 History of changes to the plantuml skill. SKILL.md is the operational guide; this file is the archeology.
 
+## 2026-05-26 — dashboard-mimicry mode (opt-in)
+
+User feedback: a v6 PlantUML rewrite of a Flink-race-condition explainer rendered the job-graph diagrams as bland gray rectangles, even though the v2 (Mermaid) source the user wanted to migrate had Flink-dashboard-blue boxes with red/teal accents and a legend block — i.e. it was already mimicking the Flink Web UI. Two real gaps surfaced — the colored-preset (`references/22-styling-colored.md`) paints by *structural role* (component vs database) and so doesn't fit "render an operator graph the way Flink itself shows it", and the existing "color-only semantics" anti-pattern had no carve-out for legend-anchored status coloring. Net effect: the skill stripped legitimate mimicry coloring as if it were a private semantic dialect.
+
+- **Added** `references/23-dashboard-mimicry.md` — third sanctioned styling mode covering four tool palettes (Flink dashboard / Spark UI / Airflow DAG view / GitHub Actions workflow graph). Documents trigger phrases ("like the Flink dashboard", "like Spark UI shows", "like the Airflow DAG view", "like GitHub Actions shows"), the canonical `skinparam rectangle { ... }` block + per-shape `#HEX` overrides for each tool, edge-label vocabulary (`HASH` / `FORWARD` / `REBALANCE` for Flink; `shuffle` / `narrow` for Spark; `needs` for GHA), and the **mandatory** inline `legend bottom` rule that converts color-only-semantics from anti-pattern to vocabulary.
+- **Updated** `SKILL.md` description (998 chars, cap 1024) — adds "opt-in dashboard-mimicry mode (legend-anchored status colors) when user wants a diagram to mirror a specific tool's UI" so the model knows all three modes exist.
+- **Updated** `SKILL.md` opinion #3 — now lists three sanctioned modes (`!theme plain`, colored preset, dashboard-mimicry) and clarifies that color-only-semantics is still banned but the mandatory legend block makes status colors legitimate in the third mode.
+- **Updated** `SKILL.md` GENERATE — added "Dashboard-mimicry mode (opt-in)" block after the existing "Colored mode (opt-in)" block. Names the four trigger phrase families and points at the new reference.
+- **Updated** `SKILL.md` push-back — color-coding-by-status pushback now carves out the dashboard-mimicry case (status colors are legitimate when paired with a legend block tied to a specific tool's UI).
+- **Updated** `references/90-anti-patterns.md` — "Color-only semantics" now cross-references `23-dashboard-mimicry.md` to make clear the anti-pattern *defers* when a legend block is present (color becomes a visual amplifier on text-readable meaning, not the carrier). "Decorative skinparams" now lists three documented options instead of two.
+- **Updated** `references/22-styling-colored.md` — clarifies that role-based coloring (this preset) and status-based coloring (mimicry mode) are different; cross-references the new file.
+- **Added** `templates/dashboard-flink-jobgraph.puml` — Flink-dashboard preset skeleton with operator + parallelism labels, HASH/FORWARD/REBALANCE edges, and legend block.
+- **Updated** `scripts/lint.py` — new `W023` warning ("dashboard-mimicry without legend") fires when a `.puml` file has 2+ rectangles with hex-color suffixes and no `legend` block. Doesn't block emit; flagged for the prose VERIFY pass to fix before shipping.
+
 ## 2026-05-26 — colored styling preset (opt-in)
 
 User feedback: the skill silently stripped colors out of a request for "rich PlantUML diagrams" to match the doc's existing Mermaid style. The skill was working as designed (monochrome-default with `!theme plain` enforced), but the design had no documented escape hatch for presentation-quality / Confluence-ready output. Two real gaps surfaced — the description didn't advertise the monochrome stance loudly enough, and "comply if the user insists with a reason" had no canonical styling to comply *with*.

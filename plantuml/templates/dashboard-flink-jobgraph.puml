@@ -1,0 +1,54 @@
+@startuml flink-jobgraph-name
+' Dashboard-mimicry mode: mirror the Apache Flink Web UI job graph.
+' Use this template ONLY when the user explicitly asks for the diagram to look
+' like the Flink dashboard / Flink Web UI / Flink job graph. For generic
+' streaming architecture diagrams, use templates/pipeline.puml instead.
+'
+' See references/23-dashboard-mimicry.md for the full palette + rules.
+
+left to right direction
+skinparam backgroundColor white
+skinparam defaultFontSize 10
+skinparam rectangle {
+  BackgroundColor #4A90D9
+  FontColor white
+  BorderColor #2C5F8A
+  RoundCorner 8
+  Shadowing false
+}
+skinparam arrow {
+  Color #666666
+  FontSize 9
+}
+
+' Operators — base color (Flink blue) for unchanged operators.
+' Show "Operator type:\nFunction\n---\n**Parallelism: N**" inside each box —
+' that's how Flink itself labels them.
+rectangle "Source:\nKafkaSource (campaign)\n---\n**Parallelism: 3**" as SRC
+rectangle "Map:\nCampaignToConfig\n---\n**Parallelism: 6**" as MAP
+
+' Status overrides — pair with the legend block below:
+'   #FF6B6B   = problem / racy / broken            (Flink red accent)
+'   #4ECDC4   = new operator / new emit semantics  (Flink teal accent)
+'   #96CEB4   = modified additively                (Flink pale-green)
+'   #45B7D1   = secondary blue (use sparingly)
+rectangle "**KeyedCoProcess**\n(keyBy id) RACE\n---\n**Parallelism: 6**" as RACY #FF6B6B
+rectangle "**Sink:**\nKafkaSink (config)\n---\n**Parallelism: 3**" as SINK #4ECDC4
+
+' Edges — name the shuffle (HASH / FORWARD / REBALANCE).
+SRC --> MAP : REBALANCE
+MAP --> RACY : HASH (id)
+RACY --> SINK : FORWARD
+
+legend bottom
+  |= Edge Label |= Meaning |
+  | HASH | keyBy shuffle (partitioned by key) |
+  | FORWARD | No shuffle (chained operators) |
+  | REBALANCE | Round-robin shuffle |
+  |<#4A90D9> Dark blue box | Unchanged operator |
+  |<#FF6B6B> Red box | Problem / racy operator |
+  |<#4ECDC4> Teal box | New operator |
+  |<#96CEB4> Pale green box | Modified (additive change) |
+endlegend
+
+@enduml

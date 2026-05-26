@@ -1,6 +1,6 @@
 ---
 name: plantuml
-description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib), and pipeline (streaming / system design / left-to-right data flow). Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the spec is complete. Defaults to monochrome (`!theme plain`); opt-in colored preset when user explicitly asks for "colored", "styled", "rich", or "Confluence-ready" diagrams. Trigger on the intent to diagram software — "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container", "kafka pipeline", "system design" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio, Excalidraw, or diagram families PlantUML handles poorly (gantt, sankey, journey, mindmap, gitGraph, timeline) — see `references/92-not-plantuml.md`.
+description: Generate valid PlantUML for sequence, component, class, state, activity, deployment, ER/ERD, use case, C4 (via C4-PlantUML stdlib), and pipeline (streaming / system design). Elicits type/participants/scope only when unclear. Defaults monochrome (`!theme plain`); opt-in colored preset for "colored / styled / Confluence-ready" requests; opt-in dashboard-mimicry mode (legend-anchored status colors) when user wants a diagram to mirror a specific tool's UI — "Flink dashboard", "Spark UI", "Airflow DAG view", "GitHub Actions workflow graph". Trigger on the intent to diagram software — "sequence for X", "ERD of our schema", "state machine for orders", "C4 container", "kafka pipeline", "Flink job graph for our design doc" — not just the word "PlantUML". Also triggers on `.puml` files or UML requests. Do NOT use for Mermaid, D2, Graphviz, drawio, Excalidraw, or families PlantUML handles poorly (gantt, sankey, journey, mindmap, gitGraph, timeline) — see `references/92-not-plantuml.md`.
 ---
 
 # PlantUML skill
@@ -9,7 +9,7 @@ Generate valid PlantUML for a fixed set of diagram types. Opinionated about thre
 
 1. **Right diagram type beats prettier diagram.** A sequence diagram of a static structure is wrong even if it renders. The ROUTE phase exists to catch this before generating.
 2. **Elicit when intent is ambiguous; skip when it isn't.** Don't ask questions the prompt already answered. Don't guess when it didn't.
-3. **Minimal styling, named diagrams, explicit boundaries.** `!theme plain` is the default; `@startuml <name>` always; no bespoke skinparams (use the canonical colored preset in `references/22-styling-colored.md` if the user explicitly asks for color); no color-only semantics regardless of mode. Diagrams should read in monochrome by default.
+3. **Minimal styling, named diagrams, explicit boundaries.** `!theme plain` is the default; `@startuml <name>` always; no bespoke skinparams. Three sanctioned styling modes — `!theme plain` (default), the canonical colored preset in `references/22-styling-colored.md` (opt-in for "colored / Confluence-ready" requests), and dashboard-mimicry mode in `references/23-dashboard-mimicry.md` (opt-in to mirror a specific tool's UI like the Flink dashboard, Spark UI, Airflow DAG view, GitHub Actions workflow graph). Color-only semantics is still banned across all three; in dashboard-mimicry the inline `legend bottom` block is what makes status colors legitimate. Diagrams should read in monochrome by default.
 
 ---
 
@@ -73,7 +73,9 @@ For the routed type:
 - `left to right direction` only for diagrams that read horizontally (use case, ER, short flows); top-to-bottom otherwise.
 - No color-only semantics — even in colored mode (see below). If something needs to stand out, use a stereotype or note, not a color.
 
-**Colored mode (opt-in).** When the user **explicitly** asks for colored / styled / "rich" / "Confluence-ready" diagrams, swap `!theme plain` for the canonical preset documented in `references/22-styling-colored.md` (a Confluence-friendly soft palette). The preset is the only sanctioned alternative to monochrome — bespoke / ad-hoc `skinparam` blocks remain an anti-pattern. Do **not** apply to C4 diagrams. If the request is ambiguous (e.g. "rich PlantUML" — "rich" could mean information-rich), ask one question per `references/00-elicitation.md`.
+**Colored mode (opt-in).** When the user **explicitly** asks for colored / styled / "rich" / "Confluence-ready" diagrams, swap `!theme plain` for the canonical preset documented in `references/22-styling-colored.md` (a Confluence-friendly soft palette). The preset paints by *structural role* (component vs database vs queue), not status. Do **not** apply to C4 diagrams. If the request is ambiguous (e.g. "rich PlantUML" — "rich" could mean information-rich), ask one question per `references/00-elicitation.md`.
+
+**Dashboard-mimicry mode (opt-in).** When the user **explicitly** wants a diagram to mirror a specific tool's UI — "like the Flink dashboard", "like the Flink UI shows", "like Spark UI", "like the Airflow DAG view", "like GitHub Actions shows", "match what the actual UI looks like" — apply the dashboard-specific preset documented in `references/23-dashboard-mimicry.md`. This is a *third* sanctioned mode, narrow and opt-in: it paints by status (the tool's own state colors — Flink red/teal/pale-green, Spark blue/green/red/gray, Airflow's six task states, GHA's four check states) and **requires** an inline `legend bottom` block mapping every color to its meaning. Without the legend it falls into the color-only-semantics anti-pattern. Do **not** apply to generic component / pipeline diagrams the user didn't tie to a specific tool, or to C4 diagrams.
 
 For C4 specifically, the `!include <C4/C4_Container>` short form requires the PlantUML standard library (bundled with official PlantUML jars since ~2020). If unsupported on the user's build, the templates document the GitHub URL fallback — see `references/18-c4.md`.
 
@@ -97,7 +99,7 @@ That's it. No surrounding prose explaining the syntax — the user can read it.
 ## When to push back
 
 - User asks for a diagram type that doesn't fit the intent (e.g. a sequence diagram of a database schema). Explain the mismatch in one sentence and propose the right type.
-- User asks to color-code by **status** (deprecated/new/deferred). Suggest stereotypes / notes instead; explain that color-only semantics break in monochrome rendering and for color-blind readers. (This is different from "I want colored diagrams" — that's a styling request, not a semantic one; apply the colored preset from `references/22-styling-colored.md`.)
+- User asks to color-code by **status** (deprecated/new/deferred) on a generic diagram with no tool reference. Suggest stereotypes / notes instead; explain that color-only semantics break in monochrome rendering and for color-blind readers. (This is different from "I want colored diagrams" — that's a styling request, not a semantic one; apply the colored preset from `references/22-styling-colored.md`. It's also different from "render this like the Flink dashboard / Spark UI / Airflow DAG / GitHub Actions" — that's dashboard-mimicry mode, where status colors are legitimate *because* an inline legend block carries the meaning. See `references/23-dashboard-mimicry.md`.)
 - User asks for a single diagram that mixes C4 levels. Split into two.
 - User asks for >20 participants in one sequence diagram or >15 nodes in one component diagram. Suggest decomposition (per-use-case sequences, sub-component diagrams).
 
@@ -129,6 +131,7 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 | `references/19-pipeline.md` | Pipeline: left-to-right data flow, stage discipline, sprite use |
 | `references/20-sprites.md` | Sprite catalogue (gilbarbara, tupadr3, awslib, kubernetes-PlantUML) — opt-in vendor icons |
 | `references/22-styling-colored.md` | Canonical colored preset (Confluence-friendly soft palette) — opt-in alternative to `!theme plain` |
+| `references/23-dashboard-mimicry.md` | Dashboard-mimicry mode (Flink / Spark / Airflow / GHA palettes) — opt-in when mirroring a specific tool's UI; mandatory `legend bottom` block |
 | `references/90-anti-patterns.md` | What to refuse to emit and why; lint codes |
 | `references/91-output-contract.md` | Final response format |
 | `references/92-not-plantuml.md` | Exit cases: when to point at Mermaid / D2 instead |
@@ -139,4 +142,4 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full history. The most recent entry is summarized in the README and in the `2026-05-26 — colored styling preset (opt-in)` block there.
+See [CHANGELOG.md](CHANGELOG.md) for the full history. Most recent entries: `2026-05-26 — dashboard-mimicry mode (opt-in)` and `2026-05-26 — colored styling preset (opt-in)`.

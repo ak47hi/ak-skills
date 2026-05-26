@@ -22,6 +22,8 @@ Fix: use stereotypes (`<<deprecated>>`), notes, or text prefixes. Color, if used
 
 **Note:** this rule applies in both default monochrome mode AND in colored mode (`references/22-styling-colored.md`). The colored preset paints shapes by structural **role** (component vs database vs queue), not by semantic **status**. Status meaning still needs a non-color carrier.
 
+**Exception — dashboard-mimicry mode (`references/23-dashboard-mimicry.md`).** When the user asks for a diagram that mirrors a specific tool's UI (Flink dashboard, Spark UI, Airflow DAG view, GitHub Actions workflow graph), status coloring is legitimate **provided** an inline `legend bottom` block maps every color to its meaning. The legend converts color from a private dialect into a printed visual key — it travels with the SVG/PNG, prints in monochrome (the legend's text rows still read), and accommodates color-blind readers. Without the legend, mimicry-mode diagrams fall right back into this anti-pattern. The lint warning `W023` flags mimicry-shaped diagrams (2+ rectangles with hex-color suffixes) that are missing a `legend` block.
+
 ### Missing diagram name
 
 Symptom: `@startuml` with no name.
@@ -44,13 +46,14 @@ Symptom: ad-hoc `skinparam` for backgroundColor, shadow, rounded corners, custom
 
 Why it's bad: bloats the source, doesn't render consistently across PlantUML versions, distracts from the content, every diagram looks different.
 
-Fix: pick one of the **three documented options** — nothing else.
+Fix: pick one of the **four documented options** — nothing else.
 
 1. `!theme plain` — the default.
-2. The colored preset block from `references/22-styling-colored.md` — opt-in when the user explicitly asks for colored / styled / Confluence-ready diagrams.
-3. The minimal `skinparam` block from `references/91-output-contract.md` — fallback for older PlantUML builds that don't ship the `plain` theme.
+2. The colored preset block from `references/22-styling-colored.md` — opt-in when the user explicitly asks for colored / styled / Confluence-ready diagrams. Paints by structural role.
+3. The dashboard-mimicry preset from `references/23-dashboard-mimicry.md` — opt-in when the user explicitly wants a diagram to mirror a specific tool's UI (Flink dashboard, Spark UI, Airflow DAG, GitHub Actions). Paints by status; requires a `legend bottom` block.
+4. The minimal `skinparam` block from `references/91-output-contract.md` — fallback for older PlantUML builds that don't ship the `plain` theme.
 
-Bespoke skinparam blocks outside these three are anti-pattern. If the colored preset isn't quite right for one shape in one diagram, use an inline override (`component "Engine" #FAD7A0`) — see `references/22-styling-colored.md` § "Inline overrides".
+Bespoke skinparam blocks outside these four are anti-pattern. If the colored preset isn't quite right for one shape in one diagram, use an inline override (`component "Engine" #FAD7A0`) — see `references/22-styling-colored.md` § "Inline overrides".
 
 ### `!theme` after `!include` (ordering pitfall)
 
@@ -72,7 +75,7 @@ Fix: on C4 diagrams, drop `!theme plain` entirely — the stdlib handles theming
 
 Many of the rules above can be checked deterministically. Run `scripts/lint.py <file.puml>` against the generated source as the first pass of VERIFY — it's faster and more reliable than walking this list by hand. The prose walk below catches what static checks can't (intent mismatches, abstraction-level choices, scope decisions).
 
-Codes the script emits: `E001`–`E004` (universal: missing/unnamed `@startuml`, missing `@enduml`), `E010`–`E011` (theme/include ordering), `W020`–`W022` (sequence: god-diagram count, autonumber-on-small-diagram, implicit participants), `E030`/`W031` (state: missing `[*]`, unlabeled transitions), `E040`/`W041` (ER: class-style arrow in ER, missing crow's-foot), `W050`/`E051`/`E052` (C4: missing tech label, missing `Rel` label), `W060` (class: missing visibility), `W070`/`W080` (component / deployment: no semantic containers).
+Codes the script emits: `E001`–`E004` (universal: missing/unnamed `@startuml`, missing `@enduml`), `E010`–`E011` (theme/include ordering), `W020`–`W022` (sequence: god-diagram count, autonumber-on-small-diagram, implicit participants), `W023` (dashboard-mimicry without `legend` block), `E030`/`W031` (state: missing `[*]`, unlabeled transitions), `E040`/`W041` (ER: class-style arrow in ER, missing crow's-foot), `W050`/`E051`/`E052` (C4: missing tech label, missing `Rel` label), `W060` (class: missing visibility), `W070`/`W080` (component / deployment: no semantic containers).
 
 ## Per-type
 

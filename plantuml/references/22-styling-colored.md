@@ -148,6 +148,8 @@ The preset paints shapes by their **structural role** (component vs database vs 
 
 Color is decoration. Meaning is carried by labels, stereotypes, and notes.
 
+**Mimicry-mode exception (different mode, not a loophole).** If the user explicitly asked for a diagram that mirrors a specific tool's UI (Flink dashboard, Spark UI, Airflow DAG view, GitHub Actions workflow graph), status coloring *is* legitimate — but the diagram switches modes entirely. It uses the dashboard-specific palette in `references/23-dashboard-mimicry.md`, **not** this preset, and adds a mandatory inline `legend bottom` block that maps every color to its meaning. The legend is what carries semantics; the color is the visual amplifier. Don't smuggle status colors into a role-based preset diagram — pick the right mode up front.
+
 ## Inline overrides
 
 If a single shape needs to stand out from the role-palette default — e.g., highlighting the one component the diagram is about — use a single inline override on that shape, not a sweeping `skinparam` change:

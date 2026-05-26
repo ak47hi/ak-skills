@@ -105,6 +105,16 @@ def detect_types(lines: list[str]) -> set[str]:
     ):
         found.add("pipeline")
 
+    # Dashboard-mimicry: 2+ `rectangle "..." as ALIAS [#HEX]` declarations and
+    # a `legend` block (or status colors) — the dashboard-mimicry shape from
+    # references/23-dashboard-mimicry.md. Detect it explicitly so the sequence
+    # fallback below doesn't misclassify edge labels (`SRC --> MAP : REBALANCE`)
+    # as sequence messages with implicit participants.
+    rect_decl_re = re.compile(r"^\s*rectangle\s+\".+\"\s+as\s+\w", re.IGNORECASE)
+    rect_count = sum(1 for line in lines if rect_decl_re.match(line))
+    if rect_count >= 2:
+        found.add("mimicry")
+
     # Fallback: if no diagram type matched and there are message-style lines
     # (`X -> Y: msg` with colon), classify as sequence with implicit participants.
     # This catches the common anti-pattern of using `Alice -> Bob: hi` with no
@@ -132,6 +142,7 @@ def check_universal(lines: list[str]) -> list[Violation]:
         "er-diagram", "usecase-diagram",
         "c4-context", "c4-container", "c4-component", "c4-dynamic",
         "pipeline-diagram",
+        "flink-jobgraph-name", "spark-dag-name", "airflow-dag-name", "gha-workflow-name",
     }
     for i, line in enumerate(lines, start=1):
         m = re.match(r"\s*@startuml\b(.*)$", line)
@@ -382,6 +393,39 @@ def check_pipeline(lines: list[str]) -> list[Violation]:
     return out
 
 
+def check_dashboard_mimicry_legend(lines: list[str]) -> list[Violation]:
+    """W023: dashboard-mimicry mode (multiple rectangles with hex-color suffixes)
+    must include an inline `legend ... endlegend` block, or color becomes a
+    private dialect with no printed key. See references/23-dashboard-mimicry.md.
+    """
+    out: list[Violation] = []
+    # Match `rectangle "..." as ALIAS #HEX` — the canonical mimicry-mode shape.
+    # Also catch sequence-style `participant "..." as X #HEX` (mimicry isn't
+    # specified for sequence, so flagging it nudges the author back to the
+    # colored preset where role-coloring on participants belongs).
+    color_suffix_re = re.compile(r"^\s*(rectangle|participant|node)\s+.+#[0-9A-Fa-f]{6}\s*$")
+    color_lines = []
+    for i, line in enumerate(lines, start=1):
+        # Skip PlantUML comment lines so example syntax inside `' ...` doesn't fire.
+        stripped = line.lstrip()
+        if stripped.startswith("'") or stripped.startswith("/'"):
+            continue
+        if color_suffix_re.match(line):
+            color_lines.append(i)
+    if len(color_lines) < 2:
+        return out
+    # Restrict to mimicry-shape: only fire when the suffix is on `rectangle`
+    # (the dashboard-mimicry shape). Coloring on `participant` belongs to the
+    # colored preset and is not a mimicry false-positive.
+    rect_color_lines = [i for i in color_lines if re.match(r"\s*rectangle\b", lines[i - 1])]
+    if len(rect_color_lines) < 2:
+        return out
+    has_legend = any(re.match(r"\s*legend\b", line) for line in lines)
+    if not has_legend:
+        out.append(Violation(rect_color_lines[0], "W023", f"dashboard-mimicry shape ({len(rect_color_lines)} rectangles with hex-color suffixes) without a `legend bottom ... endlegend` block — color-only semantics anti-pattern. See references/23-dashboard-mimicry.md"))
+    return out
+
+
 def check_sprites_have_includes(lines: list[str]) -> list[Violation]:
     """W092: best-effort string match. If a `<$name>` sprite reference appears
     in the body, at least one `!include` line should mention "<name>" somewhere
@@ -431,6 +475,10 @@ def lint(source: str, name: str = "<stdin>") -> tuple[list[Violation], int]:
 
     # Universal: any sprite reference must be preceded by an include for it.
     violations += check_sprites_have_includes(lines)
+
+    # Universal: dashboard-mimicry shape (multiple status-colored rectangles)
+    # must carry a legend block.
+    violations += check_dashboard_mimicry_legend(lines)
 
     # Sort by line.
     violations.sort(key=lambda v: (v.line, v.code))

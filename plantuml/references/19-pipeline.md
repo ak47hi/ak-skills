@@ -159,4 +159,5 @@ See `templates/pipeline.puml` for the starter skeleton.
 - Sprite catalogue: `references/20-sprites.md`
 - Deployment alternative (when infra hierarchy matters): `references/15-deployment.md`
 - C4 alternative (when abstraction level matters): `references/18-c4.md`
+- Dashboard-mimicry alternative (when the user wants the *Flink job graph* the way Flink Web UI itself shows it — flat operator boxes with parallelism, HASH/FORWARD/REBALANCE edges): `references/23-dashboard-mimicry.md`. A pipeline diagram is the right answer for "show me the streaming architecture"; a Flink mimicry diagram is the right answer for "show me what the Flink dashboard would show". Don't confuse the two.
 - Anti-patterns: `references/90-anti-patterns.md`
