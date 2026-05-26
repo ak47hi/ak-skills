@@ -1,0 +1,53 @@
+{
+  "eval_id": 0,
+  "eval_name": "hikari-leak-with-stack",
+  "prompt": "Spring Boot service on K8s is throwing `HikariPool-1 - Connection is not available, request timed out after 30000ms` every few hours. `pg_stat_activity` shows ~12 sessions stuck in `idle in transaction` for 5+ minutes each. The pod has `kubectl exec` access. HikariCP 5.x with `maximumPoolSize: 20`. The handler in question calls an external Stripe API in the middle of a `@Transactional` method. Help me find the leak and write the fix.",
+  "assertions": [
+    {
+      "id": "diagnoses-scope-too-wide",
+      "text": "Diagnoses the root cause as the DB connection being held across the outbound Stripe HTTP call (transaction scope too wide), not just a missing close",
+      "check_type": "semantic"
+    },
+    {
+      "id": "shows-two-tx-fix",
+      "text": "Recommends splitting into two short transactions (load before HTTP call, save after), with the Stripe call OUTSIDE the @Transactional boundary; shows code",
+      "check_type": "semantic"
+    },
+    {
+      "id": "recommends-leak-detection",
+      "text": "Recommends enabling HikariCP `leak-detection-threshold` (typically 30000ms or similar) so future leaks log a stack trace of the holder",
+      "check_type": "keyword",
+      "keywords": ["leak-detection-threshold", "leakDetectionThreshold"]
+    },
+    {
+      "id": "warns-against-pool-size-bump",
+      "text": "Explicitly warns against just raising maximumPoolSize as 'the fix' — calls it masking the leak",
+      "check_type": "keyword",
+      "keywords": ["do NOT raise", "do not raise", "don't raise", "mask the leak", "masks the leak", "masking", "not a fix", "anti-pattern"]
+    },
+    {
+      "id": "verification-via-pg-stat-activity",
+      "text": "Verification plan re-uses pg_stat_activity to confirm no sessions stuck idle in transaction post-fix",
+      "check_type": "keyword",
+      "keywords": ["pg_stat_activity"]
+    },
+    {
+      "id": "mentions-mbean-activeconnections",
+      "text": "References HikariCP MBean attribute(s) such as ActiveConnections, ThreadsAwaitingConnection for live diagnosis or verification",
+      "check_type": "keyword",
+      "keywords": ["ActiveConnections", "ThreadsAwaitingConnection", "MBean"]
+    },
+    {
+      "id": "postgres-side-guardrail-NEW",
+      "text": "Mentions Postgres-side guardrail (idle_in_transaction_session_timeout and/or statement_timeout) as a server-side circuit breaker",
+      "check_type": "keyword",
+      "keywords": ["idle_in_transaction_session_timeout", "statement_timeout"]
+    },
+    {
+      "id": "idempotency-for-split-tx-NEW",
+      "text": "Notes that splitting a transaction around an external API call introduces a crash window and recommends an idempotency key (and/or reconciliation job)",
+      "check_type": "keyword",
+      "keywords": ["idempotency", "idempotent", "idempotencyKey", "reconciliation"]
+    }
+  ]
+}

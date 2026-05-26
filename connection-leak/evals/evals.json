@@ -1,0 +1,26 @@
+{
+  "skill_name": "connection-leak",
+  "evals": [
+    {
+      "id": 0,
+      "name": "hikari-leak-with-stack",
+      "prompt": "Spring Boot service on K8s is throwing `HikariPool-1 - Connection is not available, request timed out after 30000ms` every few hours. `pg_stat_activity` shows ~12 sessions stuck in `idle in transaction` for 5+ minutes each. The pod has `kubectl exec` access. HikariCP 5.x with `maximumPoolSize: 20`. The handler in question calls an external Stripe API in the middle of a `@Transactional` method. Help me find the leak and write the fix.",
+      "expected_output": "Identifies that the leak is JDBC connection scope too wide (held across the Stripe call), routes to references/20-jdbc.md, recommends splitting into two short transactions with the HTTP call outside, recommends enabling HikariCP leak-detection-threshold, explicitly declines or warns against just raising maximumPoolSize. Cites a verification plan via pg_stat_activity + ActiveConnections MBean.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "flink-tm-fd-step-up",
+      "prompt": "Apache Flink 1.18 job on K8s Flink Operator. TaskManager FD count steps up by ~60 FDs every time the job restarts (we restart for redeploys ~3x/day). After 5 days the TM hits its 65k FD limit and OOM-kills. Operator has a custom `RichAsyncFunction` calling an internal gRPC service with `ManagedChannelBuilder.forAddress(...)`. The async client is created in `open()`. Walk me through the diagnosis and fix.",
+      "expected_output": "Identifies this as a Flink lifecycle leak (FD step-up tied to restart count), routes to references/21-flink.md, audits `open()`/`close()` symmetry (likely missing close() or close() that doesn't shutdown the ManagedChannel), recommends the canonical RichAsyncFunction lifecycle template with idempotent close + timeout override + ManagedChannel.shutdown().awaitTermination, cross-references references/22-http-grpc.md for the ManagedChannel singleton-per-upstream pattern. Verification plan = restart 5x and watch FD slope between restarts.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "aiohttp-fd-climb-vague",
+      "prompt": "Python FastAPI service. Sockets to a bunch of different remote services climbing without bound. `lsof` shows ~3000 sockets, growing by maybe 20/min under steady traffic. We see `Unclosed client session` warnings in the logs. py-spy is available in the pod. Where do I even start?",
+      "expected_output": "Recognizes the 'Unclosed client session' string as the dominant aiohttp anti-pattern, but still runs cross-cutting triage first (FD trend, FD classification, top remotes via ss). Routes to references/22-http-grpc.md. Distinguishes per-request vs per-client leak (the multi-remote signature points at per-client construction). Recommends one aiohttp.ClientSession per process (or per long-lived task), constructed in FastAPI lifespan, closed at shutdown. Provides the instrumentation snippet to log ClientSession construction stacks if the call site isn't obvious. Verification = heap-equivalent: count of ClientSession objects should match expected.",
+      "files": []
+    }
+  ]
+}

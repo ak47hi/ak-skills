@@ -1,0 +1,40 @@
+{
+  "eval_id": 1,
+  "eval_name": "flink-tm-fd-step-up",
+  "prompt": "Apache Flink 1.18 job on K8s Flink Operator. TaskManager FD count steps up by ~60 FDs every time the job restarts (we restart for redeploys ~3x/day). After 5 days the TM hits its 65k FD limit and OOM-kills. Operator has a custom `RichAsyncFunction` calling an internal gRPC service with `ManagedChannelBuilder.forAddress(...)`. The async client is created in `open()`. Walk me through the diagnosis and fix.",
+  "assertions": [
+    {
+      "id": "diagnoses-lifecycle-not-steady-state",
+      "text": "Diagnoses this as a lifecycle leak (cleanup on cancel, not steady-state) tied to job restart count, not a per-record leak",
+      "check_type": "semantic"
+    },
+    {
+      "id": "missing-managedchannel-shutdown",
+      "text": "Identifies the missing or insufficient ManagedChannel.shutdown() / .awaitTermination() call in RichAsyncFunction.close() as the proximate cause",
+      "check_type": "keyword",
+      "keywords": ["shutdown()", "awaitTermination", "ManagedChannel"]
+    },
+    {
+      "id": "shows-richasyncfunction-template",
+      "text": "Provides a corrected close() body that shuts down the ManagedChannel (with awaitTermination + shutdownNow fallback)",
+      "check_type": "semantic"
+    },
+    {
+      "id": "idempotent-close",
+      "text": "Recommends an idempotent close() (volatile closed flag) because Flink can call close() multiple times",
+      "check_type": "keyword",
+      "keywords": ["idempotent", "volatile", "closed = true", "if (closed)"]
+    },
+    {
+      "id": "override-timeout-handler",
+      "text": "Mentions overriding RichAsyncFunction.timeout() to cancel in-flight requests so timed-out requests don't hold sockets",
+      "check_type": "keyword",
+      "keywords": ["timeout(", "ResultFuture", "cancel"]
+    },
+    {
+      "id": "verification-restart-5x",
+      "text": "Verification plan: restart the job 5x in quick succession on the same TM pod and confirm FD count returns to baseline between restarts (does not step up)",
+      "check_type": "semantic"
+    }
+  ]
+}

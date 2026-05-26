@@ -1,0 +1,39 @@
+{
+  "eval_id": 2,
+  "eval_name": "aiohttp-fd-climb-vague",
+  "prompt": "Python FastAPI service. Sockets to a bunch of different remote services climbing without bound. `lsof` shows ~3000 sockets, growing by maybe 20/min under steady traffic. We see `Unclosed client session` warnings in the logs. py-spy is available in the pod. Where do I even start?",
+  "assertions": [
+    {
+      "id": "starts-with-triage",
+      "text": "Starts with cross-cutting triage (FD trend over time, FD classification, top remotes via ss/lsof) — does NOT jump straight to a guessed aiohttp fix",
+      "check_type": "semantic"
+    },
+    {
+      "id": "diagnoses-per-client-leak",
+      "text": "Identifies the multi-remote socket-climb signature as a per-client construction leak (vs per-request body-not-closed), based on the 'many different remote services' clue",
+      "check_type": "semantic"
+    },
+    {
+      "id": "fastapi-lifespan-singleton",
+      "text": "Recommends a single aiohttp.ClientSession per process, constructed in FastAPI `lifespan` (async context manager), and closed at shutdown",
+      "check_type": "keyword",
+      "keywords": ["lifespan", "ClientSession"]
+    },
+    {
+      "id": "instrumentation-snippet",
+      "text": "Provides an instrumentation snippet (e.g., monkey-patching `ClientSession.__init__`) to log construction stacks if the offending call site isn't obvious from grep",
+      "check_type": "semantic"
+    },
+    {
+      "id": "pyspy-dump-diagnosis",
+      "text": "Recommends `py-spy dump --pid 1` to find coroutines parked in aiohttp request methods (which indicates missing timeouts masquerading as leaks)",
+      "check_type": "keyword",
+      "keywords": ["py-spy dump", "py-spy"]
+    },
+    {
+      "id": "anti-pattern-bare-requests",
+      "text": "Calls out per-request ClientSession construction as the dominant aiohttp leak in production code; doesn't suggest just adding more `async with` blocks at every call site without hoisting the session",
+      "check_type": "semantic"
+    }
+  ]
+}

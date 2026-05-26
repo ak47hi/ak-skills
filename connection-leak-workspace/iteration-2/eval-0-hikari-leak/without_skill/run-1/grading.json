@@ -1,0 +1,53 @@
+{
+  "eval_id": 0,
+  "eval_name": "hikari-leak-with-stack",
+  "condition": "without_skill",
+  "summary": {
+    "passed": 7,
+    "failed": 1,
+    "total": 8,
+    "pass_rate": 0.875
+  },
+  "expectations": [
+    {
+      "text": "Diagnoses the root cause as the DB connection being held across the outbound Stripe HTTP call (transaction scope too wide), not just a missing close",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends splitting into two short transactions (load before HTTP call, save after), with the Stripe call OUTSIDE the @Transactional boundary; shows code",
+      "passed": true,
+      "evidence": "All semantic phrase groups matched"
+    },
+    {
+      "text": "Recommends enabling HikariCP `leak-detection-threshold` (typically 30000ms or similar) so future leaks log a stack trace of the holder",
+      "passed": true,
+      "evidence": "Found keyword: 'leak-detection-threshold'"
+    },
+    {
+      "text": "Explicitly warns against just raising maximumPoolSize as 'the fix' \u2014 calls it masking the leak",
+      "passed": true,
+      "evidence": "Found keyword: 'anti-pattern'"
+    },
+    {
+      "text": "Verification plan re-uses pg_stat_activity to confirm no sessions stuck idle in transaction post-fix",
+      "passed": true,
+      "evidence": "Found keyword: 'pg_stat_activity'"
+    },
+    {
+      "text": "References HikariCP MBean attribute(s) such as ActiveConnections, ThreadsAwaitingConnection for live diagnosis or verification",
+      "passed": false,
+      "evidence": "None of keywords ['ActiveConnections', 'ThreadsAwaitingConnection', 'MBean'] found"
+    },
+    {
+      "text": "Mentions Postgres-side guardrail (idle_in_transaction_session_timeout and/or statement_timeout) as a server-side circuit breaker",
+      "passed": true,
+      "evidence": "Found keyword: 'idle_in_transaction_session_timeout'"
+    },
+    {
+      "text": "Notes that splitting a transaction around an external API call introduces a crash window and recommends an idempotency key (and/or reconciliation job)",
+      "passed": true,
+      "evidence": "Found keyword: 'idempotency'"
+    }
+  ]
+}
