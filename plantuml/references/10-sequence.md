@@ -29,6 +29,19 @@ queue EventBus
 
 Use `as` to alias when the display label has spaces or differs from the variable.
 
+### Coloring participants
+
+For background color, append `#HexColor` after the alias:
+
+```puml
+participant "Web App" as Web #AED6F1
+database Users #A9DFBF
+```
+
+The `;line:ColorName` border syntax does **not** work on sequence diagram elements (participants, notes, lifelines). It causes `No such color` errors at render time. That syntax only works in component, deployment, and other rectangle-based diagrams.
+
+For systematic coloring across the whole diagram (borders, lifelines, group backgrounds), use the colored preset in `references/22-styling-colored.md` — its `skinparam sequence { ... }` block sets `ParticipantBorderColor`, `LifeLineBorderColor`, and friends consistently. A one-off `skinparam sequenceParticipantBorderColor #3B7DD8` works but is bespoke styling (see `references/90-anti-patterns.md` § "Decorative skinparams"); reach for the preset or inline `#HexColor` background overrides instead.
+
 ## Grouping participants (`box`)
 
 For diagrams with >5 participants, group them visually:

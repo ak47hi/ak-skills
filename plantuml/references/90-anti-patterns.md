@@ -79,6 +79,7 @@ Codes the script emits: `E001`–`E004` (universal: missing/unnamed `@startuml`,
 ### Sequence
 
 - **Unnamed lifelines.** `Alice -> Bob` with no `participant` declaration: the participants render but their visual type (actor, database, queue) is wrong. Declare participants explicitly at the top.
+- **`;line:ColorName` on participants or notes.** The `;line:X` border-color syntax only works in component/deployment/rectangle-based diagrams. On sequence participants or notes it causes `No such color` render errors. Use `#BackgroundColor` for participant fills (e.g., `participant "Name" as X #AED6F1`) or the colored preset (`references/22-styling-colored.md`) for systematic styling — not a bespoke `skinparam` block.
 - **Notes that aren't anchored.** `note: text` with no `left of` / `right of` / `over` floats arbitrarily. Always anchor.
 - **Activation/deactivation imbalance.** `++` without matching `--` produces visual rectangles that never close. Use either symmetric `++`/`--` or none.
 - **Autonumber on micro-diagrams.** Sequence diagrams with 3 messages don't need autonumbering. Reserve for 6+ message diagrams.
@@ -104,6 +105,7 @@ Codes the script emits: `E001`–`E004` (universal: missing/unnamed `@startuml`,
 ### Activity
 
 - **Mixing beta and legacy syntax.** Don't mix `:action;` (beta) with `(*) --> action` (legacy). Pick beta — it's the supported syntax.
+- **Deprecated `#COLOR:text;` syntax.** The pre-colon color form is deprecated and emits a render warning. Use `<<#color>>` after the semicolon instead: `:text; <<#D5F5E3>>`.
 - **Swimlanes used as decoration.** Swimlanes (`|name|`) are for showing *who* does each step. If there's only one actor, don't add swimlanes.
 - **Unbalanced if/endif, while/endwhile, fork/end fork.** PlantUML parses these strictly; missing `endif` etc. breaks the render.
 
