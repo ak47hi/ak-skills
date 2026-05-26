@@ -132,6 +132,111 @@ ctx.run(() -> {
 });
 ```
 
+### Java — Spring WebFlux WebClient (Reactor Netty)
+
+WebFlux's `WebClient` is built on Reactor Netty's `HttpClient`, which owns a `ConnectionProvider` (the equivalent of OkHttp's connection pool). Two distinct leak shapes — both surface as climbing CLOSE_WAIT and Netty `LEAK: ByteBuf.release()` lines under load.
+
+**Three greps catch ~all of them:**
+
+```sh
+# 1. Per-request WebClient construction. Each WebClient.create() gets its own
+#    ConnectionProvider (default 500 conns/pool). Per-request → per-pool leak.
+rg -n 'WebClient\.create\(' --type java --type kotlin
+
+# 2. exchangeToMono / exchange — the response body is NOT auto-released.
+#    Every branch must call .releaseBody(), .body(...), or .toBodilessEntity().
+rg -n '\.exchangeToMono\(|\.exchangeToFlux\(|\.exchange\(\)' --type java --type kotlin
+
+# 3. bodyToMono(Void.class) on a non-empty response. Reactor Netty can't
+#    return the connection to the pool until the response bytes are drained.
+rg -n '\.bodyToMono\(Void\.class\)' --type java --type kotlin
+```
+
+**Anti-pattern matrix** — match the Netty `LEAK:` stack to one of these:
+
+| Symptom in your code | Leak |
+|---|---|
+| `WebClient.create()` inside a handler / `@Service` method | per-request WebClient → per-request `ConnectionProvider`; the whole pool leaks per call |
+| `webClient.method(...).exchangeToMono(r -> /* logic */)` without `.releaseBody()` / `.body(...)` / `.toBodilessEntity()` on every branch | per-request body leak; CLOSE_WAIT grows 1:1 with calls |
+| `webClient.method(...).retrieve().bodyToMono(Void.class)` on a non-empty response | bytes never drained; connection stuck checked-out |
+| `.subscribe()` on a `.retrieve()` chain with no error handler and the subscription cancelled before terminal signal | partial drain; connection state ambiguous |
+
+**Idiomatic — singleton WebClient via injected `WebClient.Builder`:**
+
+`WebClient` is the WebFlux equivalent of `OkHttpClient` and follows the same singleton rule. Spring Boot auto-configures a `WebClient.Builder` bean — inject it once per upstream service:
+
+```java
+@Service
+public class EnrichmentClient {
+    private final WebClient client;
+
+    public EnrichmentClient(WebClient.Builder builder) {
+        this.client = builder
+            .baseUrl("https://enrichment.internal")
+            .clientConnector(new ReactorClientHttpConnector(
+                HttpClient.create(ConnectionProvider.builder("enrichment")
+                    .maxConnections(100)
+                    .pendingAcquireMaxCount(500)
+                    .pendingAcquireTimeout(Duration.ofSeconds(2))
+                    .maxIdleTime(Duration.ofSeconds(30))   // < upstream idle killer
+                    .build())
+                .responseTimeout(Duration.ofSeconds(5))))
+            .build();
+    }
+
+    public Mono<Enrichment> fetch(String id) {
+        return client.get()
+            .uri("/v1/users/{id}", id)
+            .retrieve()                                    // auto-releases on terminal signal
+            .bodyToMono(Enrichment.class);
+    }
+}
+```
+
+`maxConnections` + `pendingAcquireTimeout` makes pool exhaustion observable — a slow upstream produces a `PoolAcquirePendingLimitException` you can alert on, instead of a creeping leak.
+
+**Always terminate the body on every branch of `exchangeToMono`:**
+
+```java
+// LEAK — happy path consumes body; error branch leaks it
+client.get().uri(uri)
+    .exchangeToMono(resp -> {
+        if (resp.statusCode().is2xxSuccessful()) {
+            return resp.bodyToMono(Enrichment.class);
+        }
+        return Mono.error(new EnrichmentException(resp.statusCode()));  // body never released
+    });
+
+// FIX — releaseBody() on every non-consuming branch
+client.get().uri(uri)
+    .exchangeToMono(resp -> {
+        if (resp.statusCode().is2xxSuccessful()) {
+            return resp.bodyToMono(Enrichment.class);
+        }
+        return resp.releaseBody()                                      // drains + closes
+            .then(Mono.error(new EnrichmentException(resp.statusCode())));
+    });
+```
+
+Prefer `.retrieve()` over `.exchangeToMono(...)` when you don't need conditional body handling — `.retrieve()` releases automatically on terminal signal (success, error, or cancel).
+
+For "I only need the status":
+
+```java
+client.head().uri(uri)
+    .retrieve()
+    .toBodilessEntity()                  // explicitly drains + releases
+    .map(ResponseEntity::getStatusCode);
+```
+
+**Distinguish per-request WebClient from per-request body leak** via heap dump (see "Distinguishing per-request vs per-client leak" below). Classes to count in MAT:
+
+- `reactor.netty.resources.PooledConnectionProvider` — should equal the number of intentional WebClients (usually 1 per upstream). Hundreds/thousands → per-request `WebClient.create()`.
+- `reactor.netty.http.client.HttpClient` — same logic.
+- `io.netty.channel.nio.NioEventLoopGroup` — process-wide should be 1. >1 means each WebClient brought its own event loop (rare and almost always wrong).
+
+**Reactor Netty leak detector** is the same Netty detector documented under "Netty `ResourceLeakDetector` — paranoid mode" below. Same JVM flag, same log lines, same advice (turn paranoid off after diagnosis).
+
 ### Kotlin — ktor
 
 `HttpClient` is `Closeable`. A `HttpResponse` is associated with a coroutine scope; cancellation of that scope releases the connection.
@@ -292,6 +397,8 @@ In MAT, count instances of:
 - `okhttp3.OkHttpClient`
 - `org.apache.hc.client5.http.impl.classic.CloseableHttpClient`
 - `io.grpc.internal.ManagedChannelImpl`
+- `reactor.netty.resources.PooledConnectionProvider` (Spring WebFlux WebClient)
+- `reactor.netty.http.client.HttpClient` (Spring WebFlux WebClient)
 - `io.netty.channel.nio.NioEventLoopGroup`
 
 If the count exceeds the number of intentional clients (usually one per upstream service), it's a **per-client leak** — find construction sites with the source audit.
@@ -395,6 +502,7 @@ print(len(asyncio.all_tasks()))  # if growing, tasks are leaking — possibly ea
 | `OkHttpClient` | per process, optionally per-upstream with `.newBuilder()` |
 | Apache `HttpClient` | per process |
 | `ManagedChannel` (Java gRPC) | per upstream service (one channel, many stubs) |
+| Spring WebFlux `WebClient` | per upstream service; build once from the injected `WebClient.Builder` |
 | ktor `HttpClient` | per process |
 | `aiohttp.ClientSession` | per process or per long-lived task |
 | `httpx.AsyncClient` | per process |
