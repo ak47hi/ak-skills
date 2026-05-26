@@ -104,4 +104,6 @@ if [[ $found -eq 0 ]]; then
 fi
 echo "Summary: $found skill(s) found, $installed link(s) installed, $skipped already current, $errored errored"
 echo "Verify with: ls -l $SKILLS_HOME"
-[[ $ALSO_AGENTS -eq 1 ]] && echo "         and: ls -l $AGENTS_HOME"
+if [[ $ALSO_AGENTS -eq 1 ]]; then
+    echo "         and: ls -l $AGENTS_HOME"
+fi
