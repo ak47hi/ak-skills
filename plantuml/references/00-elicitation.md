@@ -81,12 +81,18 @@ Which slice? A single flow / a subsystem / a public boundary — vs "the whole s
 ## What NOT to ask
 
 Don't ask:
-- Theming preferences. Default is `!theme plain`. The user can override after.
+- Theming preferences in general. Default is `!theme plain`. The user can override after.
 - Render format. Default is SVG; the output contract documents PNG as an alternative.
 - File name. Derive from scope ("login-sequence.puml").
 - Direction (LR vs TB). The reference for each type sets a sensible default.
 
 These are decisions the skill makes, not the user.
+
+**One exception — colored mode.** If the prompt uses "rich" / "nice" / "good-looking" diagrams (genuinely ambiguous between "information-rich" and "visually rich"), ask one question before generating:
+
+> Default styling is monochrome (`!theme plain`). Want the colored preset (Confluence-friendly soft palette) instead?
+
+If the prompt is unambiguous in either direction — "rich monochrome", "colored", "styled", "Confluence-ready", "presentation" → don't ask; just apply the right mode per `references/22-styling-colored.md`.
 
 ## Propose-and-go (alternative to questions)
 

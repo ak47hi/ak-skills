@@ -43,9 +43,21 @@ A single sentence describing what the diagram shows, written so a reader who onl
 
 Not a summary of the syntax. Not a summary of what's in each box. One sentence about what the *diagram* shows.
 
-## Theme fallback
+## Theme / styling options
 
-`!theme plain` is the default. If the user reports their PlantUML doesn't ship that theme (older builds, restricted environments), swap the `!theme plain` line for this block:
+Three documented options. Pick one — never invent a fourth (see `references/90-anti-patterns.md` § "Decorative skinparams").
+
+### 1. `!theme plain` — default monochrome
+
+What every template ships with. Use unless the user explicitly opts in elsewhere.
+
+### 2. Colored preset — opt-in, Confluence-friendly
+
+When the user explicitly asks for "colored", "styled", "rich", "Confluence-ready", or "presentation-quality" diagrams, swap `!theme plain` for the canonical preset block in `references/22-styling-colored.md`. Soft-pastel palette, role-based shape colors, shadows + rounded corners. Do **not** apply to C4 diagrams.
+
+### 3. Monochrome fallback — for old PlantUML builds
+
+If the user reports their PlantUML doesn't ship the `plain` theme (older builds, restricted environments), swap the `!theme plain` line for this block:
 
 ```puml
 skinparam monochrome true

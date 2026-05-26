@@ -20,6 +20,8 @@ Why it's bad: breaks in monochrome rendering, breaks for color-blind readers, br
 
 Fix: use stereotypes (`<<deprecated>>`), notes, or text prefixes. Color, if used at all, is an *additional* signal layered on top of a text-readable one.
 
+**Note:** this rule applies in both default monochrome mode AND in colored mode (`references/22-styling-colored.md`). The colored preset paints shapes by structural **role** (component vs database vs queue), not by semantic **status**. Status meaning still needs a non-color carrier.
+
 ### Missing diagram name
 
 Symptom: `@startuml` with no name.
@@ -38,11 +40,17 @@ Fix: pick one arrow style per relation type and use it consistently. Per-type re
 
 ### Decorative skinparams
 
-Symptom: `skinparam` for backgroundColor, shadow, rounded corners, custom fonts, gradients.
+Symptom: ad-hoc `skinparam` for backgroundColor, shadow, rounded corners, custom fonts, gradients — invented per-diagram.
 
-Why it's bad: bloats the source, doesn't render consistently across PlantUML versions, distracts from the content.
+Why it's bad: bloats the source, doesn't render consistently across PlantUML versions, distracts from the content, every diagram looks different.
 
-Fix: rely on `!theme plain`. If `plain` isn't available on the user's build, use the minimal `skinparam` block from `references/91-output-contract.md` — nothing more.
+Fix: pick one of the **three documented options** — nothing else.
+
+1. `!theme plain` — the default.
+2. The colored preset block from `references/22-styling-colored.md` — opt-in when the user explicitly asks for colored / styled / Confluence-ready diagrams.
+3. The minimal `skinparam` block from `references/91-output-contract.md` — fallback for older PlantUML builds that don't ship the `plain` theme.
+
+Bespoke skinparam blocks outside these three are anti-pattern. If the colored preset isn't quite right for one shape in one diagram, use an inline override (`component "Engine" #FAD7A0`) — see `references/22-styling-colored.md` § "Inline overrides".
 
 ### `!theme` after `!include` (ordering pitfall)
 

@@ -1,6 +1,6 @@
 ---
 name: plantuml
-description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib), and pipeline (streaming / system design / left-to-right data flow). Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the spec is complete. Defaults to minimal monochrome-friendly styling (`!theme plain`), explicit `@startuml/@enduml`, named diagrams. Trigger on the intent to diagram software — "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container", "draw the architecture", "kafka pipeline", "system design", "sketch the system" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio, Excalidraw, ASCII box art, or diagram families PlantUML handles poorly (gantt, sankey, journey, mindmap, gitGraph, timeline) — see `references/92-not-plantuml.md`.
+description: Generate valid, reviewable PlantUML for sequence, component, class, state, activity, deployment, ER / ERD, use case, C4 (Context/Container/Component/Dynamic via the C4-PlantUML stdlib), and pipeline (streaming / system design / left-to-right data flow). Elicits diagram type, participants, and scope when intent is unclear; skips elicitation when the spec is complete. Defaults to monochrome (`!theme plain`); opt-in colored preset when user explicitly asks for "colored", "styled", "rich", or "Confluence-ready" diagrams. Trigger on the intent to diagram software — "sequence diagram for X", "ERD of our schema", "state machine for orders", "C4 container", "kafka pipeline", "system design" — not just the word "PlantUML". Also triggers on `.puml` files or any UML request. Do NOT use for Mermaid, D2, Graphviz, drawio, Excalidraw, or diagram families PlantUML handles poorly (gantt, sankey, journey, mindmap, gitGraph, timeline) — see `references/92-not-plantuml.md`.
 ---
 
 # PlantUML skill
@@ -9,7 +9,7 @@ Generate valid PlantUML for a fixed set of diagram types. Opinionated about thre
 
 1. **Right diagram type beats prettier diagram.** A sequence diagram of a static structure is wrong even if it renders. The ROUTE phase exists to catch this before generating.
 2. **Elicit when intent is ambiguous; skip when it isn't.** Don't ask questions the prompt already answered. Don't guess when it didn't.
-3. **Minimal styling, named diagrams, explicit boundaries.** `!theme plain`, `@startuml <name>`, no decorative skinparams, no color-only semantics. Diagrams should read in monochrome.
+3. **Minimal styling, named diagrams, explicit boundaries.** `!theme plain` is the default; `@startuml <name>` always; no bespoke skinparams (use the canonical colored preset in `references/22-styling-colored.md` if the user explicitly asks for color); no color-only semantics regardless of mode. Diagrams should read in monochrome by default.
 
 ---
 
@@ -71,7 +71,9 @@ For the routed type:
 - `@startuml <descriptive-name>` and `@enduml` always.
 - `!theme plain` as the first non-comment line **for non-C4 diagrams**. C4 templates skip this — the C4-PlantUML stdlib applies its own visual style, and stacking `!theme plain` on top fights it. (Fallback if a user's PlantUML build doesn't ship `plain`: drop the line and use the inline `skinparam` block documented in `references/91-output-contract.md`.)
 - `left to right direction` only for diagrams that read horizontally (use case, ER, short flows); top-to-bottom otherwise.
-- No color-only semantics. If something needs to stand out, use a stereotype or note, not a color.
+- No color-only semantics — even in colored mode (see below). If something needs to stand out, use a stereotype or note, not a color.
+
+**Colored mode (opt-in).** When the user **explicitly** asks for colored / styled / "rich" / "Confluence-ready" diagrams, swap `!theme plain` for the canonical preset documented in `references/22-styling-colored.md` (a Confluence-friendly soft palette). The preset is the only sanctioned alternative to monochrome — bespoke / ad-hoc `skinparam` blocks remain an anti-pattern. Do **not** apply to C4 diagrams. If the request is ambiguous (e.g. "rich PlantUML" — "rich" could mean information-rich), ask one question per `references/00-elicitation.md`.
 
 For C4 specifically, the `!include <C4/C4_Container>` short form requires the PlantUML standard library (bundled with official PlantUML jars since ~2020). If unsupported on the user's build, the templates document the GitHub URL fallback — see `references/18-c4.md`.
 
@@ -95,7 +97,7 @@ That's it. No surrounding prose explaining the syntax — the user can read it.
 ## When to push back
 
 - User asks for a diagram type that doesn't fit the intent (e.g. a sequence diagram of a database schema). Explain the mismatch in one sentence and propose the right type.
-- User asks to color-code by status. Suggest stereotypes / notes instead; explain that color-only semantics break in monochrome rendering and for color-blind readers.
+- User asks to color-code by **status** (deprecated/new/deferred). Suggest stereotypes / notes instead; explain that color-only semantics break in monochrome rendering and for color-blind readers. (This is different from "I want colored diagrams" — that's a styling request, not a semantic one; apply the colored preset from `references/22-styling-colored.md`.)
 - User asks for a single diagram that mixes C4 levels. Split into two.
 - User asks for >20 participants in one sequence diagram or >15 nodes in one component diagram. Suggest decomposition (per-use-case sequences, sub-component diagrams).
 
@@ -126,6 +128,7 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 | `references/18-c4.md` | C4: stdlib includes, macros, abstraction levels |
 | `references/19-pipeline.md` | Pipeline: left-to-right data flow, stage discipline, sprite use |
 | `references/20-sprites.md` | Sprite catalogue (gilbarbara, tupadr3, awslib, kubernetes-PlantUML) — opt-in vendor icons |
+| `references/22-styling-colored.md` | Canonical colored preset (Confluence-friendly soft palette) — opt-in alternative to `!theme plain` |
 | `references/90-anti-patterns.md` | What to refuse to emit and why; lint codes |
 | `references/91-output-contract.md` | Final response format |
 | `references/92-not-plantuml.md` | Exit cases: when to point at Mermaid / D2 instead |
@@ -135,6 +138,20 @@ When the user asks for changes to a generated diagram, re-enter from ROUTE (the 
 ---
 
 ## Changelog
+
+### 2026-05-26 — colored styling preset (opt-in)
+
+User feedback: the skill silently stripped colors out of a request for "rich PlantUML diagrams" to match the doc's existing Mermaid style. The skill was working as designed (monochrome-default with `!theme plain` enforced), but the design had no documented escape hatch for presentation-quality / Confluence-ready output. Two real gaps surfaced — the description didn't advertise the monochrome stance loudly enough, and "comply if the user insists with a reason" had no canonical styling to comply *with*.
+
+- **Added** `references/22-styling-colored.md` — canonical colored preset (Confluence-friendly soft palette covering component / database / queue / node / package / cloud / folder / artifact / interface / sequence / activity / state / class / usecase shapes). Documents trigger phrases, ordering rules (`!theme` slot, before `!include`), explicit no-apply list (C4 diagrams, DBA-audience ER, ≥15-message sequences), and the still-banned "color-only semantics" rule.
+- **Updated** `SKILL.md` description (969 chars, cap 1024) — now mentions "opt-in colored preset when user explicitly asks for 'colored', 'styled', 'rich', or 'Confluence-ready' diagrams" so the model knows both modes exist.
+- **Updated** `SKILL.md` opinion #3 — clarified that the colored preset is the only sanctioned alternative to `!theme plain`; bespoke skinparams remain anti-pattern.
+- **Updated** `SKILL.md` GENERATE — added "Colored mode (opt-in)" block under universal defaults.
+- **Updated** `SKILL.md` push-back — split color-coding-by-status (still suggest stereotypes) from colored-diagrams (now apply the preset).
+- **Updated** `references/00-elicitation.md` — "What NOT to ask" carves out colored mode from the "don't ask theming" rule when prompt is ambiguous; added a one-line check.
+- **Updated** `references/90-anti-patterns.md` — "Decorative skinparams" rule now reads "use `!theme plain` OR the documented preset"; "Color-only semantics" rule cross-references colored mode to make clear it still applies.
+- **Updated** `references/91-output-contract.md` — theme fallback section adds the colored preset as a third documented option (alongside `!theme plain` and the minimal `skinparam monochrome true` fallback).
+- **Verified** `scripts/lint.py` — no rule checks `skinparam` content, so the preset block won't false-fire. E010 (theme-before-include) doesn't apply because colored mode has no `!theme` directive.
 
 ### 2026-05-19 — refinement v1
 

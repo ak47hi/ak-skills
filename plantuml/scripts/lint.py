@@ -340,7 +340,9 @@ def check_component(lines: list[str]) -> list[Violation]:
     if not has_component:
         return out
     # Bracket-only / no semantic containers at leaf level.
-    semantic_present = any(re.search(r"\b(database|queue|cloud|node|stack)\s+", line, re.IGNORECASE) for line in lines)
+    # Anchor to start-of-line so `skinparam database { ... }` (colored preset,
+    # references/22-styling-colored.md) doesn't false-suppress this warning.
+    semantic_present = any(re.search(r"^\s*(database|queue|cloud|node|stack)\s+", line, re.IGNORECASE) for line in lines)
     if not semantic_present:
         # Only warn if there are 5+ component-ish lines (small diagrams may legitimately have none).
         comp_lines = [line for line in lines if re.search(r"^\s*\[\w", line) or re.search(r"^\s*component\s+", line, re.IGNORECASE)]
@@ -359,7 +361,8 @@ def check_deployment(lines: list[str]) -> list[Violation]:
     has_node = any(re.search(r"^\s*(node|cloud)\s+\".+\"\s*\{", line, re.IGNORECASE) for line in lines)
     if not (is_deployment or has_node):
         return out
-    has_semantic = any(re.search(r"\b(node|cloud|database|queue|artifact|stack|folder)\s+", line, re.IGNORECASE) for line in lines)
+    # Anchor to start-of-line so `skinparam node { ... }` (colored preset) doesn't false-suppress.
+    has_semantic = any(re.search(r"^\s*(node|cloud|database|queue|artifact|stack|folder)\s+", line, re.IGNORECASE) for line in lines)
     if not has_semantic:
         out.append(Violation(1, "W080", "deployment-like diagram uses no semantic containers (node/cloud/database/queue/artifact)"))
     return out
