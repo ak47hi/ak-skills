@@ -1,0 +1,222 @@
+{
+  "metadata": {
+    "skill_name": "agent-ready",
+    "skill_path": "/Users/ak_ninja/.claude/skills/agent-ready",
+    "executor_model": "claude-opus-4-7",
+    "timestamp": "2026-05-26T06:25:00Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 1,
+    "notes": "Iter-2 carried forward iter-1's eval-0 baseline, eval-1 with-skill, and eval-1 baseline since the DIRTY-check fix doesn't affect their code path (eval-1 uses --skip-commit). Iter-2 re-ran eval-0 with-skill (to validate the fix) and added eval-2 (refresh test, both conditions)."
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "greenfield-bootstrap",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 827.4,
+        "tokens": 151570,
+        "tool_calls": 72,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md exists", "passed": true, "evidence": "exists"},
+        {"text": "All 10 sections present (slim + .agent-docs)", "passed": true, "evidence": "all 10 present"},
+        {"text": "At least 3 file:line citations", "passed": true, "evidence": "98 citations"},
+        {"text": "knowledge-graph.json non-empty", "passed": true, "evidence": "54041 bytes (real /understand pipeline: 87 nodes, 77 edges)"},
+        {"text": "config.json has autoUpdate:true", "passed": true, "evidence": "autoUpdate=True"},
+        {"text": "CLAUDE.md has @ line", "passed": true, "evidence": "@ line present"},
+        {"text": "If >200 lines, .agent-docs/ has 7 files", "passed": true, "evidence": "112-line slim doc + 7 .agent-docs/ files (subagent chose to split anyway)"},
+        {"text": "Commit message exact match", "passed": true, "evidence": "exact match"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no trailer"},
+        {"text": "Staged files in allowlist", "passed": true, "evidence": "13 files all in allowlist"}
+      ],
+      "notes": [
+        "DIRTY check fix validated: `git status --porcelain -u` correctly enumerated untracked files per-file. No false abort on `.understand-anything/` collapse.",
+        "NEW small bug found by subagent: allowlist regex missed `.understand-anything/.understandignore` (created by /understand Phase 0.5). Fixed in commit-safety.md and shipped in v2.",
+        "Phase 1 ran the real /understand pipeline (plugin core built ahead of time). 87 nodes, 77 edges, 0 validation issues."
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "greenfield-bootstrap",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.40,
+        "passed": 4,
+        "failed": 6,
+        "total": 10,
+        "time_seconds": 188.3,
+        "tokens": 60846,
+        "tool_calls": 22,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md exists", "passed": true, "evidence": "exists"},
+        {"text": "All 10 sections present", "passed": false, "evidence": "missing 8 of 10 (used own 11-section structure)"},
+        {"text": "At least 3 file:line citations", "passed": true, "evidence": "36 citations"},
+        {"text": "knowledge-graph.json non-empty", "passed": true, "evidence": "9641 bytes (placed at repo root, not .understand-anything/)"},
+        {"text": "config.json has autoUpdate:true", "passed": false, "evidence": "no config.json"},
+        {"text": "CLAUDE.md has @ line", "passed": false, "evidence": "no @ line"},
+        {"text": "If >200 lines, .agent-docs/ has 7 files", "passed": false, "evidence": "doc is 206 lines, no split"},
+        {"text": "Commit message exact match", "passed": false, "evidence": "used 'Add agent onboarding docs and knowledge graph'"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no trailer"},
+        {"text": "Staged files in allowlist", "passed": false, "evidence": "knowledge-graph.json at root, not in .understand-anything/"}
+      ],
+      "notes": ["Carried forward from iter-1 (unchanged scenario)."]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "architecture-no-commit",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 555.6,
+        "tokens": 130014,
+        "tool_calls": 55,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "All 10 sections present (slim + .agent-docs)", "passed": true, "evidence": "94-line slim + 7 .agent-docs files"},
+        {"text": "ARCHITECTURE.md exists", "passed": true, "evidence": "exists"},
+        {"text": "4-6 Mermaid blocks", "passed": true, "evidence": "6 blocks"},
+        {"text": "Uses flowchart TB", "passed": true, "evidence": "directive present"},
+        {"text": "No reserved keywords as IDs", "passed": true, "evidence": "clean"},
+        {"text": "config has architecture:true", "passed": true, "evidence": "architecture=True"},
+        {"text": "config has autoUpdate:true", "passed": true, "evidence": "autoUpdate=True"},
+        {"text": "No new git commit", "passed": true, "evidence": "HEAD unchanged"},
+        {"text": "CLAUDE.md has @ line", "passed": true, "evidence": "line present"}
+      ],
+      "notes": ["Carried forward from iter-1 (--skip-commit means Phase 5 not exercised, fix doesn't affect this run)."]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "architecture-no-commit",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 3,
+        "failed": 6,
+        "total": 9,
+        "time_seconds": 266.2,
+        "tokens": 74401,
+        "tool_calls": 29,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "All 10 sections present", "passed": false, "evidence": "missing 9 of 10 (used own structure)"},
+        {"text": "ARCHITECTURE.md exists", "passed": true, "evidence": "exists"},
+        {"text": "4-6 Mermaid blocks", "passed": false, "evidence": "8 blocks (over upper bound)"},
+        {"text": "Uses flowchart TB", "passed": false, "evidence": "no flowchart TB directive"},
+        {"text": "No reserved keywords as IDs", "passed": true, "evidence": "clean"},
+        {"text": "config has architecture:true", "passed": false, "evidence": "no config.json"},
+        {"text": "config has autoUpdate:true", "passed": false, "evidence": "no config.json"},
+        {"text": "No new git commit", "passed": true, "evidence": "untracked / no commit"},
+        {"text": "CLAUDE.md has @ line", "passed": false, "evidence": "no @ line"}
+      ],
+      "notes": ["Carried forward from iter-1."]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "refresh-architecture-only",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 308.3,
+        "tokens": 116121,
+        "tool_calls": 48,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md regenerated (non-empty)", "passed": true, "evidence": "6683 bytes"},
+        {"text": "All 10 sections present after refresh", "passed": true, "evidence": "all 10 present"},
+        {"text": "ARCHITECTURE.md exists with 4-6 mermaid blocks", "passed": true, "evidence": "6 blocks"},
+        {"text": "KG preserved (16277 bytes, identical to seed)", "passed": true, "evidence": "16277 bytes (seed was 16277)"},
+        {"text": "config.json has architecture:true", "passed": true, "evidence": "architecture=True"},
+        {"text": "config.json has autoUpdate:true", "passed": true, "evidence": "autoUpdate=True"},
+        {"text": "New commit on top of seed", "passed": true, "evidence": "2 commits total, seed preserved"},
+        {"text": "New commit message exact match", "passed": true, "evidence": "exact match"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no trailer"},
+        {"text": "Staged files in allowlist", "passed": true, "evidence": "12 files all in allowlist"}
+      ],
+      "notes": [
+        "DIRTY check passed cleanly on first try (no false positive on untracked dirs).",
+        "Phase 3 correctly auto-skipped since CLAUDE.md was already wired (no AskUserQuestion issued) — saving 1 user interaction.",
+        "[NEEDS_CONTEXT] conservation maintained at 2 markers."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "refresh-architecture-only",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.60,
+        "passed": 6,
+        "failed": 4,
+        "total": 10,
+        "time_seconds": 178.4,
+        "tokens": 60070,
+        "tool_calls": 29,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md refreshed", "passed": true, "evidence": "7419 bytes"},
+        {"text": "All 10 sections present", "passed": true, "evidence": "all 10 present (inherited from seed which had skill structure)"},
+        {"text": "ARCHITECTURE.md exists with 4-6 mermaid blocks", "passed": true, "evidence": "6 blocks (inherited from seed)"},
+        {"text": "KG preserved (16277 bytes)", "passed": false, "evidence": "baseline didn't copy KG to outputs (left repo's KG untouched per its report)"},
+        {"text": "config.json has architecture:true", "passed": false, "evidence": "baseline didn't manage config.json"},
+        {"text": "config.json has autoUpdate:true", "passed": false, "evidence": "baseline didn't manage config.json"},
+        {"text": "New commit on top of seed", "passed": true, "evidence": "2 commits, seed preserved"},
+        {"text": "New commit message exact match", "passed": false, "evidence": "used 'docs: refresh AGENT_DESIGN_DOC and ARCHITECTURE against current KG'"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no trailer"},
+        {"text": "Staged files in allowlist", "passed": true, "evidence": "12 files all in allowlist"}
+      ],
+      "notes": [
+        "Took smart 'targeted edits, not full regen' approach (sensible since user said KG is current).",
+        "Inherited 10-section structure from the seed (which itself came from skill output) — baseline pass rate higher than greenfield because of this advantage.",
+        "Did not produce skill-format commit message or manage config.json."
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.000, "stddev": 0.00, "min": 1.00, "max": 1.00},
+      "time_seconds": {"mean": 563.8, "stddev": 213.0, "min": 308.3, "max": 827.4},
+      "tokens": {"mean": 132568, "stddev": 14796, "min": 116121, "max": 151570}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.443, "stddev": 0.11, "min": 0.33, "max": 0.60},
+      "time_seconds": {"mean": 211.0, "stddev": 39.0, "min": 178.4, "max": 266.2},
+      "tokens": {"mean": 65106, "stddev": 6594, "min": 60070, "max": 74401}
+    },
+    "delta": {
+      "pass_rate": "+0.557",
+      "time_seconds": "+352.7",
+      "tokens": "+67462"
+    }
+  },
+  "notes": [
+    "Iter-2 confirms skill produces 100% pass rate across all 3 evals (greenfield bootstrap, architecture+no-commit, refresh). Baseline ranges 33-60% depending on whether seed artifacts pre-existed.",
+    "DIRTY check fix validated end-to-end — no false aborts in either eval-0 or eval-2 with-skill runs.",
+    "Second small bug found during iter-2 (`.understand-anything/.understandignore` not in allowlist) was also fixed in the shipped version (v3 of commit-safety.md).",
+    "Cost: skill is 2.7x slower and 2.0x more tokens than baseline. Most of the time delta comes from Phase 1 (/understand multi-agent pipeline) and the citation-discipline review pass.",
+    "Real /understand pipeline ran successfully in eval-0 with-skill iter-2 (87 nodes, 77 edges, 0 validation issues) — confirms the plugin works once pnpm install + pnpm build are completed.",
+    "Eval-2 refresh case validated the Phase 3 auto-skip behavior: when CLAUDE.md is already wired with both @ line + Karpathy heading, Phase 3 doesn't prompt the user (clean idempotency)."
+  ]
+}

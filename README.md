@@ -8,10 +8,11 @@ This repo is the generic counterpart to domain-specific skill repos (e.g. `flink
 
 ## Skills in this repo
 
-| Skill | Purpose | Status |
-|-------|---------|--------|
-| [`plantuml/`](plantuml/) | Generate valid PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 diagrams. Elicits intent when ambiguous, routes by diagram type, enforces structural rules + anti-patterns, emits a render command. | active |
-| [`system-design/`](system-design/) | Design real production systems end-to-end: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions. Numbers first, anti-overengineering, "boring tech until a constraint forces otherwise." Not interview prep. | active |
+| Skill | Purpose | Prereqs | Status |
+|-------|---------|---------|--------|
+| [`plantuml/`](plantuml/) | Generate valid PlantUML for sequence, component, class, state, activity, deployment, ER, use case, and C4 diagrams. Elicits intent when ambiguous, routes by diagram type, enforces structural rules + anti-patterns, emits a render command. | — | active |
+| [`system-design/`](system-design/) | Design real production systems end-to-end: elicit constraints → capacity estimate → data model & storage → architecture → scale the one bottleneck → failure modes → ADR-style decisions. Numbers first, anti-overengineering, "boring tech until a constraint forces otherwise." Not interview prep. | — | active |
+| [`agent-ready/`](agent-ready/) | Prepare any repository for AI agents: generate a knowledge graph, write a cited `AGENT_DESIGN_DOC.md` (10 sections, every claim traced to `file:line`), optionally produce an `ARCHITECTURE.md` with validated Mermaid diagrams, wire `CLAUDE.md` with the design-doc import + Karpathy Guidelines, then commit only the generated files. Flags: `--skip-understand`, `--skip-commit`, `--architecture`, `--no-split`. | Claude Code plugin: [`Lum1104/Understand-Anything`](https://github.com/Lum1104/Understand-Anything) | active |
 
 ## Install
 
@@ -21,14 +22,22 @@ This repo is the generic counterpart to domain-specific skill repos (e.g. `flink
 
 `install.sh` discovers every top-level directory containing a `SKILL.md` and creates a symlink at `~/.claude/skills/<skill-name>/`. Adding a new skill = drop a new top-level directory + re-run `install.sh`.
 
+If you also use Codex, Gemini CLI, or Copilot CLI (which read from `~/.agents/skills/`), pass `--also-agents` to mirror the symlinks there too:
+
+```bash
+./install.sh --also-agents
+```
+
 Verify:
 ```bash
 ls -l ~/.claude/skills/
+ls -l ~/.agents/skills/   # if you used --also-agents
 ```
 
 Remove the symlinks (without deleting source):
 ```bash
 ./uninstall.sh
+./uninstall.sh --also-agents   # also remove the ~/.agents/skills/ mirror
 ```
 
 `uninstall.sh` only removes symlinks pointing into THIS repo, so it's safe to run even if you have other skills installed from elsewhere.
@@ -49,10 +58,17 @@ ak-skills/
 ├── .gitignore
 ├── install.sh            ← multi-skill aware: symlinks every */SKILL.md
 ├── uninstall.sh          ← removes only symlinks pointing into THIS repo
-└── plantuml/
+├── plantuml/
+│   ├── SKILL.md
+│   ├── references/
+│   └── templates/
+├── system-design/
+└── agent-ready/
     ├── SKILL.md
-    ├── references/
-    └── templates/
+    ├── references/        ← rules, license attribution
+    ├── templates/         ← the design-doc skeleton
+    ├── scripts/           ← validate-mermaid.sh
+    └── evals/             ← skill-creator eval prompts
 ```
 
 ## License

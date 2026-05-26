@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "AGENT_DESIGN_DOC.md refreshed",
+      "passed": true,
+      "evidence": "7419 bytes"
+    },
+    {
+      "text": "All 10 sections present",
+      "passed": true,
+      "evidence": "all 10 present"
+    },
+    {
+      "text": "ARCHITECTURE.md exists with 4-6 mermaid blocks",
+      "passed": true,
+      "evidence": "6 blocks"
+    },
+    {
+      "text": "KG preserved (16277 bytes)",
+      "passed": false,
+      "evidence": "baseline didn't copy KG to outputs (trusted user; left repo's KG untouched per its report)"
+    },
+    {
+      "text": "config.json has architecture:true",
+      "passed": false,
+      "evidence": "baseline didn't manage config.json"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": false,
+      "evidence": "baseline didn't manage config.json"
+    },
+    {
+      "text": "New commit on top of seed",
+      "passed": true,
+      "evidence": "2 commit(s) total, seed_present=True"
+    },
+    {
+      "text": "New commit message exact match",
+      "passed": false,
+      "evidence": "no match"
+    },
+    {
+      "text": "No Co-Authored-By trailer",
+      "passed": true,
+      "evidence": "no trailer"
+    },
+    {
+      "text": "Staged files in allowlist",
+      "passed": true,
+      "evidence": "all 12 in allowlist"
+    }
+  ]
+}

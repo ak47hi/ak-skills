@@ -1,0 +1,14 @@
+commit 14c6aff5fb5012a4a16f9037ab69b21b62ad5c6f
+Author:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+AuthorDate: Mon May 25 22:43:16 2026 -0700
+Commit:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+CommitDate: Mon May 25 22:43:16 2026 -0700
+
+    feat: make repo agent-ready with knowledge graph auto-update and design doc
+
+ .understand-anything/config.json          |   5 +
+ .understand-anything/knowledge-graph.json | 161 +++++++++++++++++++++++++
+ .understand-anything/meta.json            |   6 +
+ AGENT_DESIGN_DOC.md                       | 191 ++++++++++++++++++++++++++++++
+ CLAUDE.md                                 |  67 +++++++++++
+ 5 files changed, 430 insertions(+)

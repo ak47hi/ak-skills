@@ -1,0 +1,16 @@
+{
+  "eval_id": 1,
+  "eval_name": "architecture-no-commit",
+  "prompt": "Make this codebase agent-ready and include architecture diagrams. Don't auto-commit, I want to review first.",
+  "assertions": [
+    {"text": "AGENT_DESIGN_DOC.md exists with all 10 sections", "kind": "structural"},
+    {"text": "ARCHITECTURE.md exists at the repo root", "kind": "file_exists"},
+    {"text": "ARCHITECTURE.md contains 4-6 fenced ```mermaid blocks", "kind": "structural"},
+    {"text": "ARCHITECTURE.md uses `flowchart TB` directive (not deprecated `graph TD`)", "kind": "structural"},
+    {"text": "No Mermaid block uses reserved keywords (loop, alt, else, opt, par, end, note) as participant IDs", "kind": "structural"},
+    {"text": ".understand-anything/config.json contains \"architecture\": true", "kind": "json_field"},
+    {"text": ".understand-anything/config.json contains \"autoUpdate\": true", "kind": "json_field"},
+    {"text": "No git commit was created during this run (git log unchanged)", "kind": "git_state"},
+    {"text": "CLAUDE.md contains @AGENT_DESIGN_DOC.md line if user-approved (Phase 3 ran)", "kind": "structural"}
+  ]
+}

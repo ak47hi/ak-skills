@@ -1,0 +1,1841 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "itsdangerous",
+    "languages": [
+      "batch",
+      "json",
+      "makefile",
+      "markdown",
+      "python",
+      "shell",
+      "toml",
+      "txt",
+      "typed",
+      "unknown",
+      "yaml"
+    ],
+    "frameworks": [],
+    "description": "Safely pass data to untrusted environments and back. Provides cryptographic signing and serialization for data that needs to round-trip through untrusted contexts (URLs, cookies, etc.).",
+    "analyzedAt": "2026-05-26T06:15:45.035509Z",
+    "gitCommitHash": "672971d66a2ef9f85151e53283113f33d642dabd"
+  },
+  "nodes": [
+    {
+      "id": "file:src/itsdangerous/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "src/itsdangerous/__init__.py",
+      "summary": "Public API surface: re-exports BadData/BadSignature/Signer/Serializer/TimestampSigner/URLSafeSerializer family for the itsdangerous package.",
+      "tags": [
+        "code",
+        "core",
+        "public-api",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/_json.py",
+      "type": "file",
+      "name": "_json.py",
+      "filePath": "src/itsdangerous/_json.py",
+      "summary": "Internal _CompactJSON helper that wraps json.dumps with separators=(\",\",\":\") for compact output.",
+      "tags": [
+        "code",
+        "core",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/_json.py:_CompactJSON",
+      "type": "class",
+      "name": "_CompactJSON",
+      "filePath": "src/itsdangerous/_json.py",
+      "summary": "Class _CompactJSON (lines 7-18, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/encoding.py",
+      "type": "file",
+      "name": "encoding.py",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Pure helpers: want_bytes coercion, urlsafe base64 encode/decode, int-to-bytes and bytes-to-int converters used by signing/serialization.",
+      "tags": [
+        "code",
+        "core",
+        "python",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/encoding.py:want_bytes",
+      "type": "function",
+      "name": "want_bytes",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Function want_bytes (lines 11-17).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/encoding.py:base64_encode",
+      "type": "function",
+      "name": "base64_encode",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Function base64_encode (lines 20-25).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/encoding.py:base64_decode",
+      "type": "function",
+      "name": "base64_decode",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Function base64_decode (lines 28-38).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/encoding.py:int_to_bytes",
+      "type": "function",
+      "name": "int_to_bytes",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Function int_to_bytes (lines 49-50).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/encoding.py:bytes_to_int",
+      "type": "function",
+      "name": "bytes_to_int",
+      "filePath": "src/itsdangerous/encoding.py",
+      "summary": "Function bytes_to_int (lines 53-54).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/exc.py",
+      "type": "file",
+      "name": "exc.py",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Exception hierarchy rooted at BadData. BadSignature/BadTimeSignature/SignatureExpired/BadHeader/BadPayload carry payload context for failed verification.",
+      "tags": [
+        "code",
+        "core",
+        "python"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:BadData",
+      "type": "class",
+      "name": "BadData",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class BadData (lines 7-19, 2 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:BadSignature",
+      "type": "class",
+      "name": "BadSignature",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class BadSignature (lines 22-33, 1 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:BadTimeSignature",
+      "type": "class",
+      "name": "BadTimeSignature",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class BadTimeSignature (lines 36-57, 1 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:SignatureExpired",
+      "type": "class",
+      "name": "SignatureExpired",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class SignatureExpired (lines 60-63, 0 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:BadHeader",
+      "type": "class",
+      "name": "BadHeader",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class BadHeader (lines 66-89, 1 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/exc.py:BadPayload",
+      "type": "class",
+      "name": "BadPayload",
+      "filePath": "src/itsdangerous/exc.py",
+      "summary": "Class BadPayload (lines 92-106, 1 methods).",
+      "tags": [
+        "python",
+        "class",
+        "exception"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/serializer.py",
+      "type": "file",
+      "name": "serializer.py",
+      "filePath": "src/itsdangerous/serializer.py",
+      "summary": "Serializer class composes a Signer with a serializer module (default json) to produce signed payloads. Implements dumps/loads, dumps_to_fobj/loads_from_fobj, and the _PDataSerializer Protocol the constructor accepts.",
+      "tags": [
+        "code",
+        "core",
+        "python",
+        "serialization",
+        "tested"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:src/itsdangerous/serializer.py:_PDataSerializer",
+      "type": "class",
+      "name": "_PDataSerializer",
+      "filePath": "src/itsdangerous/serializer.py",
+      "summary": "Class _PDataSerializer (lines 24-29, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/serializer.py:Serializer",
+      "type": "class",
+      "name": "Serializer",
+      "filePath": "src/itsdangerous/serializer.py",
+      "summary": "Class Serializer (lines 40-404, 18 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/serializer.py:is_text_serializer",
+      "type": "function",
+      "name": "is_text_serializer",
+      "filePath": "src/itsdangerous/serializer.py",
+      "summary": "Function is_text_serializer (lines 33-37).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/signer.py",
+      "type": "file",
+      "name": "signer.py",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Signing primitives: SigningAlgorithm Protocol, NoneAlgorithm (no-op), HMACAlgorithm (HMAC-SHA1 default), and Signer class that derives keys, computes/verifies signatures, separates value from signature with sep.",
+      "tags": [
+        "code",
+        "core",
+        "python",
+        "signing",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/itsdangerous/signer.py:SigningAlgorithm",
+      "type": "class",
+      "name": "SigningAlgorithm",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Class SigningAlgorithm (lines 15-28, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/signer.py:NoneAlgorithm",
+      "type": "class",
+      "name": "NoneAlgorithm",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Class NoneAlgorithm (lines 31-37, 1 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/signer.py:HMACAlgorithm",
+      "type": "class",
+      "name": "HMACAlgorithm",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Class HMACAlgorithm (lines 48-64, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/signer.py:Signer",
+      "type": "class",
+      "name": "Signer",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Class Signer (lines 76-266, 8 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/signer.py:_lazy_sha1",
+      "type": "function",
+      "name": "_lazy_sha1",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Function _lazy_sha1 (lines 40-45).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/itsdangerous/signer.py:_make_keys_list",
+      "type": "function",
+      "name": "_make_keys_list",
+      "filePath": "src/itsdangerous/signer.py",
+      "summary": "Function _make_keys_list (lines 67-73).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/timed.py",
+      "type": "file",
+      "name": "timed.py",
+      "filePath": "src/itsdangerous/timed.py",
+      "summary": "TimestampSigner adds a base64 timestamp to the signed payload; TimedSerializer composes it with Serializer and enforces max_age on load.",
+      "tags": [
+        "code",
+        "core",
+        "python",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/itsdangerous/timed.py:TimestampSigner",
+      "type": "class",
+      "name": "TimestampSigner",
+      "filePath": "src/itsdangerous/timed.py",
+      "summary": "Class TimestampSigner (lines 22-167, 7 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/timed.py:TimedSerializer",
+      "type": "class",
+      "name": "TimedSerializer",
+      "filePath": "src/itsdangerous/timed.py",
+      "summary": "Class TimedSerializer (lines 170-228, 3 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/url_safe.py",
+      "type": "file",
+      "name": "url_safe.py",
+      "filePath": "src/itsdangerous/url_safe.py",
+      "summary": "URLSafeSerializerMixin: zlib-compresses payload (when shorter) and uses urlsafe base64 + _CompactJSON to keep signed strings URL-safe. URLSafeSerializer/URLSafeTimedSerializer concrete classes.",
+      "tags": [
+        "code",
+        "core",
+        "python",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/url_safe.py:URLSafeSerializerMixin",
+      "type": "class",
+      "name": "URLSafeSerializerMixin",
+      "filePath": "src/itsdangerous/url_safe.py",
+      "summary": "Class URLSafeSerializerMixin (lines 15-69, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/url_safe.py:URLSafeSerializer",
+      "type": "class",
+      "name": "URLSafeSerializer",
+      "filePath": "src/itsdangerous/url_safe.py",
+      "summary": "Class URLSafeSerializer (lines 72-76, 0 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/itsdangerous/url_safe.py:URLSafeTimedSerializer",
+      "type": "class",
+      "name": "URLSafeTimedSerializer",
+      "filePath": "src/itsdangerous/url_safe.py",
+      "summary": "Class URLSafeTimedSerializer (lines 79-83, 0 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/test_serializer.py",
+      "type": "file",
+      "name": "test_serializer.py",
+      "filePath": "tests/test_itsdangerous/test_serializer.py",
+      "summary": "Tests for Serializer in src/itsdangerous/serializer.py.",
+      "tags": [
+        "code",
+        "python",
+        "serialization",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_serializer.py:TestSerializer",
+      "type": "class",
+      "name": "TestSerializer",
+      "filePath": "tests/test_itsdangerous/test_serializer.py",
+      "summary": "Class TestSerializer (lines 35-183, 15 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_serializer.py:coerce_str",
+      "type": "function",
+      "name": "coerce_str",
+      "filePath": "tests/test_itsdangerous/test_serializer.py",
+      "summary": "Function coerce_str (lines 28-32).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_serializer.py:test_digests",
+      "type": "function",
+      "name": "test_digests",
+      "filePath": "tests/test_itsdangerous/test_serializer.py",
+      "summary": "Function test_digests (lines 186-196).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/test_signer.py",
+      "type": "file",
+      "name": "test_signer.py",
+      "filePath": "tests/test_itsdangerous/test_signer.py",
+      "summary": "Tests for Signer / signing algorithms in src/itsdangerous/signer.py.",
+      "tags": [
+        "code",
+        "python",
+        "signing",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_signer.py:_ReverseAlgorithm",
+      "type": "class",
+      "name": "_ReverseAlgorithm",
+      "filePath": "tests/test_itsdangerous/test_signer.py",
+      "summary": "Class _ReverseAlgorithm (lines 13-15, 1 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_signer.py:TestSigner",
+      "type": "class",
+      "name": "TestSigner",
+      "filePath": "tests/test_itsdangerous/test_signer.py",
+      "summary": "Class TestSigner (lines 18-102, 12 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_signer.py:test_abstract_algorithm",
+      "type": "function",
+      "name": "test_abstract_algorithm",
+      "filePath": "tests/test_itsdangerous/test_signer.py",
+      "summary": "Function test_abstract_algorithm (lines 105-109).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/test_timed.py",
+      "type": "file",
+      "name": "test_timed.py",
+      "filePath": "tests/test_itsdangerous/test_timed.py",
+      "summary": "Tests for TimestampSigner / TimedSerializer (uses freezegun for time mocking).",
+      "tags": [
+        "code",
+        "python",
+        "test"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_timed.py:FreezeMixin",
+      "type": "class",
+      "name": "FreezeMixin",
+      "filePath": "tests/test_itsdangerous/test_timed.py",
+      "summary": "Class FreezeMixin (lines 18-26, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_timed.py:TestTimestampSigner",
+      "type": "class",
+      "name": "TestTimestampSigner",
+      "filePath": "tests/test_itsdangerous/test_timed.py",
+      "summary": "Class TestTimestampSigner (lines 29-93, 8 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_timed.py:TestTimedSerializer",
+      "type": "class",
+      "name": "TestTimedSerializer",
+      "filePath": "tests/test_itsdangerous/test_timed.py",
+      "summary": "Class TestTimedSerializer (lines 96-115, 3 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/test_url_safe.py",
+      "type": "file",
+      "name": "test_url_safe.py",
+      "filePath": "tests/test_itsdangerous/test_url_safe.py",
+      "summary": "Tests for URLSafeSerializer / URLSafeTimedSerializer.",
+      "tags": [
+        "code",
+        "python",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_url_safe.py:TestURLSafeSerializer",
+      "type": "class",
+      "name": "TestURLSafeSerializer",
+      "filePath": "tests/test_itsdangerous/test_url_safe.py",
+      "summary": "Class TestURLSafeSerializer (lines 11-18, 2 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_itsdangerous/test_url_safe.py:TestURLSafeTimedSerializer",
+      "type": "class",
+      "name": "TestURLSafeTimedSerializer",
+      "filePath": "tests/test_itsdangerous/test_url_safe.py",
+      "summary": "Class TestURLSafeTimedSerializer (lines 21-24, 1 methods).",
+      "tags": [
+        "python",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:.github/workflows/lock.yaml",
+      "type": "service",
+      "name": "lock.yaml",
+      "filePath": ".github/workflows/lock.yaml",
+      "summary": "GitHub Actions workflow: lock.yaml.",
+      "tags": [
+        "ci",
+        "infra",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:.github/workflows/pre-commit.yaml",
+      "type": "service",
+      "name": "pre-commit.yaml",
+      "filePath": ".github/workflows/pre-commit.yaml",
+      "summary": "GitHub Actions workflow: pre-commit.yaml.",
+      "tags": [
+        "ci",
+        "infra",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:.github/workflows/publish.yaml",
+      "type": "service",
+      "name": "publish.yaml",
+      "filePath": ".github/workflows/publish.yaml",
+      "summary": "GitHub Actions workflow: publish.yaml.",
+      "tags": [
+        "ci",
+        "infra",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:.github/workflows/tests.yaml",
+      "type": "service",
+      "name": "tests.yaml",
+      "filePath": ".github/workflows/tests.yaml",
+      "summary": "GitHub Actions workflow: tests.yaml.",
+      "tags": [
+        "ci",
+        "infra",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:.github/ISSUE_TEMPLATE/bug-report.md",
+      "type": "document",
+      "name": "bug-report.md",
+      "filePath": ".github/ISSUE_TEMPLATE/bug-report.md",
+      "summary": "GitHub repository configuration (bug-report.md).",
+      "tags": [
+        "ci",
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "type": "config",
+      "name": "config.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/config.yml",
+      "summary": "GitHub repository configuration (config.yml).",
+      "tags": [
+        "ci",
+        "config",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:.github/ISSUE_TEMPLATE/feature-request.md",
+      "type": "document",
+      "name": "feature-request.md",
+      "filePath": ".github/ISSUE_TEMPLATE/feature-request.md",
+      "summary": "GitHub repository configuration (feature-request.md).",
+      "tags": [
+        "ci",
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.pre-commit-config.yaml",
+      "type": "config",
+      "name": ".pre-commit-config.yaml",
+      "filePath": ".pre-commit-config.yaml",
+      "summary": "Pre-commit hooks: ruff lint/format on commit.",
+      "tags": [
+        "config",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.readthedocs.yaml",
+      "type": "config",
+      "name": ".readthedocs.yaml",
+      "filePath": ".readthedocs.yaml",
+      "summary": "Read the Docs build configuration (sphinx, python 3.13).",
+      "tags": [
+        "config",
+        "yaml"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CHANGES.rst",
+      "type": "document",
+      "name": "CHANGES.rst",
+      "filePath": "CHANGES.rst",
+      "summary": "Changelog (RST) tracking releases.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:LICENSE.txt",
+      "type": "document",
+      "name": "LICENSE.txt",
+      "filePath": "LICENSE.txt",
+      "summary": "BSD-3-Clause license text.",
+      "tags": [
+        "docs",
+        "txt"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview and quickstart example using URLSafeSerializer.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "pyproject.toml",
+      "summary": "Package manifest: name=itsdangerous, version=2.3.0.dev, BSD-3-Clause; declares dev/docs/tests/typing dependency groups, ruff/pytest config.",
+      "tags": [
+        "config",
+        "toml"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:docs/Makefile",
+      "type": "service",
+      "name": "Makefile",
+      "filePath": "docs/Makefile",
+      "summary": "Sphinx build infrastructure (Makefile).",
+      "tags": [
+        "docs",
+        "infra",
+        "makefile"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/changes.rst",
+      "type": "document",
+      "name": "changes.rst",
+      "filePath": "docs/changes.rst",
+      "summary": "Sphinx documentation page: changes.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/concepts.rst",
+      "type": "document",
+      "name": "concepts.rst",
+      "filePath": "docs/concepts.rst",
+      "summary": "Sphinx documentation page: concepts.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/encoding.rst",
+      "type": "document",
+      "name": "encoding.rst",
+      "filePath": "docs/encoding.rst",
+      "summary": "Sphinx documentation page: encoding.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/exceptions.rst",
+      "type": "document",
+      "name": "exceptions.rst",
+      "filePath": "docs/exceptions.rst",
+      "summary": "Sphinx documentation page: exceptions.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/index.rst",
+      "type": "document",
+      "name": "index.rst",
+      "filePath": "docs/index.rst",
+      "summary": "Sphinx documentation page: index.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/license.rst",
+      "type": "document",
+      "name": "license.rst",
+      "filePath": "docs/license.rst",
+      "summary": "Sphinx documentation page: license.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:docs/make.bat",
+      "type": "file",
+      "name": "make.bat",
+      "filePath": "docs/make.bat",
+      "summary": "Sphinx build infrastructure (make.bat).",
+      "tags": [
+        "batch",
+        "docs",
+        "script"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/serializer.rst",
+      "type": "document",
+      "name": "serializer.rst",
+      "filePath": "docs/serializer.rst",
+      "summary": "Sphinx documentation page: serializer.",
+      "tags": [
+        "docs",
+        "markdown",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/signer.rst",
+      "type": "document",
+      "name": "signer.rst",
+      "filePath": "docs/signer.rst",
+      "summary": "Sphinx documentation page: signer.",
+      "tags": [
+        "docs",
+        "markdown",
+        "signing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/timed.rst",
+      "type": "document",
+      "name": "timed.rst",
+      "filePath": "docs/timed.rst",
+      "summary": "Sphinx documentation page: timed.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/url_safe.rst",
+      "type": "document",
+      "name": "url_safe.rst",
+      "filePath": "docs/url_safe.rst",
+      "summary": "Sphinx documentation page: url safe.",
+      "tags": [
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.devcontainer/devcontainer.json",
+      "type": "config",
+      "name": "devcontainer.json",
+      "filePath": ".devcontainer/devcontainer.json",
+      "summary": "GitHub Codespaces / devcontainer config.",
+      "tags": [
+        "config",
+        "json"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.devcontainer/on-create-command.sh",
+      "type": "file",
+      "name": "on-create-command.sh",
+      "filePath": ".devcontainer/on-create-command.sh",
+      "summary": "Devcontainer bootstrap: installs project + uv dependencies.",
+      "tags": [
+        "script",
+        "shell"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:.github/pull_request_template.md",
+      "type": "document",
+      "name": "pull_request_template.md",
+      "filePath": ".github/pull_request_template.md",
+      "summary": "PR description template enforcing fixes/changelog/tests checklist.",
+      "tags": [
+        "ci",
+        "docs",
+        "markdown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "unknown code file (20 lines).",
+      "tags": [
+        "code",
+        "unknown"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "json config file (1 lines).",
+      "tags": [
+        "config",
+        "json"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:docs/conf.py",
+      "type": "file",
+      "name": "conf.py",
+      "filePath": "docs/conf.py",
+      "summary": "Sphinx build infrastructure (conf.py).",
+      "tags": [
+        "code",
+        "docs",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/itsdangerous/py.typed",
+      "type": "file",
+      "name": "py.typed",
+      "filePath": "src/itsdangerous/py.typed",
+      "summary": "typed code file (1 lines).",
+      "tags": [
+        "code",
+        "core",
+        "typed"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "tests/test_itsdangerous/__init__.py",
+      "summary": "Empty test package marker.",
+      "tags": [
+        "code",
+        "python",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_itsdangerous/test_encoding.py",
+      "type": "file",
+      "name": "test_encoding.py",
+      "filePath": "tests/test_itsdangerous/test_encoding.py",
+      "summary": "Tests for encoding helpers in src/itsdangerous/encoding.py.",
+      "tags": [
+        "code",
+        "python",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_encoding.py:test_want_bytes",
+      "type": "function",
+      "name": "test_want_bytes",
+      "filePath": "tests/test_itsdangerous/test_encoding.py",
+      "summary": "Function test_want_bytes (lines 12-14).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_encoding.py:test_base64",
+      "type": "function",
+      "name": "test_base64",
+      "filePath": "tests/test_itsdangerous/test_encoding.py",
+      "summary": "Function test_base64 (lines 18-22).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_encoding.py:test_base64_bad",
+      "type": "function",
+      "name": "test_base64_bad",
+      "filePath": "tests/test_itsdangerous/test_encoding.py",
+      "summary": "Function test_base64_bad (lines 25-27).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/test_itsdangerous/test_encoding.py:test_int_bytes",
+      "type": "function",
+      "name": "test_int_bytes",
+      "filePath": "tests/test_itsdangerous/test_encoding.py",
+      "summary": "Function test_int_bytes (lines 33-37).",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/itsdangerous/_json.py",
+      "target": "class:src/itsdangerous/_json.py:_CompactJSON",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "function:src/itsdangerous/encoding.py:want_bytes",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "function:src/itsdangerous/encoding.py:base64_encode",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "function:src/itsdangerous/encoding.py:base64_decode",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "function:src/itsdangerous/encoding.py:int_to_bytes",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "function:src/itsdangerous/encoding.py:bytes_to_int",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:BadData",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:BadSignature",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:BadTimeSignature",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:SignatureExpired",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:BadHeader",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/exc.py",
+      "target": "class:src/itsdangerous/exc.py:BadPayload",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "class:src/itsdangerous/serializer.py:_PDataSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "class:src/itsdangerous/serializer.py:Serializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "function:src/itsdangerous/serializer.py:is_text_serializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "class:src/itsdangerous/signer.py:SigningAlgorithm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "class:src/itsdangerous/signer.py:NoneAlgorithm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "class:src/itsdangerous/signer.py:HMACAlgorithm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "class:src/itsdangerous/signer.py:Signer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "function:src/itsdangerous/signer.py:_lazy_sha1",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "function:src/itsdangerous/signer.py:_make_keys_list",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "class:src/itsdangerous/timed.py:TimestampSigner",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "class:src/itsdangerous/timed.py:TimedSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "class:src/itsdangerous/url_safe.py:URLSafeSerializerMixin",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "class:src/itsdangerous/url_safe.py:URLSafeSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "class:src/itsdangerous/url_safe.py:URLSafeTimedSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_serializer.py",
+      "target": "class:tests/test_itsdangerous/test_serializer.py:TestSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_serializer.py",
+      "target": "function:tests/test_itsdangerous/test_serializer.py:coerce_str",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_serializer.py",
+      "target": "function:tests/test_itsdangerous/test_serializer.py:test_digests",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_signer.py",
+      "target": "class:tests/test_itsdangerous/test_signer.py:_ReverseAlgorithm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_signer.py",
+      "target": "class:tests/test_itsdangerous/test_signer.py:TestSigner",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_signer.py",
+      "target": "function:tests/test_itsdangerous/test_signer.py:test_abstract_algorithm",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_timed.py",
+      "target": "class:tests/test_itsdangerous/test_timed.py:FreezeMixin",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_timed.py",
+      "target": "class:tests/test_itsdangerous/test_timed.py:TestTimestampSigner",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_timed.py",
+      "target": "class:tests/test_itsdangerous/test_timed.py:TestTimedSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_url_safe.py",
+      "target": "class:tests/test_itsdangerous/test_url_safe.py:TestURLSafeSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_url_safe.py",
+      "target": "class:tests/test_itsdangerous/test_url_safe.py:TestURLSafeTimedSerializer",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_encoding.py",
+      "target": "function:tests/test_itsdangerous/test_encoding.py:test_want_bytes",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_encoding.py",
+      "target": "function:tests/test_itsdangerous/test_encoding.py:test_base64",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_encoding.py",
+      "target": "function:tests/test_itsdangerous/test_encoding.py:test_base64_bad",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_encoding.py",
+      "target": "function:tests/test_itsdangerous/test_encoding.py:test_int_bytes",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/serializer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/signer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/timed.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/__init__.py",
+      "target": "file:src/itsdangerous/url_safe.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "file:src/itsdangerous/signer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "file:src/itsdangerous/serializer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "file:src/itsdangerous/signer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:src/itsdangerous/_json.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:src/itsdangerous/exc.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:src/itsdangerous/serializer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:src/itsdangerous/timed.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_timed.py",
+      "target": "file:tests/test_itsdangerous/test_serializer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_timed.py",
+      "target": "file:tests/test_itsdangerous/test_signer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_url_safe.py",
+      "target": "file:tests/test_itsdangerous/test_serializer.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/test_itsdangerous/test_url_safe.py",
+      "target": "file:tests/test_itsdangerous/test_timed.py",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/serializer.py",
+      "target": "file:tests/test_itsdangerous/test_serializer.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/signer.py",
+      "target": "file:tests/test_itsdangerous/test_signer.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/timed.py",
+      "target": "file:tests/test_itsdangerous/test_timed.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/url_safe.py",
+      "target": "file:tests/test_itsdangerous/test_url_safe.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/itsdangerous/encoding.py",
+      "target": "file:tests/test_itsdangerous/test_encoding.py",
+      "type": "tested_by",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/encoding.rst",
+      "target": "file:src/itsdangerous/encoding.py",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/serializer.rst",
+      "target": "file:src/itsdangerous/serializer.py",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/signer.rst",
+      "target": "file:src/itsdangerous/signer.py",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/timed.rst",
+      "target": "file:src/itsdangerous/timed.py",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/url_safe.rst",
+      "target": "file:src/itsdangerous/url_safe.py",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "config:pyproject.toml",
+      "target": "file:src/itsdangerous/__init__.py",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:core-library",
+      "name": "Core Library",
+      "description": "The itsdangerous Python package: signing, serialization, encoding, exceptions, and URL-safe variants.",
+      "nodeIds": [
+        "file:src/itsdangerous/_json.py",
+        "file:src/itsdangerous/encoding.py",
+        "file:src/itsdangerous/exc.py",
+        "file:src/itsdangerous/serializer.py",
+        "file:src/itsdangerous/signer.py",
+        "file:src/itsdangerous/timed.py",
+        "file:src/itsdangerous/url_safe.py",
+        "file:src/itsdangerous/py.typed"
+      ]
+    },
+    {
+      "id": "layer:public-api",
+      "name": "Public API",
+      "description": "Top-level re-exports that form the package surface (src/itsdangerous/__init__.py).",
+      "nodeIds": [
+        "file:src/itsdangerous/__init__.py"
+      ]
+    },
+    {
+      "id": "layer:tests",
+      "name": "Tests",
+      "description": "pytest suite covering encoding, signer, serializer, timed, and url_safe modules.",
+      "nodeIds": [
+        "file:tests/test_itsdangerous/test_serializer.py",
+        "file:tests/test_itsdangerous/test_signer.py",
+        "file:tests/test_itsdangerous/test_timed.py",
+        "file:tests/test_itsdangerous/test_url_safe.py",
+        "file:tests/test_itsdangerous/__init__.py",
+        "file:tests/test_itsdangerous/test_encoding.py"
+      ]
+    },
+    {
+      "id": "layer:docs",
+      "name": "Documentation",
+      "description": "Sphinx documentation sources and configuration in docs/.",
+      "nodeIds": [
+        "service:docs/Makefile",
+        "document:docs/changes.rst",
+        "document:docs/concepts.rst",
+        "document:docs/encoding.rst",
+        "document:docs/exceptions.rst",
+        "document:docs/index.rst",
+        "document:docs/license.rst",
+        "file:docs/make.bat",
+        "document:docs/serializer.rst",
+        "document:docs/signer.rst",
+        "document:docs/timed.rst",
+        "document:docs/url_safe.rst",
+        "file:docs/conf.py"
+      ]
+    },
+    {
+      "id": "layer:project-config",
+      "name": "Project Configuration",
+      "description": "Build/test/lint/editor configuration at the repo root (pyproject.toml, ruff, pre-commit, editorconfig, gitignore, lockfile, license, readme).",
+      "nodeIds": [
+        "config:.pre-commit-config.yaml",
+        "document:CHANGES.rst",
+        "document:LICENSE.txt",
+        "document:README.md",
+        "config:pyproject.toml",
+        "file:.understand-anything/.understandignore",
+        "config:.understand-anything/config.json"
+      ]
+    },
+    {
+      "id": "layer:ci-and-devenv",
+      "name": "CI / Dev Environment",
+      "description": "GitHub workflows, PR/issue templates, devcontainer for codespaces, Read the Docs build config.",
+      "nodeIds": [
+        "service:.github/workflows/lock.yaml",
+        "service:.github/workflows/pre-commit.yaml",
+        "service:.github/workflows/publish.yaml",
+        "service:.github/workflows/tests.yaml",
+        "document:.github/ISSUE_TEMPLATE/bug-report.md",
+        "config:.github/ISSUE_TEMPLATE/config.yml",
+        "document:.github/ISSUE_TEMPLATE/feature-request.md",
+        "config:.readthedocs.yaml",
+        "config:.devcontainer/devcontainer.json",
+        "file:.devcontainer/on-create-command.sh",
+        "document:.github/pull_request_template.md"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README and license to understand what itsdangerous solves: cryptographic signing/serialization for data round-tripping through untrusted contexts.",
+      "nodeIds": [
+        "document:README.md",
+        "document:LICENSE.txt",
+        "config:pyproject.toml"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Public API surface",
+      "description": "The package __init__ re-exports the user-facing classes (Serializer, Signer, TimestampSigner, URLSafeSerializer, URLSafeTimedSerializer, and the BadData exception family).",
+      "nodeIds": [
+        "file:src/itsdangerous/__init__.py"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Encoding primitives",
+      "description": "Pure helpers used everywhere downstream: urlsafe base64 encode/decode, int-to-bytes conversion, want_bytes coercion.",
+      "nodeIds": [
+        "file:src/itsdangerous/encoding.py"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Signing core",
+      "description": "SigningAlgorithm Protocol, HMACAlgorithm (default), and Signer that ties keys, separators, and algorithm together for sign/verify.",
+      "nodeIds": [
+        "file:src/itsdangerous/signer.py"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Serialization layer",
+      "description": "Serializer composes a Signer with a serialization module (default json) to dumps/loads complex payloads as signed strings.",
+      "nodeIds": [
+        "file:src/itsdangerous/serializer.py"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Time-bounded variants",
+      "description": "TimestampSigner prepends a base64 timestamp; TimedSerializer wraps that into a serializer with max_age expiration.",
+      "nodeIds": [
+        "file:src/itsdangerous/timed.py"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "URL-safe variants",
+      "description": "URLSafeSerializerMixin uses zlib compression + urlsafe base64 + _CompactJSON to keep signed strings safe for URLs/cookies.",
+      "nodeIds": [
+        "file:src/itsdangerous/url_safe.py",
+        "file:src/itsdangerous/_json.py"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Exception model",
+      "description": "BadData rooted hierarchy: BadSignature, BadTimeSignature, SignatureExpired, BadHeader, BadPayload \u2014 all carry attribution data for failed verification.",
+      "nodeIds": [
+        "file:src/itsdangerous/exc.py"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Tests",
+      "description": "pytest suite mirroring each src module (encoding, signer, serializer, timed, url_safe). Uses freezegun for time-based assertions.",
+      "nodeIds": [
+        "file:tests/test_itsdangerous/test_signer.py",
+        "file:tests/test_itsdangerous/test_serializer.py",
+        "file:tests/test_itsdangerous/test_timed.py",
+        "file:tests/test_itsdangerous/test_url_safe.py",
+        "file:tests/test_itsdangerous/test_encoding.py"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "Documentation & release infra",
+      "description": "Sphinx docs (concepts, signer, serializer, timed, url_safe, encoding), changelog, devcontainer, GitHub workflows.",
+      "nodeIds": [
+        "document:docs/index.rst",
+        "document:docs/concepts.rst",
+        "document:docs/signer.rst",
+        "document:docs/serializer.rst",
+        "document:docs/timed.rst",
+        "document:docs/url_safe.rst",
+        "document:docs/encoding.rst",
+        "document:docs/exceptions.rst",
+        "document:CHANGES.rst"
+      ]
+    }
+  ]
+}

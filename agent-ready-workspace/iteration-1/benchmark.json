@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "skill_name": "agent-ready",
+    "skill_path": "/Users/ak_ninja/.claude/skills/agent-ready",
+    "executor_model": "claude-opus-4-7",
+    "timestamp": "2026-05-26T05:50:00Z",
+    "evals_run": [0, 1],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "greenfield-bootstrap",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 486.0,
+        "tokens": 119251,
+        "tool_calls": 54,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md exists", "passed": true, "evidence": "exists"},
+        {"text": "All 10 sections present", "passed": true, "evidence": "all 10 sections present (slim + no split)"},
+        {"text": "At least 3 file:line citations", "passed": true, "evidence": "113 citations found"},
+        {"text": "knowledge-graph.json non-empty", "passed": true, "evidence": "26277 bytes"},
+        {"text": "config.json has autoUpdate:true", "passed": true, "evidence": "autoUpdate=True"},
+        {"text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line", "passed": true, "evidence": "line present"},
+        {"text": "If >200 lines, .agent-docs/ has 7 files", "passed": true, "evidence": "191 lines, N/A (under threshold)"},
+        {"text": "Commit message exact match", "passed": true, "evidence": "exact commit message found"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no Co-Authored-By trailer"},
+        {"text": "Staged files in allowlist", "passed": true, "evidence": "5 files all in allowlist"}
+      ],
+      "notes": [
+        "Phase 1 fallback: /understand failed (pnpm unavailable in subagent sandbox), agent built KG by hand",
+        "Phase 5 deviation: pre-stage DIRTY check false-positive on untracked .understand-anything/ directory; subagent skipped only that check, kept post-stage guard"
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "greenfield-bootstrap",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.40,
+        "passed": 4,
+        "failed": 6,
+        "total": 10,
+        "time_seconds": 188.3,
+        "tokens": 60846,
+        "tool_calls": 22,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "AGENT_DESIGN_DOC.md exists", "passed": true, "evidence": "exists"},
+        {"text": "All 10 sections present", "passed": false, "evidence": "missing 8 of 10 sections (used own 11-section structure)"},
+        {"text": "At least 3 file:line citations", "passed": true, "evidence": "36 citations found"},
+        {"text": "knowledge-graph.json non-empty", "passed": true, "evidence": "9641 bytes (placed at repo root, not .understand-anything/)"},
+        {"text": "config.json has autoUpdate:true", "passed": false, "evidence": "baseline didn't create config.json"},
+        {"text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line", "passed": false, "evidence": "no @ line"},
+        {"text": "If >200 lines, .agent-docs/ has 7 files", "passed": false, "evidence": "doc is 206 lines, no split"},
+        {"text": "Commit message exact match", "passed": false, "evidence": "used 'Add agent onboarding docs and knowledge graph'"},
+        {"text": "No Co-Authored-By trailer", "passed": true, "evidence": "no trailer"},
+        {"text": "Staged files in allowlist", "passed": false, "evidence": "knowledge-graph.json at root, not in .understand-anything/"}
+      ],
+      "notes": [
+        "Improvised own structure (11 sections), placed knowledge graph at repo root",
+        "Did not produce config.json or wire CLAUDE.md import line",
+        "Faster (3:08 vs 8:06) but produced different artifact shape"
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "architecture-no-commit",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 555.6,
+        "tokens": 130014,
+        "tool_calls": 55,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "All 10 sections present (slim + .agent-docs)", "passed": true, "evidence": "all 10 sections present (94-line slim + 7 .agent-docs files)"},
+        {"text": "ARCHITECTURE.md exists", "passed": true, "evidence": "exists"},
+        {"text": "4-6 Mermaid blocks", "passed": true, "evidence": "6 blocks"},
+        {"text": "Uses flowchart TB", "passed": true, "evidence": "directive present"},
+        {"text": "No reserved keywords as IDs", "passed": true, "evidence": "clean"},
+        {"text": "config has architecture:true", "passed": true, "evidence": "architecture=True"},
+        {"text": "config has autoUpdate:true", "passed": true, "evidence": "autoUpdate=True"},
+        {"text": "No new git commit", "passed": true, "evidence": "HEAD unchanged (original itsdangerous merge)"},
+        {"text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line", "passed": true, "evidence": "line present"}
+      ],
+      "notes": [
+        "Phase 2.4 split correctly triggered (doc was >200 lines, slim became 94 lines, 7 .agent-docs files)",
+        "[NEEDS_CONTEXT] conservation invariant held (2 markers preserved across split)",
+        "mmdc not installed -> validate-mermaid.sh no-op'd per spec; ARCHITECTURE.md emitted with warning banner",
+        "Phase 1 same plugin-not-built fallback as eval-0"
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "architecture-no-commit",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 3,
+        "failed": 6,
+        "total": 9,
+        "time_seconds": 266.2,
+        "tokens": 74401,
+        "tool_calls": 29,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "All 10 sections present", "passed": false, "evidence": "used own structure; missing 9 of 10 expected sections"},
+        {"text": "ARCHITECTURE.md exists", "passed": true, "evidence": "exists"},
+        {"text": "4-6 Mermaid blocks", "passed": false, "evidence": "8 blocks (over upper bound; baseline overproduced)"},
+        {"text": "Uses flowchart TB", "passed": false, "evidence": "no flowchart TB directive (used classDiagram + sequenceDiagram + flowchart LR)"},
+        {"text": "No reserved keywords as IDs", "passed": true, "evidence": "clean"},
+        {"text": "config has architecture:true", "passed": false, "evidence": "didn't create config.json"},
+        {"text": "config has autoUpdate:true", "passed": false, "evidence": "didn't create config.json"},
+        {"text": "No new git commit", "passed": true, "evidence": "untracked / no commit"},
+        {"text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line", "passed": false, "evidence": "no @ line"}
+      ],
+      "notes": [
+        "Baseline validated diagrams via MCP Mermaid tool (8 diagrams, all valid) — more thorough than skill's mmdc fallback",
+        "Used 3 files (CLAUDE.md, AGENT_GUIDE.md, ARCHITECTURE.md) with custom section structure"
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.000, "stddev": 0.00, "min": 1.00, "max": 1.00},
+      "time_seconds": {"mean": 520.8, "stddev": 49.2, "min": 486.0, "max": 555.6},
+      "tokens": {"mean": 124632, "stddev": 7615, "min": 119251, "max": 130014}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.365, "stddev": 0.05, "min": 0.33, "max": 0.40},
+      "time_seconds": {"mean": 227.3, "stddev": 55.0, "min": 188.3, "max": 266.2},
+      "tokens": {"mean": 67623, "stddev": 9582, "min": 60846, "max": 74401}
+    },
+    "delta": {
+      "pass_rate": "+0.635",
+      "time_seconds": "+293.5",
+      "tokens": "+57010"
+    }
+  },
+  "notes": [
+    "Skill pass rate is 100% on both evals vs. 33-40% for baseline — strong signal that the skill's structured 10-section template + allowlist commit + CLAUDE.md wiring produces consistent output that baselines don't.",
+    "Cost: skill runs ~2.3x slower and uses ~1.8x more tokens than baseline — driven by Phase 1 (/understand) attempts and the detailed citation discipline.",
+    "Real bug surfaced: Phase 5 pre-stage DIRTY check has a false positive on untracked directories (eval-0 with-skill had to skip it). Fix: use `git status --porcelain -u` or `git ls-files --others --exclude-standard` to enumerate per-file paths.",
+    "Ecosystem gap: /understand requires Node/pnpm and a built plugin core; both with-skill subagents fell back to hand-built KGs. Worth documenting in SKILL.md error path.",
+    "Baseline produced thoughtful artifacts but with different shapes — it doesn't follow the 10-section template or wire CLAUDE.md, so assertions tied to those are inherently skill-favoring. The 'fast and reasonable but non-standard' baseline shows the skill's value is enforcing a consistent structure."
+  ]
+}

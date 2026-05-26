@@ -1,0 +1,22 @@
+commit 2f28649ddb22dd893a05be8e3ebbcc81eca48ea5
+Author:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+AuthorDate: Mon May 25 22:38:25 2026 -0700
+Commit:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+CommitDate: Mon May 25 22:38:25 2026 -0700
+
+    Add agent onboarding docs and knowledge graph
+    
+    Bootstrap the repo for AI agent navigation:
+    - AGENT_DESIGN_DOC.md: layered-architecture overview with wire-format
+      details, exception hierarchy, typing notes, and common change recipes,
+      each claim cited to file:line.
+    - knowledge-graph.json: machine-readable module / class / import graph
+      for fast dependency queries without re-grepping.
+    - CLAUDE.md: entry point that points agents at the design doc and graph,
+      states project rules (no runtime deps, wire format is a contract,
+      layer discipline), and lists common commands and file pointers.
+
+ AGENT_DESIGN_DOC.md  | 206 +++++++++++++++++++++++++++++++++++++++++
+ CLAUDE.md            |  68 ++++++++++++++
+ knowledge-graph.json | 255 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 529 insertions(+)

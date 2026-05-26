@@ -1,0 +1,19 @@
+{
+  "eval_id": 0,
+  "eval_name": "greenfield-bootstrap",
+  "prompt": "Bootstrap this repo so a Claude agent can navigate it — generate a design doc and a knowledge graph, then commit it.",
+  "assertions": [
+    {"text": "AGENT_DESIGN_DOC.md exists at the repo root", "kind": "file_exists"},
+    {"text": "AGENT_DESIGN_DOC.md (or slim version) contains all 10 sections in order: What This Project Does, Architecture, Core Data Structures, Key Algorithms, Business Logic Rules, External Dependencies, Configuration, Error Handling, Testing Strategy, Open Questions", "kind": "structural"},
+    {"text": "Design doc claims cite source via `file:line` pattern (at least 3 such citations in §§3-8)", "kind": "structural"},
+    {"text": ".understand-anything/knowledge-graph.json exists and is non-empty", "kind": "file_exists"},
+    {"text": ".understand-anything/config.json contains \"autoUpdate\": true", "kind": "json_field"},
+    {"text": "CLAUDE.md contains the line `@AGENT_DESIGN_DOC.md`", "kind": "structural"},
+    {"text": "If AGENT_DESIGN_DOC.md > 200 lines, .agent-docs/ directory exists with 7 expected files", "kind": "conditional"},
+    {"text": "Git history shows exactly one new commit since the start of the run", "kind": "git_state"},
+    {"text": "The new commit message exactly equals `feat: make repo agent-ready with knowledge graph auto-update and design doc`", "kind": "git_state"},
+    {"text": "The new commit body does NOT contain `Co-Authored-By:` (any variant)", "kind": "git_state"},
+    {"text": "The new commit staged files are a subset of the allowlist (.understand-anything/*.json, AGENT_DESIGN_DOC.md, .agent-docs/*.md, CLAUDE.md, ARCHITECTURE.md)", "kind": "git_state"},
+    {"text": "No `git push` was performed (remote HEAD unchanged or no remote)", "kind": "git_state"}
+  ]
+}

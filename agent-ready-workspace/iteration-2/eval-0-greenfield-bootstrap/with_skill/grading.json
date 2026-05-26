@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "AGENT_DESIGN_DOC.md exists",
+      "passed": true,
+      "evidence": "exists"
+    },
+    {
+      "text": "All 10 sections present (slim + .agent-docs)",
+      "passed": true,
+      "evidence": "all 10 present"
+    },
+    {
+      "text": "At least 3 file:line citations",
+      "passed": true,
+      "evidence": "98 citations"
+    },
+    {
+      "text": "knowledge-graph.json non-empty",
+      "passed": true,
+      "evidence": "54041 bytes"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": true,
+      "evidence": "autoUpdate=True"
+    },
+    {
+      "text": "CLAUDE.md has @ line",
+      "passed": true,
+      "evidence": "@ line present"
+    },
+    {
+      "text": "If >200 lines, .agent-docs/ has 7 files (doc is 112)",
+      "passed": true,
+      "evidence": "split anyway: True, files=7"
+    },
+    {
+      "text": "Commit message exact match",
+      "passed": true,
+      "evidence": "exact match"
+    },
+    {
+      "text": "No Co-Authored-By trailer",
+      "passed": true,
+      "evidence": "no trailer"
+    },
+    {
+      "text": "Staged files in allowlist",
+      "passed": true,
+      "evidence": "all 13 in allowlist"
+    }
+  ]
+}

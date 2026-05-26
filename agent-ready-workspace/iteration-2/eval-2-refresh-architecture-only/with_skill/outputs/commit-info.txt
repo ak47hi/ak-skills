@@ -1,0 +1,40 @@
+commit 8f39b2cf84080b21016baf9bd73add9bf674b6b2
+Author:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+AuthorDate: Mon May 25 23:14:52 2026 -0700
+Commit:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+CommitDate: Mon May 25 23:14:52 2026 -0700
+
+    feat: make repo agent-ready with knowledge graph auto-update and design doc
+
+ .agent-docs/algorithms.md      | 23 +++++++++++++----------
+ .agent-docs/business-rules.md  |  4 +++-
+ .agent-docs/configuration.md   |  6 ++++--
+ .agent-docs/data-structures.md | 12 ++++++++++++
+ .agent-docs/error-handling.md  |  6 ++++--
+ .agent-docs/integrations.md    |  3 ++-
+ .agent-docs/testing.md         |  7 ++++---
+ AGENT_DESIGN_DOC.md            | 14 +++++++-------
+ ARCHITECTURE.md                | 31 ++++++++++++++++---------------
+ 9 files changed, 65 insertions(+), 41 deletions(-)
+
+commit 44e36d30b8dbaa70c1eb54cbdfb9b4e0b1473338
+Author:     eval <eval@local>
+AuthorDate: Mon May 25 23:09:22 2026 -0700
+Commit:     eval <eval@local>
+CommitDate: Mon May 25 23:09:22 2026 -0700
+
+    seed: pre-existing agent-ready artifacts (for refresh test)
+
+ .agent-docs/algorithms.md                 |  36 +++++
+ .agent-docs/business-rules.md             |  17 +++
+ .agent-docs/configuration.md              |  23 ++++
+ .agent-docs/data-structures.md            |  42 ++++++
+ .agent-docs/error-handling.md             |  21 +++
+ .agent-docs/integrations.md               |  13 ++
+ .agent-docs/testing.md                    |  12 ++
+ .understand-anything/config.json          |   5 +
+ .understand-anything/knowledge-graph.json | 104 ++++++++++++++
+ AGENT_DESIGN_DOC.md                       |  94 +++++++++++++
+ ARCHITECTURE.md                           | 220 ++++++++++++++++++++++++++++++
+ CLAUDE.md                                 |  67 +++++++++
+ 12 files changed, 654 insertions(+)

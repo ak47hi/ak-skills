@@ -1,0 +1,16 @@
+{
+  "eval_id": 2,
+  "eval_name": "refresh-architecture-only",
+  "prompt": "Refresh the AGENT_DESIGN_DOC and architecture for this project — the KG is already current.",
+  "assertions": [
+    {"text": "Phase 1 was skipped (no /understand invocation in transcript)", "kind": "behavioral"},
+    {"text": "AGENT_DESIGN_DOC.md exists and is non-empty (regenerated or kept)", "kind": "file_exists"},
+    {"text": "ARCHITECTURE.md exists with 4-6 mermaid blocks", "kind": "structural"},
+    {"text": ".understand-anything/knowledge-graph.json is unchanged (not regenerated)", "kind": "behavioral"},
+    {"text": ".understand-anything/config.json still has architecture:true and autoUpdate:true", "kind": "json_field"},
+    {"text": "New git commit on top of the seed commit (HEAD differs from seed)", "kind": "git_state"},
+    {"text": "New commit message exactly equals feat: make repo agent-ready with knowledge graph auto-update and design doc", "kind": "git_state"},
+    {"text": "No Co-Authored-By trailer in new commit", "kind": "git_state"},
+    {"text": "Staged files are subset of allowlist", "kind": "git_state"}
+  ]
+}

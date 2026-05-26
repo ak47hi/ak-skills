@@ -1,0 +1,46 @@
+commit 9e05e5c4271593769898161f5d395179cd59b3f1
+Author:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+AuthorDate: Mon May 25 23:12:38 2026 -0700
+Commit:     Akhilesh Thurumalla <akhilesh.thurumalla@gmail.com>
+CommitDate: Mon May 25 23:12:38 2026 -0700
+
+    docs: refresh AGENT_DESIGN_DOC and ARCHITECTURE against current KG
+    
+    Targeted refresh — content was already accurate against HEAD; line-number
+    citations spot-checked across signer.py, timed.py, url_safe.py, serializer.py
+    and confirmed unchanged. KG (.understand-anything/knowledge-graph.json) left
+    as-is per user instruction (already current).
+    
+    Changes:
+    - Add "Last refreshed" provenance lines to both docs.
+    - Resolve the open question about pyproject.toml:86 coverage source —
+      verified it is a copy-paste bug ("jinja2" should be "itsdangerous").
+      No CI workflow runs coverage, so the bug only surfaces in local runs.
+    - Reframe ARCHITECTURE.md mermaid-validation note to drop the slash-command
+      prescription and point at generic mmdc usage.
+
+ AGENT_DESIGN_DOC.md | 7 +++++--
+ ARCHITECTURE.md     | 9 +++++----
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
+commit 320c43408704181297d7ef20daafd60033c7c1fb
+Author:     eval <eval@local>
+AuthorDate: Mon May 25 23:09:24 2026 -0700
+Commit:     eval <eval@local>
+CommitDate: Mon May 25 23:09:24 2026 -0700
+
+    seed: pre-existing agent-ready artifacts (for refresh test)
+
+ .agent-docs/algorithms.md                 |  36 +++++
+ .agent-docs/business-rules.md             |  17 +++
+ .agent-docs/configuration.md              |  23 ++++
+ .agent-docs/data-structures.md            |  42 ++++++
+ .agent-docs/error-handling.md             |  21 +++
+ .agent-docs/integrations.md               |  13 ++
+ .agent-docs/testing.md                    |  12 ++
+ .understand-anything/config.json          |   5 +
+ .understand-anything/knowledge-graph.json | 104 ++++++++++++++
+ AGENT_DESIGN_DOC.md                       |  94 +++++++++++++
+ ARCHITECTURE.md                           | 220 ++++++++++++++++++++++++++++++
+ CLAUDE.md                                 |  67 +++++++++
+ 12 files changed, 654 insertions(+)

@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "AGENT_DESIGN_DOC.md exists",
+      "passed": true,
+      "evidence": "exists"
+    },
+    {
+      "text": "All 10 sections present",
+      "passed": true,
+      "evidence": "all 10 sections present (slim + no split)"
+    },
+    {
+      "text": "At least 3 file:line citations",
+      "passed": true,
+      "evidence": "113 citations found"
+    },
+    {
+      "text": "knowledge-graph.json non-empty",
+      "passed": true,
+      "evidence": "26277 bytes"
+    },
+    {
+      "text": "config.json has autoUpdate:true",
+      "passed": true,
+      "evidence": "autoUpdate=True (expected True)"
+    },
+    {
+      "text": "CLAUDE.md has @AGENT_DESIGN_DOC.md line",
+      "passed": true,
+      "evidence": "@AGENT_DESIGN_DOC.md line present"
+    },
+    {
+      "text": "If >200 lines, .agent-docs/ has 7 files (doc is 191 lines, no split needed)",
+      "passed": true,
+      "evidence": "N/A (under threshold)"
+    },
+    {
+      "text": "Commit message matches feat: ...agent-ready... pattern",
+      "passed": true,
+      "evidence": "exact commit message found"
+    },
+    {
+      "text": "No Co-Authored-By trailer in commit",
+      "passed": true,
+      "evidence": "no Co-Authored-By trailer"
+    },
+    {
+      "text": "Staged files are subset of allowlist",
+      "passed": true,
+      "evidence": "5 files all in allowlist"
+    }
+  ]
+}

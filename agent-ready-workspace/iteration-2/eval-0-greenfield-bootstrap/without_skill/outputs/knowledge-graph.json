@@ -1,0 +1,255 @@
+{
+  "schema_version": "1.0",
+  "project": "itsdangerous",
+  "description": "Cryptographic signing of data for safe transmission to untrusted environments.",
+  "generated_for": "Claude agent navigation",
+  "entry_points": [
+    "src/itsdangerous/__init__.py"
+  ],
+  "modules": [
+    {
+      "id": "encoding",
+      "path": "src/itsdangerous/encoding.py",
+      "role": "Low-level byte/base64/int helpers used by every other module.",
+      "public_api": [
+        "want_bytes",
+        "base64_encode",
+        "base64_decode",
+        "int_to_bytes",
+        "bytes_to_int",
+        "_base64_alphabet"
+      ],
+      "depends_on": ["exc"]
+    },
+    {
+      "id": "exc",
+      "path": "src/itsdangerous/exc.py",
+      "role": "Exception hierarchy. BadData is the root; BadSignature, BadTimeSignature, SignatureExpired, BadHeader, BadPayload are descendants.",
+      "public_api": [
+        "BadData",
+        "BadSignature",
+        "BadTimeSignature",
+        "SignatureExpired",
+        "BadHeader",
+        "BadPayload"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "_json",
+      "path": "src/itsdangerous/_json.py",
+      "role": "Private compact-JSON wrapper (no whitespace, no ascii-only). Used as the default serializer for URL-safe variants.",
+      "public_api": ["_CompactJSON"],
+      "depends_on": []
+    },
+    {
+      "id": "signer",
+      "path": "src/itsdangerous/signer.py",
+      "role": "Core HMAC signing. Defines SigningAlgorithm/NoneAlgorithm/HMACAlgorithm and the Signer class that signs/verifies bytes using key derivation + separator + base64 signature.",
+      "public_api": [
+        "SigningAlgorithm",
+        "NoneAlgorithm",
+        "HMACAlgorithm",
+        "Signer",
+        "_make_keys_list"
+      ],
+      "key_concepts": [
+        "secret_keys list (oldest -> newest) for key rotation",
+        "salt scopes the derived key per context",
+        "key_derivation modes: concat, django-concat (default), hmac, none",
+        "sep byte must not appear in base64 alphabet"
+      ],
+      "depends_on": ["encoding", "exc"]
+    },
+    {
+      "id": "serializer",
+      "path": "src/itsdangerous/serializer.py",
+      "role": "Wraps a Signer to sign arbitrary objects (default: JSON). dumps/loads encode object -> bytes -> signed string. Supports fallback_signers for migration.",
+      "public_api": [
+        "Serializer",
+        "is_text_serializer",
+        "_PDataSerializer",
+        "_TSerialized"
+      ],
+      "key_concepts": [
+        "Generic over _TSerialized (str or bytes) so type checker knows the payload format",
+        "load_payload / dump_payload separate serialization from signing",
+        "iter_unsigners yields primary signer + fallback signers",
+        "loads_unsafe returns (valid, payload) without raising"
+      ],
+      "depends_on": ["encoding", "exc", "signer"]
+    },
+    {
+      "id": "timed",
+      "path": "src/itsdangerous/timed.py",
+      "role": "Adds timestamps to signatures so they can expire. TimestampSigner extends Signer; TimedSerializer extends Serializer to use it.",
+      "public_api": ["TimestampSigner", "TimedSerializer"],
+      "key_concepts": [
+        "sign() appends base64(int_to_bytes(unix_ts)) before HMAC",
+        "unsign(max_age=...) raises SignatureExpired when age > max_age",
+        "return_timestamp option returns (value, aware datetime in UTC)"
+      ],
+      "depends_on": ["encoding", "exc", "serializer", "signer"]
+    },
+    {
+      "id": "url_safe",
+      "path": "src/itsdangerous/url_safe.py",
+      "role": "URLSafeSerializerMixin compresses (zlib) if it shrinks the payload and base64-encodes it. Combined with Serializer / TimedSerializer to produce URL-safe outputs.",
+      "public_api": [
+        "URLSafeSerializerMixin",
+        "URLSafeSerializer",
+        "URLSafeTimedSerializer"
+      ],
+      "key_concepts": [
+        "Leading '.' marks compressed payload",
+        "Default serializer is _CompactJSON (str)",
+        "load_payload undoes base64 (and optional zlib) before delegating"
+      ],
+      "depends_on": ["_json", "encoding", "exc", "serializer", "timed"]
+    },
+    {
+      "id": "__init__",
+      "path": "src/itsdangerous/__init__.py",
+      "role": "Public API re-exports. Anything imported here is the stable surface.",
+      "public_api": [
+        "BadData",
+        "BadHeader",
+        "BadPayload",
+        "BadSignature",
+        "BadTimeSignature",
+        "SignatureExpired",
+        "Serializer",
+        "Signer",
+        "HMACAlgorithm",
+        "NoneAlgorithm",
+        "TimedSerializer",
+        "TimestampSigner",
+        "URLSafeSerializer",
+        "URLSafeTimedSerializer",
+        "base64_encode",
+        "base64_decode",
+        "want_bytes"
+      ],
+      "depends_on": [
+        "encoding",
+        "exc",
+        "serializer",
+        "signer",
+        "timed",
+        "url_safe"
+      ]
+    }
+  ],
+  "classes": [
+    {
+      "id": "SigningAlgorithm",
+      "module": "signer",
+      "kind": "abstract",
+      "subclasses": ["NoneAlgorithm", "HMACAlgorithm"]
+    },
+    {
+      "id": "Signer",
+      "module": "signer",
+      "subclasses": ["TimestampSigner"],
+      "key_methods": ["derive_key", "get_signature", "sign", "unsign", "verify_signature", "validate"]
+    },
+    {
+      "id": "TimestampSigner",
+      "module": "timed",
+      "extends": "Signer",
+      "adds": ["get_timestamp", "timestamp_to_datetime", "unsign(max_age, return_timestamp)"]
+    },
+    {
+      "id": "Serializer",
+      "module": "serializer",
+      "subclasses": ["TimedSerializer", "URLSafeSerializerMixin"],
+      "key_methods": ["dumps", "loads", "dump_payload", "load_payload", "make_signer", "iter_unsigners", "loads_unsafe"]
+    },
+    {
+      "id": "TimedSerializer",
+      "module": "timed",
+      "extends": "Serializer",
+      "subclasses": ["URLSafeTimedSerializer"]
+    },
+    {
+      "id": "URLSafeSerializerMixin",
+      "module": "url_safe",
+      "extends": "Serializer",
+      "subclasses": ["URLSafeSerializer", "URLSafeTimedSerializer"]
+    },
+    {
+      "id": "URLSafeSerializer",
+      "module": "url_safe",
+      "extends": ["URLSafeSerializerMixin", "Serializer"]
+    },
+    {
+      "id": "URLSafeTimedSerializer",
+      "module": "url_safe",
+      "extends": ["URLSafeSerializerMixin", "TimedSerializer"]
+    },
+    {
+      "id": "BadData",
+      "module": "exc",
+      "subclasses": ["BadSignature", "BadPayload"]
+    },
+    {
+      "id": "BadSignature",
+      "module": "exc",
+      "extends": "BadData",
+      "subclasses": ["BadTimeSignature", "BadHeader"]
+    },
+    {
+      "id": "BadTimeSignature",
+      "module": "exc",
+      "extends": "BadSignature",
+      "subclasses": ["SignatureExpired"]
+    }
+  ],
+  "edges": [
+    {"from": "url_safe", "to": "_json", "kind": "imports"},
+    {"from": "url_safe", "to": "serializer", "kind": "imports"},
+    {"from": "url_safe", "to": "timed", "kind": "imports"},
+    {"from": "url_safe", "to": "encoding", "kind": "imports"},
+    {"from": "url_safe", "to": "exc", "kind": "imports"},
+    {"from": "timed", "to": "serializer", "kind": "imports"},
+    {"from": "timed", "to": "signer", "kind": "imports"},
+    {"from": "timed", "to": "encoding", "kind": "imports"},
+    {"from": "timed", "to": "exc", "kind": "imports"},
+    {"from": "serializer", "to": "signer", "kind": "imports"},
+    {"from": "serializer", "to": "encoding", "kind": "imports"},
+    {"from": "serializer", "to": "exc", "kind": "imports"},
+    {"from": "signer", "to": "encoding", "kind": "imports"},
+    {"from": "signer", "to": "exc", "kind": "imports"},
+    {"from": "encoding", "to": "exc", "kind": "imports"},
+    {"from": "TimestampSigner", "to": "Signer", "kind": "extends"},
+    {"from": "TimedSerializer", "to": "Serializer", "kind": "extends"},
+    {"from": "URLSafeSerializerMixin", "to": "Serializer", "kind": "extends"},
+    {"from": "URLSafeSerializer", "to": "URLSafeSerializerMixin", "kind": "extends"},
+    {"from": "URLSafeSerializer", "to": "Serializer", "kind": "extends"},
+    {"from": "URLSafeTimedSerializer", "to": "URLSafeSerializerMixin", "kind": "extends"},
+    {"from": "URLSafeTimedSerializer", "to": "TimedSerializer", "kind": "extends"},
+    {"from": "HMACAlgorithm", "to": "SigningAlgorithm", "kind": "extends"},
+    {"from": "NoneAlgorithm", "to": "SigningAlgorithm", "kind": "extends"},
+    {"from": "BadSignature", "to": "BadData", "kind": "extends"},
+    {"from": "BadPayload", "to": "BadData", "kind": "extends"},
+    {"from": "BadTimeSignature", "to": "BadSignature", "kind": "extends"},
+    {"from": "BadHeader", "to": "BadSignature", "kind": "extends"},
+    {"from": "SignatureExpired", "to": "BadTimeSignature", "kind": "extends"},
+    {"from": "Serializer", "to": "Signer", "kind": "composes", "note": "Serializer holds a Signer class and instantiates it via make_signer"},
+    {"from": "TimedSerializer", "to": "TimestampSigner", "kind": "composes", "note": "default_signer = TimestampSigner"}
+  ],
+  "tests": [
+    {"path": "tests/test_itsdangerous/test_encoding.py", "covers": ["encoding"]},
+    {"path": "tests/test_itsdangerous/test_signer.py", "covers": ["signer"]},
+    {"path": "tests/test_itsdangerous/test_serializer.py", "covers": ["serializer"]},
+    {"path": "tests/test_itsdangerous/test_timed.py", "covers": ["timed"]},
+    {"path": "tests/test_itsdangerous/test_url_safe.py", "covers": ["url_safe"]}
+  ],
+  "build_and_test": {
+    "package_manager": "uv (lockfile present) / pip",
+    "python": ">=3.10",
+    "lint": "ruff (configured in pyproject.toml + .pre-commit-config.yaml)",
+    "test_runner": "pytest via tox / tox-uv",
+    "docs": "Sphinx (docs/conf.py, .readthedocs.yaml)"
+  }
+}
