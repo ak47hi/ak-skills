@@ -28,6 +28,18 @@ VERIFY    →  Re-sample TRIAGE — slope should be flat.                   refe
 
 Run in order, once per leak hunt. If the leak is multi-cause (e.g. both a JDBC and an HTTP-gRPC leak on the same pod), finish one cycle end-to-end, then re-enter from ROUTE for the second class. Don't try to handle both classes in one DIAGNOSE pass — the diagnostic commands overlap and the output gets unreadable.
 
+### Fast path (when the pod is on fire RIGHT NOW)
+
+For incident response where the user can't wait for the full workflow, jump to `references/02-fast-path.md` — four commands, a signature → fix-pattern table, and explicit "stop here if your case matches" rules. The fast path is the speed-run, not a shortcut around discipline: it still captures the slope baseline VERIFY needs. Fall back to the full six-phase workflow if your signature doesn't match cleanly.
+
+### Before opening a domain reference — is this even a leak?
+
+Some "leak" symptoms aren't leaks. If TRIAGE shows a flat slope, or CLOSE_WAIT growing only to one slow upstream, or FD spikes that recover on their own — open `references/95-not-a-leak.md` first. Five common false positives (sizing-not-leak, hung-requests-not-leak, deploy-CLOSE_WAIT, normal-small-CLOSE_WAIT, burst-traffic) and a sixth bonus (slowloris / SYN flood). Applying leak fixes to these makes things worse.
+
+### Survive while you fix it
+
+A leak fix often takes hours; the pod is dying now. `references/96-mitigation.md` covers the keep-prod-alive playbook — scheduled restart, leak-detection tightening, aggressive timeouts, time-boxed FD-limit bump, circuit breaker, canary rollback, traffic shed at the LB. Each mitigation requires an explicit exit criterion. Without one, the mitigation **becomes** the new bug.
+
 ---
 
 ## ELICIT
@@ -150,12 +162,15 @@ If the user comes back saying "the slope is still climbing":
 |---|---|
 | `references/00-elicitation.md` | When to ask, what to ask, when to skip into TRIAGE |
 | `references/01-routing.md` | Triage signature → domain decision tree; overlap rules |
+| `references/02-fast-path.md` | 60-second cheatsheet — 4 commands + signature → fix-pattern table for incidents |
 | `references/10-triage.md` | Cross-cutting commands: FD trend, FD classification, runtime/tool inventory |
 | `references/20-jdbc.md` | JDBC / DB pool leaks (HikariCP, asyncpg, SQLAlchemy, psycopg) — Java, Kotlin, Python |
 | `references/21-flink.md` | Flink 1.18 lifecycle leaks — `RichFunction.close`, AsyncIO timeout, RocksDB iterators, Kafka/JDBC sinks |
-| `references/22-http-grpc.md` | HTTP / gRPC leaks (OkHttp, Apache HC, Netty, gRPC, ktor, aiohttp, httpx, requests) — Java, Kotlin, Python |
+| `references/22-http-grpc.md` | HTTP / gRPC leaks (OkHttp, Apache HC, Netty, gRPC, Reactor Netty WebClient, ktor, aiohttp, httpx, requests) — Java, Kotlin, Python |
 | `references/90-anti-patterns.md` | Universal: masking with sizing, swallowing close errors, per-request client construction |
 | `references/91-output-contract.md` | Final report format — what the fix summary must include |
+| `references/95-not-a-leak.md` | False-positive catalog — when the symptom isn't a leak (sizing, hung requests, deploy CLOSE_WAIT, normal small CLOSE_WAIT, burst traffic, slowloris) |
+| `references/96-mitigation.md` | Keep-prod-alive playbook while developing the structural fix — every mitigation requires an explicit exit criterion |
 
 ---
 

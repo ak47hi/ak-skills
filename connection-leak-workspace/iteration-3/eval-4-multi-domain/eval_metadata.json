@@ -1,0 +1,13 @@
+{
+  "eval_id": 4,
+  "eval_name": "multi-domain-jdbc-and-http",
+  "purpose": "Probes overlap routing in references/01-routing.md. Two coexisting leaks; skill should fix the dominant one first, finish the cycle, then re-route.",
+  "prompt": "After our latest deploy our Spring Boot service is showing both HikariCP 'Connection is not available' timeouts every 90 minutes AND climbing CLOSE_WAIT to api.stripe.com (now ~400, climbing ~5/min). The HikariCP leak detection threshold trips with a stack pointing at PaymentService.processRefund. We're stable enough to debug but customers are getting 500s every couple hours. How do I attack this?",
+  "expected_behavior": [
+    "Recognizes both leaks coexist",
+    "Routes by slope dominance (or notes the rule from 01-routing.md) — usually the JDBC one is more user-visible (the 500s)",
+    "Produces TWO fix reports per references/91-output-contract.md, one per resource class",
+    "Notes the overlap rule explicitly: don't try to fix both in one DIAGNOSE pass",
+    "Each report has its own before/after triage slope"
+  ]
+}

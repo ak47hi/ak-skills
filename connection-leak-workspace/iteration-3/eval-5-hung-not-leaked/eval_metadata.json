@@ -1,0 +1,13 @@
+{
+  "eval_id": 5,
+  "eval_name": "hung-requests-masquerading-as-leak",
+  "purpose": "Tests whether the skill detects 'this is not a leak — it's a missing timeout, requests are hung and sockets are stuck open until the remote times out'. Subtle but real anti-pattern. The skill mentions this briefly in references/22-http-grpc.md aiohttp section ('coroutines parked inside aiohttp request methods — often a missing timeout, which then masquerades as a leak as the client waits forever') but does not have a dedicated 'not-a-leak' section.",
+  "prompt": "Python FastAPI service. CLOSE_WAIT growing slowly but steadily — went from 50 to 350 over 4 hours. Only one remote — our internal recommendations service. `py-spy dump` shows ~200 coroutines all parked inside `aiohttp.client.ClientSession._request` at the same line. We have a singleton ClientSession in lifespan, properly closed at shutdown. What's going on and how do I fix it?",
+  "expected_behavior": [
+    "Identifies this is NOT a per-request or per-client leak — singleton is correct and well-managed",
+    "Identifies that 200 parked coroutines + slow CLOSE_WAIT growth + one remote = the remote is slow or unreachable, the client has no timeout, requests are stuck",
+    "Recommends adding `aiohttp.ClientTimeout(total=N, connect=N, sock_read=N)` to the ClientSession constructor",
+    "Calls out that the symptom (CLOSE_WAIT growth) looks like a leak but the root cause is missing timeout + slow/dead upstream",
+    "Bonus: recommends upstream health check / circuit breaker to fail fast"
+  ]
+}

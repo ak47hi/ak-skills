@@ -1,0 +1,14 @@
+{
+  "eval_id": 7,
+  "eval_name": "sizing-not-leak-pushback",
+  "purpose": "Tests pushback discipline. User has flat FD slope under steady state but pool exhaustion only during the daily peak. The skill should refuse to apply leak fixes and explicitly redirect to a sizing exercise (per SKILL.md 'When to push back' and 'Iteration' sections).",
+  "prompt": "Our team disagrees on whether this is a leak or a sizing issue. The HikariCP pool oscillates between 0 and 18 active connections all day, but every morning at 8am peak we get a handful of `Connection is not available, request timed out after 30000ms` errors. By 9am traffic settles and the pool oscillates fine again. maxPoolSize is currently 20. Should we raise the pool size, or is this a leak?",
+  "expected_behavior": [
+    "Runs TRIAGE step 1 (or guides the user to) — confirms FD slope is flat",
+    "Concludes this is NOT a leak — pool oscillates normally outside peak; the daily peak just exceeds capacity",
+    "Refuses to apply leak fixes; explicitly says they don't apply here",
+    "Recommends a sizing exercise: measure peak QPS, p99 holding time, compute required maxPoolSize per `(cores * 2) + spindle_count` formula or per Little's law",
+    "Calls out that this is a pool-sizing conversation, not a leak hunt",
+    "Bonus: warns that bumping maxPoolSize without analysis can hit DB-side `max_connections` ceiling"
+  ]
+}

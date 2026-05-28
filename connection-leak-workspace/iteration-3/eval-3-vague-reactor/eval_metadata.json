@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "vague-reactor-no-library",
+  "purpose": "Probes TRIAGE discipline when the user names no library. The skill should refuse to guess and instead run cross-cutting triage first.",
+  "prompt": "Our reactor service is leaking sockets. FDs went from 800 to 3500 over the last 12 hours. We have kubectl exec access. JVM, Spring Boot. What do I do?",
+  "expected_behavior": [
+    "Does NOT immediately propose a library-specific fix",
+    "Runs TRIAGE step 2 (FD classification) to identify the resource class",
+    "Runs TRIAGE step 2b (top remote endpoints) to disambiguate per-request vs per-client",
+    "Captures the slope baseline (~225 FDs/hour) before routing",
+    "Only after triage produces a signature does it route to a domain reference"
+  ]
+}
