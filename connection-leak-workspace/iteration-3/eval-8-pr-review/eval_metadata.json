@@ -1,0 +1,19 @@
+{
+  "eval_id": 8,
+  "eval_name": "pr-review-not-incident",
+  "purpose": "Tests adaptation to non-incident framing. The skill is incident-shaped (triage commands assume a live pod). Can it adapt to PR review (no live pod, just code)? Tests whether the source-audit grep tables transfer to a pre-merge context.",
+  "prompt": "Pre-merge code review. New RichAsyncFunction below — calls a downstream gRPC service. We've had leak issues before so the team wants a careful review. Does this code have leak risk?\n\n```java\npublic class EnrichmentAsyncFn extends RichAsyncFunction<Event, Enriched> {\n    private transient ManagedChannel channel;\n    private transient EnrichServiceGrpc.EnrichServiceFutureStub stub;\n\n    @Override\n    public void open(Configuration parameters) {\n        channel = ManagedChannelBuilder.forAddress(\"enrich-svc:50051\", 50051)\n            .usePlaintext()\n            .build();\n        stub = EnrichServiceGrpc.newFutureStub(channel);\n    }\n\n    @Override\n    public void asyncInvoke(Event in, ResultFuture<Enriched> rf) {\n        ListenableFuture<EnrichReply> reply = stub.enrich(toRequest(in));\n        Futures.addCallback(reply, new FutureCallback<>() {\n            @Override public void onSuccess(EnrichReply r) {\n                rf.complete(List.of(fromReply(r)));\n            }\n            @Override public void onFailure(Throwable t) {\n                rf.completeExceptionally(t);\n            }\n        }, MoreExecutors.directExecutor());\n    }\n\n    @Override\n    public void close() throws Exception {\n        if (channel != null) channel.shutdown();\n        super.close();\n    }\n}\n```",
+  "expected_behavior": [
+    "Recognizes this is a code review, not an incident — skips TRIAGE (no live pod to triage)",
+    "Source-audit checklist runs cleanly against the pasted code:",
+    "  • channel is `transient` ✓, opened in open(), referenced in close() ✓",
+    "  • close() calls shutdown() but DOESN'T call awaitTermination() — bug",
+    "  • close() has no shutdownNow() fallback — bug",
+    "  • close() is not idempotent (no `closed` flag) — bug",
+    "  • No timeout() override — in-flight requests on Flink AsyncIO timeout leak the HTTP/2 stream — bug",
+    "  • No withDeadlineAfter on the stub call — bug",
+    "  • No tracking of in-flight futures for cancellation in close() — bug",
+    "Recommends the corrected RichAsyncFunction template from references/21-flink.md",
+    "Notes that 'no FD step-up on test runs' is not sufficient verification — must observe under failure-path triggers (cancel mid-flight, network errors)"
+  ]
+}

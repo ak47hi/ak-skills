@@ -1,0 +1,14 @@
+{
+  "eval_id": 6,
+  "eval_name": "slow-leak-no-close-wait-signal",
+  "purpose": "Probes interpretation when the easy-tell CLOSE_WAIT signal is absent. CLOSE_WAIT flat + FDs climbing = per-client leak (each new client construction adds a fresh pool of healthy ESTABLISHED sockets, none ever close). The skill mentions this but it's easy to miss.",
+  "prompt": "Our Spring service has FDs creeping up by ~2 per minute. Pretty slow. Sample interval was 5 minutes over a 2 hour window. The CLOSE_WAIT count is flat near zero — basically all the new sockets are ESTABLISHED to many different remote services. We use OkHttp. Where do I look?",
+  "expected_behavior": [
+    "Recognizes the absence of CLOSE_WAIT + many-remote signature points at per-client leak (not per-request body-not-closed)",
+    "Routes to OkHttp section of references/22-http-grpc.md",
+    "Recommends heap dump → count OkHttpClient instances",
+    "Recommends grep for `new OkHttpClient(` outside @Bean/static init",
+    "Notes that 2 FDs/min is small per minute but unbounded — slope is the leak, magnitude is just time",
+    "Does NOT dismiss the small slope as 'not a leak'"
+  ]
+}
