@@ -1,0 +1,41 @@
+{
+  "skill_name": "forecast-allocation",
+  "evals": [
+    {
+      "id": 0,
+      "name": "design-cohort-forecast-with-sparsity",
+      "mode": "DESIGN",
+      "prompt": "Design a forecasting system for ad-group cohort supply. We have ~50k active cohorts where a cohort = the set of ad-groups eligible to serve a given impression (defined by market × locale × device × placement × audience). Roughly 70% of cohorts have <30 observations per week — long-tail. The downstream pacer needs to meet underdelivery ≤2% p95 per campaign with at most 3 replans per cohort per day. Forecast horizon: 7 days, refreshed hourly. Inference budget: 10 ms per cohort. We have 18 months of history. 3-person ML team on PyTorch + Ray, weekly retrain operationally.",
+      "files": [],
+      "expected_output": "Phase 1 should pass (all seven dimensions stated) or do a minimal propose-and-go for any small gaps. Phase 2 routes to research areas 10-forecast + 12-cohort + 14-uncertainty + 11-pacing; archetype guaranteed-ad-delivery fires. Phase 3 MUST emit a factorized forecast as the recommended representation (decompose into per-(market, locale, device, placement, time) tensor, ~10^4-10^5 cells; cohort supply computed by aggregation at query time). MUST explicitly REJECT one-model-per-cohort and cohort-ID-as-categorical with citation to references/93-anti-patterns.md A1/A2. MUST pick a quantile-trained GBDT (LightGBM with pinball loss) and explain why ladder rungs above (DeepAR/TFT/Bayesian) aren't justified by a binding constraint. Phase 5 must specify quantile loss tied to underdelivery asymmetry and CRPS + per-cohort coverage as metrics. Phase 6 emits the templates/design-doc.md skeleton with: factorized forecast in section 3, GBDT vs Transformer vs per-cohort in section 4, GBDT recommended with sacrifice noted, scalability analysis at 50k cohorts, failure modes incl. drift + sparsity backoff, eval plan with both forecast AND planner metric tables. Anti-pattern check at the end must explicitly mark A1, A2, B1, D3, E1, E2 as passed.",
+      "assertions": []
+    },
+    {
+      "id": 1,
+      "name": "prototype-pacing-simulator",
+      "mode": "PROTOTYPE",
+      "prompt": "Prototype a pacing simulator I can run locally to test underdelivery under noisy forecasts. I want to be able to swap pacers (proportional vs LP vs my own) and see how each behaves when the forecast is off by varying amounts. Stdlib + numpy + scipy only — no PyTorch. Should run with `python run.py`.",
+      "files": [],
+      "expected_output": "Phase 1 propose-and-go (broad request — infer ~10 cohorts, ~4 commitments, 48-tick horizon, synthetic Poisson traffic; flag inferences). Phase 2 routes to 11-pacing + 13-allocation + 15-simulation. Phase 6 emits templates/prototype.py with: (a) Forecaster protocol + SeasonalNaiveForecaster stub with predict + predict_quantiles, (b) Planner protocol + ProportionalPacer + LPPacer (scipy.optimize.linprog) implementations, (c) TrafficSource protocol + SyntheticTrafficSource Poisson generator, (d) Simulator event loop measuring underdelivery, smoothness, replan churn, forecast RMSE, forecast bias, (e) run.py-style main printing the two-table report, (f) TODO markers at each module pointing to the right reference. MUST run unmodified — produce numeric output without errors. MUST include the perturbation-grid TODO and the oracle-planner-for-regret TODO. Should NOT include PyTorch / TFT / Bayesian dependencies — that would violate the latency + stack constraint inferred from the prompt.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "evaluate-pacing-replan-churn-under-forecast-error",
+      "mode": "EVALUATE",
+      "prompt": "Evaluate three pacing strategies (proportional, probabilistic / participation-rate, and dual-decomposed online) for replan churn under 10% forecast error. We care about both underdelivery and churn — currently our production pacer is forecast-proportional and replan churn is hurting downstream caching. Want to know: does dual-decomposed actually win on churn at our scale, and what's the underdelivery tradeoff?",
+      "files": [],
+      "expected_output": "Phase 1 propose-and-go on operating point (e.g., 10k commitments, 24h horizon, hourly replan; flag inferences). Phase 2 routes to 11-pacing + 15-simulation + 91-eval-metrics + 14-uncertainty (the 10% forecast error is the uncertainty input). Phase 6 emits templates/eval-plan.md with: (1) falsifiable hypothesis: 'Dual-decomposed pacer reduces replan churn by ≥X% vs forecast-proportional at 10% forecast error magnitude, with underdelivery p95 regression ≤Y pp'; (2) baselines including even-pacing AND oracle; (3) counterfactual planner replacement strategy (fixed traffic + fixed forecast, swap pacer); (4) sim calibration check requiring reproduction of production proportional-pacer baseline; (5) BOTH forecast metrics table AND planner metrics table per 91-eval-metrics.md; (6) perturbation grid with forecast error at 0/5/10/20/50% magnitudes; (7) paired bootstrap significance protocol with CI; (8) pre-registered decision rule before running. MUST surface the anti-patterns: NO comparing pacers on different traffic (E5), NO RMSE-only (E1), NO sim without baseline reproduction (E4). MUST NOT recommend RL pacer (C5 — banned without calibrated sim).",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "name": "narrow-quantile-vs-rmse-for-asymmetric-planner",
+      "mode": "DESIGN",
+      "prompt": "Quick question: I'm training a forecaster that feeds an LP planner where under-delivery costs 3× over-delivery. Should I train on RMSE or pinball loss?",
+      "files": [],
+      "expected_output": "NARROW QUESTION. Skill MUST NOT emit the full design-doc template. Chat-mode answer: ~1-3 paragraphs. Names the binding signal (3× asymmetric under-delivery cost = planner is loss-asymmetric, classical anti-pattern B1 if RMSE is used). Recommends pinball loss at quantile q such that q / (1-q) ≈ 3, i.e. q ≈ 0.75 — biased high so under-delivery becomes rare and over-delivery becomes the more common direction. Cites references/10-forecast.md loss table and references/14-uncertainty.md loss asymmetry section. Notes that if the planner consumes a full distribution rather than a point/quantile, train multi-quantile or use CRPS instead. Should NOT propose a deep model, a Bayesian posterior, or anything else — the question is loss choice, not model choice. Should refuse to expand to a full template even if the user pushes — match the user's depth.",
+      "assertions": []
+    }
+  ]
+}
