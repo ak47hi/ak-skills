@@ -45,6 +45,8 @@ Special case of LP with a graph structure: sources (supply ticks), sinks (commit
 
 Use whenever the allocation problem reduces to a bipartite assignment with capacities — guaranteed-ad-delivery without complex side-constraints, supply-chain shipment routing, scheduler-to-quota assignment.
 
+**Max-flow as a special case.** Pure feasibility — "can we deliver D from forecasted supply at all?" — is a max-flow problem; min-cost flow generalizes it by adding edge costs. Always *frame* the allocation problem before picking the solver: if you only need feasibility, max-flow is cheaper and the algorithms (Ford-Fulkerson, push-relabel, Dinic's) are off-the-shelf.
+
 ### 5. Convex program (QP / SOCP)
 
 When the objective has a quadratic smoothness term (`λ ‖α‖²`) or robust constraints (`Σ α ≥ D` under uncertainty set), the problem is convex but not LP. Solvers: OSQP, ECOS, MOSEK.
@@ -70,6 +72,45 @@ Treat allocation as a control problem solved tick-by-tick rather than as a batch
 ### 9. RL / learned planner
 
 Learn the allocation policy. Justified rarely; the analytical solvers above almost always win on stability + sample efficiency + interpretability. The win for RL is in problems where the cost function is non-differentiable, non-convex, and rich offline data + a sim exist.
+
+## Online primal-dual
+
+The theoretical underpinning of the dual-decomposed pacer (`11-pacing.md`) is the **online primal-dual framework** (Buchbinder & Naor 2009). For online matching / allocation problems where arrivals are random-order or i.i.d., maintaining a feasible primal-dual pair yields a constant-factor competitive ratio versus the offline optimum.
+
+Key results worth citing in a design:
+
+- **Adwords problem** (Devanur & Hayes 2009): under random-permutation arrivals, primal-dual achieves `(1 − ε)` of optimal for any `ε > 0` with `O(log n / ε²)` history.
+- **Online LP** (Agrawal–Wang–Ye 2014): dynamic learning of duals yields near-optimal performance under i.i.d. arrivals — the formal justification for the subgradient updates in the dual-decomposed pacer.
+- **Mehta survey** (2013) catalogs the online-matching family — display ads, adwords, general bipartite — with competitive ratios per arrival model.
+
+The practical takeaway: the dual-decomposed pacer's competitive guarantee is not heuristic; it's the algorithmic embodiment of decades of online-matching theory. See `99-citations.md`.
+
+## Differentiable optimization (planner-coupled loss)
+
+The bridge between forecast loss and planner cost. Standard practice trains the forecast on a generic loss (RMSE, pinball) and feeds it to the planner downstream — the forecast doesn't know what cost it's minimizing in the system. **Differentiable optimization** wraps the planner in a layer that backpropagates the downstream cost as the forecast loss:
+
+- **OptNet** (Amos & Kolter 2017) — differentiable QP layers via implicit differentiation of the KKT conditions.
+- **cvxpylayers** (Agrawal et al. 2019) — production-friendly library that wraps any convex program declared in CVXPY as a differentiable PyTorch / JAX layer.
+- **SPO / SPO+** (Elmachtoub & Grigas 2022) — surrogate loss for predict-then-optimize when the downstream problem is linear; doesn't require differentiating the LP.
+- **Task-based learning** (Donti, Amos, Kolter 2017) — the general framework: train predictions so the downstream task cost is minimized.
+
+Justify use when:
+
+1. **Loss asymmetry varies** by cohort or time and a single static pinball quantile can't capture it.
+2. **Planner is convex** and small enough that the differentiable layer is tractable (typically ≤ 10³ variables per cohort).
+3. **System cost is the metric** and forecasts that win RMSE don't win it.
+
+Costs: training time goes 5-50×, the differentiable layer is fragile under degenerate LPs, debugging is harder. The middle ground — train with **asymmetric pinball loss at a quantile chosen to match the planner's asymmetry** — captures most of the benefit at a fraction of the cost. See `10-forecast.md` loss table and `99-citations.md`.
+
+## Robust LP under bounded uncertainty
+
+When forecast uncertainty is bounded but distribution-free, the **Γ-robust LP** formulation (Bertsimas & Sim 2004) is the standard tractable alternative to full stochastic programming:
+
+- Each uncertain coefficient lies in an interval `[ā − â, ā + â]`.
+- The robust constraint requires feasibility when at most `Γ` of the coefficients realize their worst case simultaneously (`Γ = 0`: nominal LP; `Γ = n`: worst-case LP).
+- Reformulates as a deterministic LP with shifted RHS — solvable by any LP solver, no Monte Carlo.
+
+`Γ` is the tunable conservatism knob: pick the smallest `Γ` such that the empirical constraint-violation rate over historical data meets the SLA. See `99-citations.md`.
 
 ## Dual decomposition
 

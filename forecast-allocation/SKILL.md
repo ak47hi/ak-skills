@@ -215,6 +215,7 @@ Terse, professional, no emoji, no decorative filler. Match the user's depth: giv
 | `references/92-output-contracts.md` | What each mode's artifact must contain. Maps to `templates/`. |
 | `references/93-anti-patterns.md` | Bans (cohort-ID memorization, one-model-per-cohort, RMSE-only, planner-unaware loss, stationarity, naive lookup). Walked in OUTPUT. |
 | `references/archetypes/` | Catalog: guaranteed-ad-delivery, capacity-planning, supply-chain, scheduler-quotas. Per archetype: when it fires, additional elicitation, recurring failure modes, anchor numbers. |
+| `references/99-citations.md` | Annotated primary literature for every research-area reference (M5, TFT, DeepAR, N-BEATS, Chronos / TimesFM / Moirai, HWM, SHALE, Buchbinder–Naor, OptNet / cvxpylayers, CQR, deep ensembles, robust LP). Cited by name; loaded only on explicit request. |
 | `templates/design-doc.md` | DESIGN deliverable skeleton. |
 | `templates/prototype.py` | PROTOTYPE deliverable skeleton (runs unmodified). |
 | `templates/eval-plan.md` | EVALUATE deliverable skeleton. |

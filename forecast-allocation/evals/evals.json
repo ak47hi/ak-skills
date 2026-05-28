@@ -36,6 +36,60 @@
       "files": [],
       "expected_output": "NARROW QUESTION. Skill MUST NOT emit the full design-doc template. Chat-mode answer: ~1-3 paragraphs. Names the binding signal (3× asymmetric under-delivery cost = planner is loss-asymmetric, classical anti-pattern B1 if RMSE is used). Recommends pinball loss at quantile q such that q / (1-q) ≈ 3, i.e. q ≈ 0.75 — biased high so under-delivery becomes rare and over-delivery becomes the more common direction. Cites references/10-forecast.md loss table and references/14-uncertainty.md loss asymmetry section. Notes that if the planner consumes a full distribution rather than a point/quantile, train multi-quantile or use CRPS instead. Should NOT propose a deep model, a Bayesian posterior, or anything else — the question is loss choice, not model choice. Should refuse to expand to a full template even if the user pushes — match the user's depth.",
       "assertions": []
+    },
+    {
+      "id": 4,
+      "name": "unseen-cohort-generalization-eval",
+      "mode": "DESIGN",
+      "prompt": "We're launching in 6 new markets next quarter — ~30% of our cohorts at serving time will be brand-new (zero training history). Existing system is a global GBDT keyed on cohort_id. How do we redesign the forecast so cold-start cohorts don't blow up underdelivery, and how do we measure that the fix actually works before the launch?",
+      "files": [],
+      "expected_output": "Phase 1: propose-and-go on missing dimensions (likely cohort cardinality, sparsity rate beyond the stated 30% unseen, latency budget). Phase 2 routes to 10-forecast + 12-cohort + 14-uncertainty + 91-eval-metrics + 15-simulation. Archetype likely guaranteed-ad-delivery (markets + cohorts language). Phase 3 MUST explicitly REJECT the existing cohort_id-keyed GBDT design (anti-pattern A2 — cohort ID as embedding/categorical key) with citation; MUST recommend a factorized forecast over (market × locale × device × placement × t) per references/12-cohort.md AND name clustering / k-NN backoff for cold-start cohorts (per the new clustering subsection in 12-cohort.md). MUST also propose running a foundation model (Chronos/TimesFM/Moirai) zero-shot as a comparison baseline per references/10-forecast.md rung 6.5 and anti-pattern A6. Phase 5 MUST mandate a held-out unseen-cohort eval slice in the metrics table (per 91-eval-metrics.md reporting cuts) — explicitly a held-out set of cohorts with zero training observations. Phase 6 emits templates/design-doc.md skeleton with the anti-pattern walk explicitly marking A1, A2, A6, D3 as addressed. MUST NOT propose adding a new cohort_id embedding layer 'with regularization' — that's still A2.",
+      "assertions": []
+    },
+    {
+      "id": 5,
+      "name": "drift-detection-pipeline",
+      "mode": "EVALUATE",
+      "prompt": "Our forecast has apparently been silently miscalibrating for ~3 weeks — production underdelivery climbed from 1.5% to 4.2% before anyone noticed. Design the eval and monitoring that would have caught it within 48 hours of onset. We have hourly retrains, daily delivery labels, ~10k cohorts.",
+      "files": [],
+      "expected_output": "Phase 1 propose-and-go on missing operating points. Phase 2 routes to 14-uncertainty + 15-simulation + 91-eval-metrics. Phase 6 emits templates/eval-plan.md with: (1) explicit drift triad per 14-uncertainty.md — feature drift (PSI / KS on inputs), prediction drift (distribution of ŷ vs training-time ŷ), performance drift (calibration / CRPS / underdelivery vs baseline); (2) PIT histogram + per-cohort coverage as the calibration check (with group-conditional conformal per the updated 14-uncertainty.md section since cohorts are heterogeneous); (3) regime-shift injection eval per the new regime-shift injection recipe in 15-simulation.md — synthesize a mean shift at tick T/2, measure time-to-detect; (4) retraining trigger thresholds tied to each drift signal (e.g., PSI > 0.2, performance drift > 1σ for 3 consecutive ticks); (5) time-to-detect SLA stated as a falsifiable hypothesis ('drift detected within 48h of a 20% mean shift, p95'); (6) calibrated sim reproduces production baseline first (anti-pattern E4) before drawing conclusions. MUST surface anti-pattern D3 (stationary assumption with no drift monitor) as the root cause. MUST NOT recommend retraining 'more often' as the fix without addressing detection — the failure was silent miscalibration, not stale data.",
+      "assertions": []
+    },
+    {
+      "id": 6,
+      "name": "hybrid-archetype-capacity-plus-scheduler",
+      "mode": "DESIGN",
+      "prompt": "K8s platform team: we need to forecast total cluster demand (CPU/mem) 14 days ahead to size our reserved capacity, AND allocate that capacity across ~200 tenant queues under DRF fairness during bursts. Cluster has ~50k cores, ~1000 concurrent batch jobs at peak, tenants vary 100× in normal demand. SLA: <1% job-queueing-time SLA violations per tier; capacity over-provisioning ≤ 20%.",
+      "files": [],
+      "expected_output": "Phase 1: most dimensions stated. Phase 2 MUST load BOTH the capacity-planning AND scheduler-quotas archetypes (the routing table in references/archetypes/README.md explicitly supports multi-archetype hybrids). Research areas: 10-forecast + 11-pacing + 13-allocation + 14-uncertainty + 15-simulation. Phase 3-6 produce a combined design that distinguishes the two layers cleanly: (a) capacity-planning layer — 14-day quantile forecast at the SLA quantile (e.g., p99) per resource pool with autoscale-absorbed inside the reservation; (b) scheduler-quotas layer — DRF / weighted-fair-queueing per-tick allocation under the hierarchical quota tree, with hard quotas as planner constraints. The design MUST explicitly call out which decisions belong to which archetype (reservation horizon vs scheduling decision cadence). Anti-patterns to surface: forecasting per-job arrival (too noisy, aggregate to per-tenant), no replan-churn control on scheduler decisions, ignoring correlation across tenants in the capacity forecast. MUST NOT collapse the two archetypes into one — they have different decision cadences and the design needs both.",
+      "assertions": []
+    },
+    {
+      "id": 7,
+      "name": "adversarial-transformer-pushback",
+      "mode": "DESIGN",
+      "prompt": "I want to use a TFT (Temporal Fusion Transformer) for forecasting and an RL agent for pacing — those are the SOTA, right? We have ~10k cohorts, weekly retrains, a 2-person ML team, and serving needs to fit in 10ms per cohort. Let's design the full system.",
+      "files": [],
+      "expected_output": "ADVERSARIAL CASE — skill MUST push back, not capitulate. Phase 1: constraints are stated; binding numbers are 10k cohorts (modest), weekly retrain, 2-person team, 10ms inference. Phase 2 routes to 10-forecast + 11-pacing + 13-allocation + 15-simulation. Skill MUST explicitly invoke the 'When to push back' section of SKILL.md: TFT is not justified by a binding constraint at this scale (10k cohorts, no long-range dependency requirement stated, no rich multi-modal features stated), recommend GBDT (rung 4) per references/10-forecast.md with anti-pattern A4 cited (climbing the ladder without justification). RL pacer MUST be rejected per anti-pattern C5 (RL planner without a calibrated sim) — the team has no calibrated sim and a 2-person team cannot operate an RL pacer safely; recommend dual-decomposed pacer per references/11-pacing.md as the standard. Skill MUST NOT meekly produce the TFT + RL design the user asked for. It should reframe the constraints and recommend GBDT + dual-decomposed + sim harness (with TODO to optionally compare against TFT and a foundation-model zero-shot baseline per A6). Tone is firm but professional — these are conversations, not refusals (per SKILL.md), so the user's reason for asking is solicited: if they have a binding constraint that forces TFT or RL, that should appear as a recorded tradeoff. Output is the design doc with GBDT + dual-decomposed recommended, alternatives section documenting TFT and RL with the specific constraints each failed to satisfy.",
+      "assertions": []
+    },
+    {
+      "id": 8,
+      "name": "narrow-loss-asymmetry-overdelivery-dominant",
+      "mode": "DESIGN",
+      "prompt": "Mirror question: our planner's loss is reversed from typical — over-delivery costs ~3× under-delivery (regulated impression caps, brand-safety limits). Forecast feeds an LP. Pinball or RMSE, and at what quantile?",
+      "files": [],
+      "expected_output": "NARROW QUESTION. Symmetric to eval id 3 but with reversed asymmetry. Skill MUST NOT default to q=0.75. Correct answer: pinball loss at q ≈ 0.25 — biased *low* so over-delivery becomes rare and under-delivery becomes the more common direction (the cheaper one in this asymmetry). Math: q / (1-q) ≈ 1/3, so q ≈ 0.25. Cites references/10-forecast.md loss table and references/14-uncertainty.md loss-asymmetry section. Skill MUST NOT emit a full design-doc template; chat-mode 1-3 paragraphs. Tests that the skill applies the asymmetry rule symmetrically rather than memorizing the more common ad-platform direction (under-delivery > over-delivery).",
+      "assertions": []
+    },
+    {
+      "id": 9,
+      "name": "sim-calibration-failure-mode",
+      "mode": "EVALUATE",
+      "prompt": "We A/B-tested a new pacer in our simulator — looked great, 30% improvement on planner regret, ship-it. Rolled to production, underdelivery actually got worse and we rolled back. What went wrong with the eval, and how do we fix the process before the next attempt?",
+      "files": [],
+      "expected_output": "Phase 2 routes to 15-simulation + 91-eval-metrics + 11-pacing + 14-uncertainty. Phase 6 emits an eval-plan.md or diagnostic with: (1) identifies anti-pattern E4 (sim that doesn't reproduce production baselines) as the most likely root cause — the sim is broken if it shows a 30% improvement that doesn't replicate; (2) prescribes the reproducibility check from references/15-simulation.md (production pacer on replayed traffic ≈ production-observed within tolerance; even-pacing yields predicted smoothness; oracle has near-zero regret) BEFORE any new pacer comparison; (3) identifies likely sub-causes: forecast-error distribution in sim not matching production heavy-tail (anti-pattern in 15-simulation.md), traffic shock distribution absent, planner solve-latency variance absent (per the new latency/jitter injection guidance in 15-simulation.md), correlated cohort dynamics not modeled, label-availability lag wrong; (4) reframes the eval process: pre-registered hypothesis + decision rule + paired bootstrap CI + counterfactual planner replacement (fixed forecast + traffic, swap pacer per E5); (5) recommends chaos-engineering perturbations alongside the forecast-error grid before trusting any sim verdict. MUST NOT recommend just running the sim again with the same calibration — the calibration is the bug. MUST NOT recommend abandoning sim and going straight to a production A/B — that's a different bug.",
+      "assertions": []
     }
   ]
 }

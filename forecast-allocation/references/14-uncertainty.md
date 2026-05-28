@@ -36,19 +36,49 @@ Cost: inference time, debugging surface, expertise.
 
 ### Ensembles
 
-Train N models (different seeds, splits, hyperparameters); use the ensemble distribution as the predictive distribution. Strong empirically; computationally expensive at inference time. Approximations: deep ensembles, snapshot ensembles, multi-quantile single model.
+Train N models (different seeds, splits, hyperparameters); use the ensemble distribution as the predictive distribution. Strong empirically; computationally expensive at inference time. Approximations: **deep ensembles** (Lakshminarayanan, Pritzel, Blundell 2017), snapshot ensembles, multi-quantile single model, **MC dropout** as the cheap-Bayesian alternative (Gal & Ghahramani 2016). See `99-citations.md`.
+
+Caveat: ensemble *variance* is not automatically a *calibrated* predictive distribution — over-confident on training-like inputs, under-confident on out-of-distribution ones. Always measure PIT / per-quantile coverage; consider CQR on top of the ensemble (composite deep-ensemble + CQR) to get distribution-free coverage with adaptive width. Reporting ensemble variance as "calibrated uncertainty" without measurement is anti-pattern D5 in `93-anti-patterns.md`.
 
 ### Conformal prediction
 
-Wraps any point forecaster to produce intervals with finite-sample coverage guarantees. Split-conformal is the simplest:
+Wraps any point forecaster to produce intervals with finite-sample coverage guarantees (Vovk, Gammerman, Shafer 2005). Split-conformal is the simplest:
 
 1. Train point forecast on training set.
 2. Compute residuals `e_i = |ŷ_i − y_i|` on a held-out calibration set.
 3. Predictive interval for new x: `ŷ ± Quantile_{1−α}(e)`.
 
-Adaptivity in tabular forecasting often needs CQR (conformalized quantile regression) — start with quantile predictions, conformalize them. Strong when calibration on out-of-distribution is critical.
+**CQR (Conformalized Quantile Regression)** (Romano, Patterson, Candès 2019) is the adaptivity upgrade: start with quantile predictions (e.g., quantile GBDT), conformalize the residuals. Width adapts to local difficulty rather than the global residual quantile. The modern default for tabular forecasting with cohort heterogeneity.
 
-Caveat: conformal coverage is *marginal* (averaged over all inputs) — per-cohort coverage can still be miscalibrated. CQR + cohort-conditional calibration helps; verify per-cohort.
+Caveat: split-conformal coverage is *marginal* (averaged over all inputs) — per-cohort coverage can still be miscalibrated.
+
+### Group-conditional conformal
+
+Fix for the per-cohort vs marginal coverage gap: compute the residual quantile *per group* (cohort tier, region, regime) rather than globally. Coverage then holds within each group at the cost of slightly wider intervals (less data per group). Practical recipe (Angelopoulos & Bates 2023):
+
+1. Bucket calibration data by group label (e.g., cohort decile, regime).
+2. Compute the conformal quantile per bucket: `q_g = Quantile_{1−α}(e | group = g)`.
+3. At serve time, look up the new prediction's group and use `q_g` instead of the marginal `q`.
+
+Use whenever the design has high-stakes cohort tiers (premium vs standard, head vs tail). See `99-citations.md`.
+
+## Variance decomposition
+
+For a Bayesian or ensemble forecast, the total predictive variance decomposes into three load-bearing components:
+
+```
+Var[ŷ] = E_θ[ Var[y|θ] ]       (aleatoric — irreducible noise in y|θ)
+       + Var_θ[ E[y|θ] ]        (epistemic — uncertainty over the model parameters)
+       + drift component        (regime / distribution shift outside training support)
+```
+
+The decomposition tells the planner *what kind of caution to apply*:
+
+- **Aleatoric** dominates → forecast is doing its job; the planner needs to hedge via quantile / stochastic LP (`13-allocation.md`).
+- **Epistemic** dominates → collect more data for the affected cohorts, or borrow from neighbors via clustering (`12-cohort.md`).
+- **Drift** dominates → the model is mis-calibrated; trigger retraining, widen safety margin until it lands.
+
+Practical estimation: deep ensembles give epistemic via cross-model variance and aleatoric via per-model spread (Lakshminarayanan et al. 2017); Bayesian posteriors give both directly. Drift requires an independent monitor — variance decomposition doesn't see it by construction. See `99-citations.md`.
 
 ## Calibration
 
