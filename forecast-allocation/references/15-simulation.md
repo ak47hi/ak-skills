@@ -98,6 +98,36 @@ To stress-test the planner under forecast error, run the sim across a grid:
 
 Report planner metrics across the grid. The flat region (where the planner is robust) and the cliff (where it isn't) are both informative.
 
+## Chaos engineering for planners
+
+The perturbation grid stresses *forecast quality*. Chaos engineering stresses *operational reliability* — an orthogonal axis that's just as load-bearing. The planner's degradation path (fall back to even-pacing? freeze on last-known plan? page on-call?) is tested only by injecting realistic operational failures:
+
+- **Solver timeouts.** Planner LP times out mid-tick; does the system use the previous solution, or no allocation?
+- **Retraining failures.** Forecast pipeline fails for N days; does serving fall back to a frozen model, last-known-good, or a degraded baseline?
+- **Label-pipeline delay.** Delivery confirmations land +24 h late instead of +1 day; does drift detection still fire, or does it silently miss?
+- **Partial cohort blackout.** Forecast unavailable for X% of cohorts (data quality issue, schema change); does the planner allocate zero, fall back to historical, or crash?
+- **Correlated traffic shock.** All cohorts in a market spike 5× simultaneously (sporting event, news cycle); does the planner thrash on replan churn, or does the smoothing absorb it?
+
+This is the "chaos monkey" pattern from distributed systems applied to forecasting + allocation. Pair it with the forecast-error perturbation grid; both axes need coverage before production.
+
+### Latency / jitter injection
+
+In production, planner solve time and label availability both vary stochastically. Sim that uses deterministic latencies says "replan-every-tick is fine" when production says otherwise. Add to the perturbation grid:
+
+- **Planner solve latency variance** (e.g., p50 = 100 ms, p95 = 5 s, p99 = 30 s).
+- **Label-availability lag distribution** (e.g., p50 = +1 day, p99 = +7 days).
+- **Retraining cycle drift** (e.g., scheduled hourly, but 5% of the time it's delayed by 6+ hours).
+
+### Regime shift injection (drift regression test)
+
+Synthesize an abrupt 20% mean shift at tick `T/2`. Measure:
+
+- **Time-to-detect** — how many ticks before the drift monitor (`14-uncertainty.md`) fires.
+- **Planner recovery time** — how many ticks before planner metrics return within SLA.
+- **Worst-case underdelivery during the recovery window**.
+
+Use this as a regression test every time the drift pipeline or retraining trigger changes — without it, drift-monitoring regressions ship silently.
+
 ## Baselines
 
 Every sim run needs baselines or the numbers are meaningless:

@@ -16,13 +16,14 @@ A forecast minimizing the wrong loss is worse than a worse model on the right lo
 
 1. **Seasonal-naive / simple exponential smoothing.** The baseline. Always fit it. Beating it on the planner metric, not just RMSE, is the bar.
 2. **ETS / ARIMA / Theta.** Classical statistical methods. Strong on individual short series with clean seasonality. Per-cohort fitting; doesn't share signal across cohorts.
-3. **Prophet.** Strong default for medium-sparsity series with holiday/seasonality structure. Robust to missing data. Weak on highly noisy or very short series.
+3. **Prophet / NeuralProphet.** Prophet (Taylor & Letham 2018) is the strong default for medium-sparsity series with holiday/seasonality structure; robust to missing data; weak on highly noisy or very short series. **NeuralProphet** (Triebe et al. 2021) is the drop-in upgrade when Prophet plateaus but a transformer is overkill — it keeps the decomposable structure and adds AR-Net terms for autoregression. See `99-citations.md`.
 4. **GBDT (LightGBM, XGBoost, CatBoost) with lag/calendar/cohort features.** The strongest default for hierarchical forecasting at modest scale. Trains one global model, conditions on cohort features, scales to 10⁵-10⁶ cohorts. M5 competition winning approach. Use quantile loss directly (`objective=quantile, alpha=q`) for quantile outputs.
-5. **DeepAR / N-BEATS / TFT (Temporal Fusion Transformer).** Justified when (a) you need long-range dependencies a tree can't capture, (b) you need cross-cohort attention, (c) you have rich exogenous features (text, image, graph). Cost: training pipeline, GPU, harder to debug.
+5. **DeepAR / N-BEATS / TFT / PatchTST / TimesNet.** Justified when (a) you need long-range dependencies a tree can't capture, (b) you need cross-cohort attention, (c) you have rich exogenous features (text, image, graph). Cost: training pipeline, GPU, harder to debug. DeepAR is the probabilistic-RNN default (Salinas et al. 2020); TFT is the multi-horizon transformer default (Lim et al. 2021); PatchTST (Nie et al. 2023) wins on long-context single series; TimesNet (Wu et al. 2023) handles multi-periodic seasonality. *Temporal CNN / LSTM are the per-cohort sequence-model family that precede this rung — subsumed by TFT / DeepAR for hierarchical work, but still useful for a single long series with rich exogenous features.* See `99-citations.md`.
 6. **Bayesian state-space / hierarchical Bayes.** Justified when (a) you genuinely need posterior uncertainty (not just intervals), (b) hierarchical structure is load-bearing and sample size per cohort is small, (c) interpretable shrinkage matters. Cost: inference time, expertise.
+6.5. **Time-series foundation models (Chronos / TimesFM / Moirai).** Pretrained zero-shot forecasters (Ansari et al. 2024, Das et al. 2024, Woo et al. 2024). Justified when (a) cold-start cohorts dominate (no history to fit on) **and** (b) zero-shot quality matters more than fine-tuned accuracy on the head distribution. **Always run as a comparison baseline** even when not picked — they're free to evaluate and occasionally beat fine-tuned custom work on unseen cohorts. Cost: GPU inference, larger models, less inspectable. Skipping the zero-shot baseline without justification is anti-pattern A6 in `93-anti-patterns.md`. See `99-citations.md`.
 7. **Ensemble.** Combine 2-3 of the above. Almost always wins on point + calibration, almost always loses on infra cost.
 
-**Default the design at level 4 (GBDT) unless an explicit constraint forces a climb.** Most teams pick level 5/6 prematurely.
+**Default the design at level 4 (GBDT) unless an explicit constraint forces a climb.** Most teams pick level 5/6 prematurely. The M5 retrospective (Makridakis et al. 2022) is the empirical justification — LightGBM-style GBDTs won the M5 accuracy competition across hierarchical retail forecasting. See `99-citations.md`.
 
 ## Hierarchical forecasting
 
@@ -30,7 +31,7 @@ When cohorts have a hierarchy (region > city > zip, brand > product > SKU, campa
 
 - **Bottom-up.** Forecast leaves, aggregate. Lossy on noisy leaves; loses cross-leaf signal.
 - **Top-down.** Forecast roots, disaggregate by historical proportions. Loses leaf-specific signal; struggles with new leaves.
-- **MinT / reconciliation.** Forecast every level independently, reconcile so children sum to parents. The classical choice; needs covariance estimation.
+- **MinT (Minimum Trace) reconciliation** (Wickramasuriya, Athanasopoulos, Hyndman 2019). Forecast every level independently, reconcile via a trace-minimizing projection so children sum to parents. The modern reconciliation default; needs covariance estimation. See `99-citations.md`.
 - **Global hierarchical model.** One model trained with hierarchy as features. The modern default.
 
 If the planner consumes only at the leaf level, **forecast at the leaf level** and tolerate the noise — aggregation hides errors but doesn't fix them.
@@ -59,6 +60,15 @@ This is the load-bearing trick for guaranteed-ad-delivery systems: it converts a
 | CRPS | Continuous predictive distribution; planner consumes the full distribution. Strictly proper. |
 | MAPE / wMAPE | Reporting only — biased estimators, unstable near zero. Never train on these. |
 | Planner-coupled loss | Backprop through the planner (differentiable LP / barrier method). Justified when planner cost is the metric and the joint system is trainable. |
+
+## Anomaly-aware forecasting
+
+Production history is contaminated — outages, fraud spikes, one-off events. A model fit naively on contaminated data either treats anomalies as noise (over-smoothing) or memorizes them as recurring (over-fitting). Two patterns:
+
+- **Detect-then-mask.** Run an anomaly detector on history (STL decomposition + IQR or Hampel filter on residuals; isolation forest on multivariate features). Mask the anomalous points or replace them with seasonal-naive imputations before fitting the forecast. Cheap; loses signal when an "anomaly" is the start of a real regime shift.
+- **Regime-indicator feature.** Pass an `is_anomaly` (or `regime_id`) feature into a GBDT/TFT alongside the calendar features. The model learns conditional behavior: baseline forecast when the indicator is off, separate offset when on. Doesn't require erasing history.
+
+Always pair with a **drift monitor** (`14-uncertainty.md`) — anomaly detectors fire on regime shifts too, so the planner needs a fall-back path when "anomaly" turns out to be the new normal.
 
 ## Calendar, regimes, exogenous features
 
@@ -96,3 +106,4 @@ The planner usually consumes multiple horizons simultaneously (full forward curv
 - MAPE/wMAPE as a training loss (biased, unstable near zero).
 - Stationary assumption with no drift monitor.
 - Climbing the model ladder past level 4 (GBDT) without naming the constraint that forces it.
+- Skipping the zero-shot foundation-model baseline (Chronos / TimesFM / Moirai) when cold-start cohorts dominate (anti-pattern A6).

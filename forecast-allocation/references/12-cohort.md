@@ -77,6 +77,39 @@ If cohorts have a hierarchy or a graph relationship (cohort A is a subset of coh
 
 Cost: graph construction, training pipeline, debuggability. Justify with the structure being load-bearing.
 
+## Cold-start cohorts via clustering
+
+A brand-new cohort with zero history needs a forecast at serve time. Factorization handles most of this (the cohort is a known aggregation over a known forecast tensor), but when a cohort has *novel* attribute combinations the factorization can still misprice. The fix is to **borrow from the nearest known cluster**:
+
+- **k-means / hierarchical clustering** over cohort embeddings learned across the active population. At serve time, find the new cohort's nearest cluster; use the cluster's pooled forecast as the prior.
+- **k-NN on attribute space.** Cheaper; works when cohorts are described by a small fixed attribute vector.
+- **Bayesian shrinkage to cluster mean.** Combine a thin per-cohort estimate with the cluster prior weighted by the cohort's history length — the standard hierarchical-Bayes pattern.
+
+Pair this with the **unseen-cohort eval slice** in `91-eval-metrics.md`: a held-out cohort set with zero training observations measures whether the cold-start path actually works.
+
+## Probabilistic / sketch-based cohort approximation
+
+When cohort cardinality genuinely exceeds memory (>10⁷ cohorts, or unbounded due to high-dimensional eligibility intersections), even the factorized representation can overflow. Sketch-based aggregates trade exactness for bounded space:
+
+- **Count-Min sketch** for per-cohort impression counts with bounded multiplicative error.
+- **Bloom filter** for cohort-membership queries when only "is this ad-group eligible for this cohort" matters.
+- **HyperLogLog** for per-cohort distinct-user counts when reach (not impressions) is the metric.
+
+Reach for these only when factorization itself overflows; otherwise factorization is exact and the sketch is a downgrade. The skill's default is factorized; sketches are the last-resort path.
+
+## Cohort feature engineering
+
+When a global model conditions on a cohort identity, the *features* must be compositional — never the cohort ID itself (anti-pattern A2). The useful features:
+
+- **Set cardinality** (number of ad-groups in the cohort).
+- **Entropy / Gini over member weights** — concentrated cohorts behave differently from uniform ones.
+- **Overlap metrics** with reference cohorts (Jaccard or cosine over member sets).
+- **Dominant-attribute presence** (one-hot encoding of the most common ad-group attribute in the set).
+- **Mean / max / sum-pooled member embeddings** (the DeepSets-style aggregation; permutation-invariant).
+- **Recency-weighted member features** (newer members weight more — captures cohort drift).
+
+These all generalize to unseen cohorts because they're computed from the members, not from the cohort ID.
+
 ## Sparsity handling
 
 For cohorts with < 30 observations (or whatever your threshold is):

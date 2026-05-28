@@ -38,6 +38,14 @@ Each entry: **symptom** (how it shows up), **why bad** (the failure mode), **ask
 
 **Ask instead.** What constraint forces the climb past GBDT? Long-range dependencies that trees can't capture? Multi-modal features? If neither, default to GBDT. See `10-forecast.md` model ladder.
 
+### A6. Foundation-model-skip without comparing zero-shot baseline
+
+**Symptom.** ML team designs a custom GBDT / transformer; never benchmarks against a foundation model (Chronos / TimesFM / Moirai) for cold-start cohorts or unseen-cohort generalization.
+
+**Why bad.** Time-series foundation models occasionally beat fine-tuned custom work on unseen cohorts and are *free to evaluate* — pretrained weights, zero-shot inference. Skipping the comparison leaves a known cheap baseline unmeasured; designs that climb the ladder past rung 4 without this check are claiming a benefit they haven't verified.
+
+**Ask instead.** Run Chronos / TimesFM / Moirai zero-shot as a comparison baseline. Justify the custom-model investment only if it meaningfully beats the foundation model on the planner metric, not just RMSE. See `10-forecast.md` rung 6.5 and `99-citations.md`.
+
 ### A5. MAPE / wMAPE as training loss
 
 **Symptom.** `loss=mape` in the trainer config.
@@ -147,6 +155,14 @@ Each entry: **symptom** (how it shows up), **why bad** (the failure mode), **ask
 **Why bad.** Marginal coverage averages across the whole population. The 10% tail of miscovered cases could all be the high-stakes cohorts.
 
 **Ask instead.** Verify per-cohort (or per-tier) coverage. If miscalibrated, use group-conditional conformal. See `14-uncertainty.md`.
+
+### D5. Uncalibrated deep ensemble reported as "probabilistic forecast"
+
+**Symptom.** A 5-model deep ensemble produces a mean + variance per forecast; the variance is consumed by the planner as if it were a calibrated predictive distribution. No PIT, no per-quantile coverage, no CRPS in the eval.
+
+**Why bad.** Ensemble variance is *a* proxy for uncertainty, not *the* calibrated predictive distribution. Deep ensembles are routinely over-confident on training-like inputs and under-confident out-of-distribution. A planner that trusts the variance as a calibrated quantile mis-hedges in both directions — and you find out only when production underdelivery spikes.
+
+**Ask instead.** Measure PIT histogram and per-quantile coverage on the ensemble distribution; report CRPS, not just ensemble variance. If miscalibrated, wrap with CQR (`14-uncertainty.md`) — the deep-ensemble + CQR composite gives both adaptivity and distribution-free coverage. Cite Lakshminarayanan 2017 for the ensemble, Romano 2019 for CQR.
 
 ## Evaluation
 
