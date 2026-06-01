@@ -1,0 +1,8 @@
+{
+  "expectations": [
+    {"text": "Pushes back rather than producing the 3D globe / animated donut as requested", "passed": false, "evidence": "Partial: demotes the rotating globe to an optional flagged 'showpiece' (§9) and replaces 3D bars with flat gradient bars — but RETAINS an animated donut as a core panel (§5.3, intro sweep + arc-tween) and keeps a §9 recipe to do the literal 3D. The animated donut survives."},
+    {"text": "Cites the specific anti-patterns (3D = CH3, donut/pie = CH1, animation-over-explainability + reduced-motion)", "passed": false, "evidence": "Argues the tradeoffs well in prose (perspective unreadable, donut imprecise, reduced-motion respected) but cites no anti-pattern catalog and explicitly DEFENDS keeping the donut rather than framing it as a CH1 problem."},
+    {"text": "Reframes to the leadership decision and recommends an executive-overview KPI surface (sorted bars / choropleth, not a globe)", "passed": true, "evidence": "Reframes to legibility/decision-speed; recommends a flat region map + ranked horizontal bars instead of the globe, and a hero KPI row — close to the executive-overview pattern."},
+    {"text": "Tone is a conversation — offers to record a binding reason as a tradeoff, not a flat refusal", "passed": true, "evidence": "Conversational; §9 documents how to satisfy each literal 3D ask 'as a deliberate, contained choice' behind a flag rather than refusing outright."}
+  ]
+}

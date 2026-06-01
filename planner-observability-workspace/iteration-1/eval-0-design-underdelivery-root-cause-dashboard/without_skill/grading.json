@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Mode identified as DESIGN; emits the design-doc template (10 sections)", "passed": false, "evidence": "A thorough design, but on its own ad-hoc structure (principles / rows / data model / performance / walkthrough). No Accessibility section and no decision-value Success-metrics section — two of the ten template sections are absent — and no anti-pattern appendix."},
+    {"text": "Produces an explicit anomaly->root-cause drill spine, not a flat set of charts", "passed": true, "evidence": "Strong: a top-down diagnostic funnel (incident summary -> delivery-vs-plan spine -> failure-class router -> cohort contribution -> audit timeline -> cohort detail), explicitly not a metrics wall."},
+    {"text": "Why-underdeliver sequence pairs the delivery curve with a pacing trace and distinguishes forecast-low / exhaustion / supply-shortfall / allocation-failure", "passed": true, "evidence": "Exceeds: a 6-class failure router (supply shortfall, forecast error/over-allocation, pacing throttle, auction loss, reservation starvation, targeting) with per-class verdict evidence; delivery paired with pace index / rate."},
+    {"text": "Includes an allocation Sankey with a drill target", "passed": false, "evidence": "No Sankey / allocation-flow. Uses a treemap (cohort contribution) and audit-log swimlanes instead; the supply->demand flow view is absent."},
+    {"text": "Anomalies overlaid on metrics (not a separate tab); replans as event markers", "passed": true, "evidence": "Replans/reservation/allocation events as markers on the delivery spine; click-to-correlate pins a crosshair across rows; nothing siloed in a separate anomaly tab."},
+    {"text": "Addresses 20k-cohort scale (virtualization / server-side aggregation / query-key scoping)", "passed": true, "evidence": "Strong: AggregatingMergeTree rollups, campaign-scoped queries, top-N at the database (LIMIT 200 + 'everything else' bucket), two-tier refresh cadence, never pulls 20k rows."},
+    {"text": "Walks the anti-pattern appendix; no pie / dead-end overview / mean-only latency", "passed": false, "evidence": "Avoids pie and dead-ends in practice (§8 'what this deliberately does NOT do'), but there is no walk of an anti-pattern catalog, no accessibility/color-encoding treatment, and latency-percentile discipline is not addressed."}
+  ]
+}

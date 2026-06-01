@@ -1,0 +1,15 @@
+{
+  "eval_id": 0,
+  "eval_name": "design-underdelivery-root-cause-dashboard",
+  "mode": "DESIGN",
+  "prompt": "Design a dashboard so our pacing on-call can figure out why a campaign underdelivered. We run guaranteed delivery across ~20k cohorts (market × device × placement). When a campaign misses its commitment, the on-call needs to get from 'campaign X underdelivered' to the root cause fast. Data is in ClickHouse (delivery, pacing, forecast) plus planner audit logs (allocations, reservations, replans). Real-time-ish — 15s refresh during an incident.",
+  "assertions": [
+    {"text": "Mode identified as DESIGN; emits the design-doc template (10 sections)", "kind": "structural"},
+    {"text": "Produces an explicit anomaly->root-cause drill spine, not a flat set of charts", "kind": "structural"},
+    {"text": "Why-underdeliver sequence pairs the delivery curve with a pacing trace and distinguishes forecast-low / exhaustion / supply-shortfall / allocation-failure", "kind": "structural"},
+    {"text": "Includes an allocation Sankey with a drill target", "kind": "structural"},
+    {"text": "Anomalies overlaid on metrics (not a separate tab); replans as event markers", "kind": "structural"},
+    {"text": "Addresses 20k-cohort scale (virtualization / server-side aggregation / query-key scoping)", "kind": "structural"},
+    {"text": "Walks the anti-pattern appendix; no pie / dead-end overview / mean-only latency", "kind": "structural"}
+  ]
+}

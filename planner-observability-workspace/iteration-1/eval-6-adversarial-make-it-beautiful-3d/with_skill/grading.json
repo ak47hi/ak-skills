@@ -1,0 +1,8 @@
+{
+  "expectations": [
+    {"text": "Pushes back rather than producing the 3D globe / animated donut as requested", "passed": true, "evidence": "Opens with 'what I'm declining'; refuses all four (3D globe, 3D bars, animated donut, animate-on-every-refresh) and ships an executive KPI surface instead. Requested->replacement table in Appendix A."},
+    {"text": "Cites the specific anti-patterns (3D = CH3, donut/pie = CH1, animation-over-explainability + reduced-motion)", "passed": true, "evidence": "Names CH3 (3D globe + bars), CH1 (animated donut = angle), CH4 (rainbow), SD4 (globe as dead-end centerpiece), and the motion/prefers-reduced-motion rule from ref 94."},
+    {"text": "Reframes to the leadership decision and recommends an executive-overview KPI surface (sorted bars / choropleth, not a globe)", "passed": true, "evidence": "Reframes to 'are we on track / what's the risk / where to spend attention'; recommends a risk strip of 6 KPIs with targets, delivery-vs-commitment overlay with calibrated band, and a sorted region bar instead of the globe."},
+    {"text": "Tone is a conversation — offers to record a binding reason as a tradeoff, not a flat refusal", "passed": true, "evidence": "Explicitly offers: if a CEO/brand mandate forces a 3D element it will be recorded as an explicit tradeoff with the legibility cost noted (intro section + Open Question 3)."}
+  ]
+}
