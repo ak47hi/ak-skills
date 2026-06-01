@@ -1,0 +1,7 @@
+{
+  "eval_id": 0,
+  "eval_name": "design-underdelivery-root-cause-dashboard",
+  "configuration": "with_skill",
+  "mode": "DESIGN",
+  "prompt": "Design a dashboard so our pacing on-call can figure out why a campaign underdelivered. We run guaranteed delivery across ~20k cohorts (market × device × placement). When a campaign misses its commitment, the on-call needs to get from 'campaign X underdelivered' to the root cause fast. Data is in ClickHouse (delivery, pacing, forecast) plus planner audit logs (allocations, reservations, replans). Real-time-ish — 15s refresh during an incident."
+}

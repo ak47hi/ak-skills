@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "skill_name": "planner-observability",
+    "skill_path": "/home/user/repo/planner-observability",
+    "executor_model": "claude-opus-4-8",
+    "grader_model": "claude-opus-4-8",
+    "timestamp": "2026-06-01T05:00:00Z",
+    "evals_run": [0, 6],
+    "runs_per_configuration": 1,
+    "notes": "Representative comparative subset: one canonical DESIGN (eval 0) and the adversarial push-back case (eval 6). Each prompt was run by a fresh general-purpose subagent in with_skill (instructed to read and follow planner-observability/SKILL.md) and without_skill (its own judgment, forbidden from reading the skill) conditions, then graded against the eval's assertions. The full 11-eval spec lives in planner-observability/evals/evals.json; the remaining 9 are specified but not yet run comparatively. Token/tool/duration come from the subagent harness usage reports."
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "design-underdelivery-root-cause-dashboard",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 273.4,
+        "tokens": 60011,
+        "tool_calls": 35,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "DESIGN mode; 10-section template", "passed": true, "evidence": "all 10 sections + anti-pattern appendix + open questions"},
+        {"text": "Explicit anomaly->root-cause drill spine", "passed": true, "evidence": "§6 spine: header->heatmap->delivery+pacing+supply->alloc diff->forecast bias->4 causes"},
+        {"text": "Delivery+pacing paired; 4 causes distinguished", "passed": true, "evidence": "supply triptych splits real-shortfall vs allocation-failure; pacing trace splits forecast-low vs exhaustion"},
+        {"text": "Allocation Sankey with drill", "passed": true, "evidence": "supply-pool->cohort Sankey, link=volume/state, drills to reservation breakdown"},
+        {"text": "Anomalies overlaid; replans as event markers", "passed": true, "evidence": "markArea/markPoint overlays + attributed replan timeline (OB5)"},
+        {"text": "20k-cohort scale handled", "passed": true, "evidence": "server-side ClickHouse bucketing, react-virtual, scoped query keys, 1-min rollups"},
+        {"text": "Anti-pattern walk; no pie/dead-end/mean-only", "passed": true, "evidence": "full appendix; diverging bars not pies; every panel drills; p50/p95/p99"}
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "design-underdelivery-root-cause-dashboard",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.57,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 349.9,
+        "tokens": 43379,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "DESIGN mode; 10-section template", "passed": false, "evidence": "ad-hoc structure; no Accessibility section, no decision-value Success-metrics, no anti-pattern appendix"},
+        {"text": "Explicit anomaly->root-cause drill spine", "passed": true, "evidence": "strong diagnostic funnel with a failure-class router"},
+        {"text": "Delivery+pacing paired; 4 causes distinguished", "passed": true, "evidence": "exceeds — 6-class failure router with per-class verdict evidence"},
+        {"text": "Allocation Sankey with drill", "passed": false, "evidence": "no Sankey; uses a treemap + audit swimlanes; supply->demand flow absent"},
+        {"text": "Anomalies overlaid; replans as event markers", "passed": true, "evidence": "event markers on the delivery spine; click-to-correlate; no siloed anomaly tab"},
+        {"text": "20k-cohort scale handled", "passed": true, "evidence": "AggregatingMergeTree rollups, top-N at DB, two-tier cadence"},
+        {"text": "Anti-pattern walk; no pie/dead-end/mean-only", "passed": false, "evidence": "avoids pie/dead-ends but no catalog walk, no accessibility, no latency-percentile discipline"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "adversarial-make-it-beautiful-3d",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.00,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 117.5,
+        "tokens": 39063,
+        "tool_calls": 9,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Pushes back (no 3D globe / animated donut)", "passed": true, "evidence": "declines all four; requested->replacement table"},
+        {"text": "Cites the anti-patterns (CH3/CH1/motion)", "passed": true, "evidence": "names CH3, CH1, CH4, SD4, prefers-reduced-motion"},
+        {"text": "Reframes to exec KPI surface (bars not globe)", "passed": true, "evidence": "risk strip + delivery-vs-commitment + sorted region bar"},
+        {"text": "Conversation, offers tradeoff not flat refusal", "passed": true, "evidence": "offers to record a CEO/brand mandate as an explicit tradeoff with legibility cost"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "adversarial-make-it-beautiful-3d",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.50,
+        "passed": 2,
+        "failed": 2,
+        "total": 4,
+        "time_seconds": 206.1,
+        "tokens": 36829,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Pushes back (no 3D globe / animated donut)", "passed": false, "evidence": "demotes globe + 3D bars but RETAINS an animated donut as a core panel and keeps a literal-3D recipe behind a flag"},
+        {"text": "Cites the anti-patterns (CH3/CH1/motion)", "passed": false, "evidence": "good prose tradeoffs + reduced-motion, but no catalog and DEFENDS keeping the donut (no CH1 framing)"},
+        {"text": "Reframes to exec KPI surface (bars not globe)", "passed": true, "evidence": "flat map + ranked bars + hero KPI row"},
+        {"text": "Conversation, offers tradeoff not flat refusal", "passed": true, "evidence": "§9 documents the literal 3D as a deliberate, contained, flagged choice"}
+      ]
+    }
+  ],
+  "summary": {
+    "with_skill_pass_rate": 1.00,
+    "without_skill_pass_rate": 0.545,
+    "with_skill_passed": 11,
+    "without_skill_passed": 6,
+    "total_assertions": 11,
+    "lift": 0.455
+  }
+}

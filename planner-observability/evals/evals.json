@@ -1,0 +1,164 @@
+{
+  "skill_name": "planner-observability",
+  "evals": [
+    {
+      "id": 0,
+      "name": "design-underdelivery-root-cause-dashboard",
+      "mode": "DESIGN",
+      "prompt": "Design a dashboard so our pacing on-call can figure out why a campaign underdelivered. We run guaranteed delivery across ~20k cohorts (market × device × placement). When a campaign misses its commitment, the on-call needs to get from 'campaign X underdelivered' to the root cause fast. Data is in ClickHouse (delivery, pacing, forecast) plus planner audit logs (allocations, reservations, replans). Real-time-ish — 15s refresh during an incident.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 1 should pass or do a minimal propose-and-go (persona = pacing on-call; decision = root-cause an underdelivery; data shape stated). Phase 2 routes to 13-planner-debugging (primary) + 14-observability-health + 11-chart-selection + 17-analytics-ux; categories root-cause-analysis (primary) + delivery-explorer + planner-explorer. Phase 3-6 MUST produce: (a) the three-tier hierarchy with the drill spine overview anomaly -> cohort heatmap -> delivery+pacing -> allocation diff -> forecast/feature attribution -> cause; (b) the why-underdeliver panel sequence (delivery curve + pacing trace beneath it + forecast error + supply-shortfall-vs-allocation-failure split) distinguishing the four root causes; (c) an allocation Sankey for supply->demand flow with drill; (d) anomalies OVERLAID on the metrics (markArea/markPoint), not a separate tab; (e) event markers for replans; (f) cross-filter + selection propagation + keyboard nav + <=3-click drill path; (g) scalability at 20k cohorts (virtualized cohort table / server-side heatmap bucketing, query-key scoping). Phase 6 emits the design-doc.md skeleton with all 10 sections and walks the anti-pattern appendix. MUST explicitly avoid: pie charts (CH1), dead-end overview (SD4), siloed anomaly tab (OB3), mean-only latency (OB1), unvirtualized table (IM2). Output is the design doc, not runnable code.",
+      "assertions": [
+        {"text": "Mode identified as DESIGN; emits the design-doc template (10 sections)", "kind": "structural"},
+        {"text": "Produces an explicit anomaly->root-cause drill spine, not a flat set of charts", "kind": "structural"},
+        {"text": "Why-underdeliver sequence pairs the delivery curve with a pacing trace and distinguishes forecast-low / exhaustion / supply-shortfall / allocation-failure", "kind": "structural"},
+        {"text": "Includes an allocation Sankey with a drill target", "kind": "structural"},
+        {"text": "Anomalies overlaid on metrics (not a separate tab); replans as event markers", "kind": "structural"},
+        {"text": "Addresses 20k-cohort scale (virtualization / server-side aggregation / query-key scoping)", "kind": "structural"},
+        {"text": "Walks the anti-pattern appendix; no pie / dead-end overview / mean-only latency", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "prototype-forecast-explorer-app",
+      "mode": "PROTOTYPE",
+      "prompt": "Scaffold a React + TypeScript dashboard I can actually run for exploring forecast vs actual across cohorts. I want a cohort list and, when I pick one, its forecast-vs-actual chart with the uncertainty band. We have a lot of cohorts so the list has to stay fast. Should run with npm run dev, no backend.",
+      "files": [],
+      "expected_output": "Mode PROTOTYPE. Phase 2 loads 12-forecast-explainability + 11-chart-selection + 18-react-architecture (always in PROTOTYPE) + category forecast-explorer. Phase 6 emits the templates/prototype Vite app and MUST: (a) boot with `npm install && npm run dev` and render with NO backend via a deterministic mock adapter; (b) include a forecast-vs-actual ECharts panel that draws the uncertainty band AND carries a calibration/coverage note (NOT a bare line — EX1; NOT an uncalibrated band with no note — EX2); (c) virtualize the cohort table with @tanstack/react-virtual (high cardinality — IM2); (d) split server state (TanStack Query, keys encoding the filter/selection — IM1) from UI state (Zustand — IM4); (e) selection in the table drives the chart (cross-filter / selection propagation); (f) no color-only encoding in the table status (AC1); (g) TODO markers pointing at the next panels + their references. MUST NOT render all cohort rows unvirtualized, MUST NOT put fetched data in the Zustand store, MUST NOT ship a forecast line with no band.",
+      "assertions": [
+        {"text": "Emits a Vite + React + TS app that builds (npm run build succeeds)", "kind": "file_exists"},
+        {"text": "Forecast-vs-actual chart renders an uncertainty band WITH a calibration/coverage note", "kind": "structural"},
+        {"text": "Cohort table is virtualized (react-virtual), not rendering all rows", "kind": "structural"},
+        {"text": "Server state in TanStack Query with filter-scoped keys; UI state in Zustand", "kind": "structural"},
+        {"text": "Table selection propagates to the chart (cross-filter)", "kind": "behavioral"},
+        {"text": "Table status uses shape/label, not color alone", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "audit-vanity-exec-dashboard",
+      "mode": "AUDIT",
+      "prompt": "Review our exec delivery dashboard — leadership says it's noisy and they can't tell if we're on track. It has: a big 'Total Impressions Delivered: 4.2M' number, a pie chart of delivery split across 8 markets, a pie of device mix, a line of average planner latency, a table of all 18,000 cohorts with their delivery %, and a grid of green/red cells for cohort health. No targets shown anywhere. What's wrong and how would you fix it?",
+      "files": [],
+      "expected_output": "Mode AUDIT. Loads 93-anti-patterns + 16-executive-reporting (category executive-overview). Emits the audit-report with a findings table citing specific anti-pattern ids: the 4.2M hero with no target = SD1/SD2/EXEC2 (vanity metric); the two pies over 8 markets / device mix = CH1 (use sorted horizontal bars); average planner latency = OB1 (percentiles) AND EXEC1 (operational detail leaking into an exec view) AND OB2 (no SLA line); the full 18k-cohort table = IM2 (unvirtualized) AND EXEC1 (operational detail on the exec surface — doesn't belong here at all); green/red grid = AC1 (color-only). MUST identify the ROOT issue: an exec surface drowning in operational detail with no targets/risk (EXEC1/EXEC2/EXEC3) — leadership can't tell good from bad. MUST propose signal-dense replacements: 6-9 KPIs with targets + trend + risk, operational detail pushed to a Tier-2 drill-through. MUST include a 'what to keep' section and prioritize by decision-impact. MUST NOT merely restyle the existing charts.",
+      "assertions": [
+        {"text": "Mode AUDIT; emits findings table citing specific anti-pattern ids", "kind": "structural"},
+        {"text": "Flags both pies as CH1 and recommends sorted bars / part-to-whole alternative", "kind": "structural"},
+        {"text": "Identifies operational-detail-in-exec-view (EXEC1) as a root issue, not just per-chart nits", "kind": "structural"},
+        {"text": "Flags the no-target KPIs (EXEC2/SD1) and the color-only health grid (AC1)", "kind": "structural"},
+        {"text": "Proposes a curated 6-9 KPI exec surface with targets+trend+risk and a drill-through for detail", "kind": "structural"},
+        {"text": "Includes a 'what to keep' section and prioritizes by decision-impact", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "narrow-pie-vs-bar",
+      "mode": "AUDIT",
+      "prompt": "Quick one: is a pie chart fine for showing delivery-by-channel (we have 7 channels)?",
+      "files": [],
+      "expected_output": "NARROW QUESTION. Skill MUST NOT emit a full template (no design doc, no audit report skeleton). Chat-mode 1-3 paragraphs. Answer: no — at 7 near-equal channels a pie is hard to read; humans decode length/position better than angle/area (Cleveland & McGill). Recommend a sorted horizontal bar; a treemap only if it's a strict part-to-whole with many slices and the whole is the point; stacked area if it's share-over-time. Cites references/11-chart-selection.md (and may cite 99-citations Cleveland & McGill). Should match the user's depth — terse. MUST NOT expand into a full dashboard design or audit even though chart selection is the topic.",
+      "assertions": [
+        {"text": "Chat-mode answer (1-3 paragraphs); does NOT emit a full template", "kind": "structural"},
+        {"text": "Recommends sorted horizontal bar over pie with the perception rationale", "kind": "structural"},
+        {"text": "Names the carve-outs (treemap for strict part-to-whole, stacked area for share-over-time)", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "design-exec-weekly-kpi",
+      "mode": "DESIGN",
+      "prompt": "Design a weekly exec review dashboard for our guaranteed-delivery business. Leadership wants to know if we're on track and where the risk is. They do NOT want to drown in operational detail.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 2 routes to 16-executive-reporting (category executive-overview, Tier 1). MUST curate 6-9 KPIs, each carrying a target/threshold + trend (sparkline) + status by color AND shape/label: delivery success, underdelivery RISK (leading, not just status — EXEC3), pacing stability, forecast quality, utilization, revenue impact. MUST lead with risk over status. MUST keep operational detail OFF the surface (EXEC1) with exactly one drill-through into Tier-2 health. MUST reject vanity metrics (SD1) — every KPI has a reference. Periodic/snapshot is acceptable (no live refresh) with freshness stated. Emits the design-doc template (can be slimmed — narrow persona) with the KPI set, the single drill, and success metric = time-to-decision. MUST NOT add per-cohort tables, planner latency, or replan detail to the exec view.",
+      "assertions": [
+        {"text": "Curates 6-9 KPIs, each with a target/threshold and a trend", "kind": "structural"},
+        {"text": "Leads with forecasted risk, not just current status (EXEC3)", "kind": "structural"},
+        {"text": "Keeps operational detail off the exec view; at most one drill-through to Tier 2 (EXEC1)", "kind": "structural"},
+        {"text": "No vanity metrics; status encoded with shape/label not color alone", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "design-forecast-explainability-view",
+      "mode": "DESIGN",
+      "prompt": "We keep getting surprised by forecast misses that turn into underdelivery. Design a forecast-explainability view so an analyst can see not just that the forecast was wrong but why, and whether it's about to drift again.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 2 routes to 12-forecast-explainability (category forecast-explorer) + 11-chart-selection. MUST produce the four panels: (1) actual-vs-forecast with a CALIBRATED band + a calibration note (EX1/EX2); (2) error decomposition into signed BIAS vs VARIANCE plus an attribution heatmap over cohort x horizon (EX4 — not a single error number); (3) feature/driver contribution per prediction (debuggability, FA F2); (4) planner-impact overlay tying the forecast miss to the delivery curve. MUST include a calibration view as a first-class panel: PIT/reliability + PER-COHORT-TIER coverage (not just marginal — FA D4) + coverage trend over time as the drift leading indicator. The 'about to drift again' requirement MUST be answered by the coverage-trend panel. Emits the design doc. MUST NOT recommend 'just show the forecast line' or a bare RMSE number.",
+      "assertions": [
+        {"text": "Actual-vs-forecast panel has a calibrated band WITH a calibration note (EX1/EX2)", "kind": "structural"},
+        {"text": "Error decomposed into bias vs variance + attribution heatmap (EX4)", "kind": "structural"},
+        {"text": "Includes feature/driver contribution and a planner-impact overlay", "kind": "structural"},
+        {"text": "Calibration view uses per-cohort-tier coverage + coverage-trend for drift, not marginal-only", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "adversarial-make-it-beautiful-3d",
+      "mode": "DESIGN",
+      "prompt": "Make our planner dashboard look amazing — I want smooth animations on every refresh, a rotating 3D globe showing delivery by region, gradient-filled 3D bar charts, and a big animated donut for the delivery breakdown. It needs to wow the leadership demo. Design it.",
+      "files": [],
+      "expected_output": "ADVERSARIAL CASE — the skill MUST push back, not capitulate. It must invoke the 'When to push back' stance and the anti-patterns: 3D globe + 3D bars = CH3 (3D distorts comparison, occlusion, zero info gain); animated donut for breakdown = CH1 (pie/donut) + the animation-over-explainability stance; animations on every refresh = the motion anti-pattern (delays reading, references/94 prefers-reduced-motion). The skill must REFRAME from 'wow' to decision speed: the goal is the leadership decision (are we on track, what's the risk), and recommend the executive-overview category (16) — KPIs with targets + trend + risk, sorted bars / choropleth-not-globe for regional delivery, sparse and legible. Tone firm but professional — a conversation, not a refusal: if there's a binding reason (a one-off marketing splash, not an operational tool) it's recorded as a tradeoff, but the operational dashboard stays signal-dense. MUST NOT meekly produce the 3D-globe + animated-donut design as asked.",
+      "assertions": [
+        {"text": "Pushes back rather than producing the 3D globe / animated donut as requested", "kind": "behavioral"},
+        {"text": "Cites the specific anti-patterns (3D = CH3, donut/pie = CH1, animation-over-explainability + reduced-motion)", "kind": "structural"},
+        {"text": "Reframes to the leadership decision and recommends an executive-overview KPI surface (sorted bars / choropleth, not a globe)", "kind": "structural"},
+        {"text": "Tone is a conversation — offers to record a binding reason as a tradeoff, not a flat refusal", "kind": "behavioral"}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "design-observability-health-alerts",
+      "mode": "DESIGN",
+      "prompt": "Design the operational health + alerting for our planner/forecast/allocation/pacing pipeline. Last incident we got paged 200 times for one root cause and still missed the actual SLA breach. We need to actually catch problems without drowning the on-call.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 2 routes to 14-observability-health (primary) + 11-chart-selection + 17. MUST produce: per-subsystem health signals (planner solve latency, forecast staleness/calibration, allocation reservation-failure, pacing oscillation); latency as p50/p95/p99 NOT mean (OB1); SLA reference lines on every health chart (OB2); anomalies OVERLAID on the perturbed metric with attribution (OB3/EX3), not a separate tab; event markers (OB5). For ALERTING the skill MUST directly address the 200-pages-one-cause incident: severity tiers, alert on SYMPTOMS not causes (page on SLA-breaching underdelivery, not on 'forecast coverage dropped'), burn-rate/multi-window thresholds (not single-tick), DEDUP/grouping (one incident across N cohorts = one page), and every alert links to its drill path. The 'missed the actual breach while paged 200x' is the alert-fatigue + alert-on-cause anti-pattern (OB4) — the skill must name it as the root cause. A compact health-overview grid for the first-glance 'which subsystem is unhealthy'. Emits the design doc.",
+      "assertions": [
+        {"text": "Latency shown as percentiles (p50/p95/p99), not mean (OB1)", "kind": "structural"},
+        {"text": "SLA reference lines on health charts; anomalies overlaid with attribution, not siloed (OB2/OB3)", "kind": "structural"},
+        {"text": "Alert design: severity tiers + symptom-based + burn-rate/multi-window + dedup + drill link (OB4)", "kind": "structural"},
+        {"text": "Names alert fatigue / alert-on-cause as the root cause of the 200-pages-one-miss incident", "kind": "behavioral"}
+      ]
+    },
+    {
+      "id": 8,
+      "name": "narrow-500k-cohort-table",
+      "mode": "DESIGN",
+      "prompt": "Quick question: I need to show a table of 500k cohorts with their delivery metrics. How should I render that without freezing the browser?",
+      "files": [],
+      "expected_output": "NARROW QUESTION. Chat-mode 1-3 paragraphs, no full template. Answer: do NOT render all rows (IM2). At 500k the table must be SERVER-SIDE — the OLAP store paginates/aggregates, the client virtualizes (react-virtual) over a windowed/infinite query, and you DON'T fetch all 500k to the browser (IM3 client-side aggregation). Default to a sorted/aggregated rollup (worst-N by anomaly/underdelivery) with drill-down rather than a flat 500k-row dump — nobody scans 500k rows; the table should surface the cohorts that matter and drill. Cites references/18-react-architecture.md. MUST NOT suggest client-side rendering or fetching of all 500k rows, MUST NOT expand to a full design doc.",
+      "assertions": [
+        {"text": "Chat-mode; no full template", "kind": "structural"},
+        {"text": "Prescribes server-side pagination/aggregation + client virtualization, not client-side render of 500k", "kind": "structural"},
+        {"text": "Recommends a worst-N rollup + drill rather than a flat 500k dump", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 9,
+      "name": "design-simulation-replay-explorer",
+      "mode": "DESIGN",
+      "prompt": "We want to test pacer changes in our simulator before shipping and also replay past incidents. Design the surface: I want to compare a candidate pacer against the current one, and scrub through an incident tick by tick.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 2 routes to 15-simulation-replay (category simulation-explorer) + 11 + 17. MUST produce: (1) a sim-vs-actual overlay shown FIRST with a reproduction-tolerance band — if the sim doesn't reproduce production it's uncalibrated and untrustworthy (FA E4); (2) a replay timeline SCRUBBER that drives shared time-selection so EVERY panel re-renders to 'state at tick t' (not just one panel); (3) counterfactual planner replacement for the pacer comparison: FIX traffic + forecast, swap the pacer, two delivery curves side by side, with 'what's held fixed' made explicit (FA E5 — not comparing on different traffic); (4) a forecast-error perturbation sweep (0/5/10/20%) showing degradation; (5) scenario-compare on BOTH forecast and planner metrics. Emits the design doc. MUST NOT propose a what-if that lets traffic vary between candidate and baseline, MUST NOT omit the sim-calibration check.",
+      "assertions": [
+        {"text": "Sim-vs-actual reproduction check shown first; sim flagged untrustworthy if it doesn't reproduce", "kind": "structural"},
+        {"text": "Replay scrubber drives shared time-selection so all panels re-render to tick t", "kind": "structural"},
+        {"text": "Pacer comparison is counterfactual replacement (fixed traffic+forecast, swap pacer)", "kind": "structural"},
+        {"text": "Includes a perturbation sweep and two-table (forecast + planner) scenario compare", "kind": "structural"}
+      ]
+    },
+    {
+      "id": 10,
+      "name": "design-cohort-anomaly-localizer",
+      "mode": "DESIGN",
+      "prompt": "Across ~50k cohorts we sometimes get a delivery anomaly and can't tell if it's a few cohorts or systemic. Design a view that lets us localize it fast and drill into the offending cohorts.",
+      "files": [],
+      "expected_output": "Mode DESIGN. Phase 2 routes to cohort-explorer + 11 + 14 + 17. MUST produce: a cohort x time HEATMAP as the primary localizer on a PERCEPTUALLY-UNIFORM scale (CH4 — not rainbow), value = anomaly score / delivery deficit; the systemic-vs-localized read is the heatmap's whole point (a column lit up = systemic, scattered cells = localized). A virtualized/sorted cohort table (50k — IM2/IM3 server-side). Small multiples for the top-N anomalous cohorts. Selection propagates the cohort across panels; drill path heatmap cell -> cohort delivery curve -> allocation diff -> cause (the root-cause spine). Segment breakdown as sorted bars (not pie — CH1). Emits the design doc. MUST address 50k-cohort scale and MUST overlay anomalies rather than siloing them (OB3).",
+      "assertions": [
+        {"text": "Cohort x time heatmap on a perceptually-uniform scale as the localizer (CH4)", "kind": "structural"},
+        {"text": "Distinguishes systemic vs localized via the heatmap structure", "kind": "structural"},
+        {"text": "Virtualized/server-side cohort table at 50k; drill from heatmap cell to root-cause spine", "kind": "structural"},
+        {"text": "Selection propagation across panels; segment breakdown as sorted bars not pie", "kind": "structural"}
+      ]
+    }
+  ]
+}

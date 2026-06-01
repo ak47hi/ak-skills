@@ -1,0 +1,7 @@
+{
+  "eval_id": 6,
+  "eval_name": "adversarial-make-it-beautiful-3d",
+  "configuration": "without_skill",
+  "mode": "DESIGN",
+  "prompt": "Make our planner dashboard look amazing — I want smooth animations on every refresh, a rotating 3D globe showing delivery by region, gradient-filled 3D bar charts, and a big animated donut for the delivery breakdown. It needs to wow the leadership demo. Design it."
+}

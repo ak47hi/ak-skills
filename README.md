@@ -15,6 +15,7 @@ This repo is the generic counterpart to domain-specific skill repos (e.g. `flink
 | [`agent-ready/`](agent-ready/) | Prepare any repository for AI agents: generate a knowledge graph, write a cited `AGENT_DESIGN_DOC.md` (10 sections, every claim traced to `file:line`), optionally produce an `ARCHITECTURE.md` with validated Mermaid diagrams, wire `CLAUDE.md` with the design-doc import + Karpathy Guidelines, then commit only the generated files. Flags: `--skip-understand`, `--skip-commit`, `--architecture`, `--no-split`. | Claude Code plugin: [`Lum1104/Understand-Anything`](https://github.com/Lum1104/Understand-Anything) | active |
 | [`connection-leak/`](connection-leak/) | Diagnose and fix connection leaks in JVM (Java/Kotlin) and Python services across three resource classes: JDBC/DB pools (HikariCP, asyncpg, SQLAlchemy), Apache Flink 1.18 operator lifecycle (`RichFunction.close`, AsyncIO, RocksDB iterators), and HTTP/gRPC clients (OkHttp, Apache HC, Netty, gRPC, ktor, aiohttp, httpx, requests). Runs cross-cutting triage (FD trend, FD classification, runtime ID) before routing to the matching domain reference. Replaces an earlier 4-skill family (`connection-leak-hunt` + 3 siblings). | — | active |
 | [`forecast-allocation/`](forecast-allocation/) | Design constrained forecasting + allocation systems — the class where a forecast feeds a planner that allocates scarce supply against committed demand under uncertainty. Modes: DESIGN (cited design doc), PROTOTYPE (runnable Python skeleton with forecaster + planner + simulator), EVALUATE (forecast + planner metrics + perturbation grid). Six phases — ELICIT → ROUTE → FRAME → ANALYZE → EVALUATE → OUTPUT — with research-area refs (forecasting, pacing, cohort representation, allocation optimization, uncertainty, simulation) loaded only when the prompt touches them. Archetype catalog: guaranteed ad delivery, capacity planning, supply-chain allocation, scheduler/quotas. Rejects cohort-ID memorization, one-model-per-cohort, RMSE-only eval, planner-unaware objectives. | — | active |
+| [`planner-observability/`](planner-observability/) | The observability counterpart to `forecast-allocation`: design the operational analytics dashboards + monitoring you *see* a forecast/planner/guaranteed-delivery system through. Modes: DESIGN (dashboard design doc — 10 sections), PROTOTYPE (runnable Vite + React + TS app with ECharts, TanStack Query, Zustand, virtualized cohort table, calibrated forecast band — boots with `npm run dev`), AUDIT (critique an existing dashboard against the anti-pattern catalog). Six phases — ELICIT → ROUTE → FRAME → ANALYZE → MEASURE → OUTPUT — with concern refs (information architecture, chart selection, forecast explainability, planner debugging, observability/health, simulation/replay, executive reporting, analytics UX, React architecture) loaded only when touched. Eight dashboard-category catalog (executive-overview … root-cause-analysis). Decision-first not chart-first; explainability over decoration; drill-down over breadth. Rejects vanity metrics, pie-for-non-part-to-whole, uncalibrated uncertainty bands, dead-end overviews, alert fatigue, unvirtualized high-cardinality tables, color-only encoding. | Node/npm (for PROTOTYPE) | active |
 
 ## Install
 
@@ -84,9 +85,14 @@ ak-skills/
 │   ├── templates/         ← the design-doc skeleton
 │   ├── scripts/           ← validate-mermaid.sh
 │   └── evals/             ← skill-creator eval prompts
-└── connection-leak/
-    ├── SKILL.md           ← six-phase router (ELICIT → TRIAGE → ROUTE → DIAGNOSE → FIX → VERIFY)
-    └── references/        ← 00-elicitation, 01-routing, 10-triage, 20-jdbc, 21-flink, 22-http-grpc, 90-anti-patterns, 91-output-contract
+├── connection-leak/
+│   ├── SKILL.md           ← six-phase router (ELICIT → TRIAGE → ROUTE → DIAGNOSE → FIX → VERIFY)
+│   └── references/        ← 00-elicitation, 01-routing, 10-triage, 20-jdbc, 21-flink, 22-http-grpc, 90-anti-patterns, 91-output-contract
+└── planner-observability/
+    ├── SKILL.md           ← six-phase router (ELICIT → ROUTE → FRAME → ANALYZE → MEASURE → OUTPUT); modes DESIGN / PROTOTYPE / AUDIT
+    ├── references/        ← 00-elicitation, 01-routing, 10-18 concern refs, 90-94 support, 99-citations, categories/
+    ├── templates/         ← design-doc.md, audit-report.md, prototype/ (runnable Vite + React + TS app)
+    └── evals/             ← skill-creator eval set (evals.json)
 ```
 
 ## License

@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Mode identified as DESIGN; emits the design-doc template (10 sections)", "passed": true, "evidence": "States 'Mode: DESIGN'; all 10 template sections present (Personas … Success metrics) plus the anti-pattern appendix and flagged open questions."},
+    {"text": "Produces an explicit anomaly->root-cause drill spine, not a flat set of charts", "passed": true, "evidence": "§6 lays out the spine incident header -> cohort heatmap (where) -> delivery+pacing+supply (how) -> allocation diff+reservation (what) -> forecast bias (why) -> one of four named causes."},
+    {"text": "Why-underdeliver sequence pairs the delivery curve with a pacing trace and distinguishes forecast-low / exhaustion / supply-shortfall / allocation-failure", "passed": true, "evidence": "Workflow A + the supply triptych (forecasted vs available vs allocated) explicitly split the four causes; pacing trace stacked beneath the delivery curve on a shared x-axis."},
+    {"text": "Includes an allocation Sankey with a drill target", "passed": true, "evidence": "§4 'Allocation-flow Sankey' — supply pools -> demand cohorts, link width = volume, color = reservation state; drill to reservation breakdown for the link."},
+    {"text": "Anomalies overlaid on metrics (not a separate tab); replans as event markers", "passed": true, "evidence": "Anomaly windows overlaid via markArea/markPoint on the Tier-2 charts; dedicated replan timeline with attributed event markers (OB5)."},
+    {"text": "Addresses 20k-cohort scale (virtualization / server-side aggregation / query-key scoping)", "passed": true, "evidence": "§7: server-side ClickHouse bucketing for the heatmap, react-virtual for the cohort table, panel-scoped query keys, 1-min rollups, refresh discipline, lttb sampling."},
+    {"text": "Walks the anti-pattern appendix; no pie / dead-end overview / mean-only latency", "passed": true, "evidence": "Full appendix walks CH/SD/EX/OB/IN/IM/AC/EXEC; allocation diff is a diverging bar not pies, every panel drills (no SD4), latency p50/p95/p99 not mean (OB1)."}
+  ]
+}

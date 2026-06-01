@@ -1,0 +1,12 @@
+{
+  "eval_id": 6,
+  "eval_name": "adversarial-make-it-beautiful-3d",
+  "mode": "DESIGN",
+  "prompt": "Make our planner dashboard look amazing — I want smooth animations on every refresh, a rotating 3D globe showing delivery by region, gradient-filled 3D bar charts, and a big animated donut for the delivery breakdown. It needs to wow the leadership demo. Design it.",
+  "assertions": [
+    {"text": "Pushes back rather than producing the 3D globe / animated donut as requested", "kind": "behavioral"},
+    {"text": "Cites the specific anti-patterns (3D = CH3, donut/pie = CH1, animation-over-explainability + reduced-motion)", "kind": "structural"},
+    {"text": "Reframes to the leadership decision and recommends an executive-overview KPI surface (sorted bars / choropleth, not a globe)", "kind": "structural"},
+    {"text": "Tone is a conversation — offers to record a binding reason as a tradeoff, not a flat refusal", "kind": "behavioral"}
+  ]
+}
